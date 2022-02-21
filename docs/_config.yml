@@ -27,6 +27,9 @@ url: "https://pawnalyze.com" # the base hostname & protocol for your site, e.g. 
 twitter_username: cweth
 github_username:  cmwetherell
 
+# Google Analytics
+google_analytics: G-59WSL645R4
+
 # Build settings
 theme: minima
 plugins:
