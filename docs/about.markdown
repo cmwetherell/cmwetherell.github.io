@@ -12,3 +12,4 @@ Ideally, this site will evolve into something more user friendly over time where
 
 Thanks for visiting!
 
+<img src="/assets/img/selfie.jpeg" alt="caleb wetherell" width="50%"/>
