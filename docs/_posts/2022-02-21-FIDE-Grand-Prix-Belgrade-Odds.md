@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Mamedyarov, MVL, and Giri are favorites heading into FIDE Grand Prix 2022 Belgrade"
-date:   2022-02-22 00:00:00 -0800
+date:   2022-02-21 23:00:00 -0800
 categories: Tournament
 ---
 
