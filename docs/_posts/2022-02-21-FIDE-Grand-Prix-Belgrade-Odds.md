@@ -40,7 +40,7 @@ These results are mostly in line with classical time-control ELO ratings.  Howev
 
 ### Some Tidbits You May Find Interesting
 
-You might wonder if the randomization process mentioned above has a metrial effect on the odds of each player winning the tournament. The short is is no, almost none at all. Richárd Rapport was the most unlucky, having his odds decreased by 0.3% from before the drawing to after the drawing. Pool C, with Rpport, Gujrathi, Fedoseev, and Shirov, is the only pool without a player below 2700.
+You might wonder if the randomization process mentioned above has a metrial effect on the odds of each player winning the tournament. The short is is no, almost none at all. Richárd Rapport was the most unlucky, having his odds decreased by 0.3% from before the drawing to after the drawing. Pool C, with Rapport, Gujrathi, Fedoseev, and Shirov, is the only pool without a player below 2700.
 
 Mamedyarov benefitted the most. He is a whopping 0.2% more likely to win the tournament from before to after the random drawing of pools. +1 FIDE.
 
