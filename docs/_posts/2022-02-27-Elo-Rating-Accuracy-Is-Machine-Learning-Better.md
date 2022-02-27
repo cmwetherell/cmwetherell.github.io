@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Elo Ratings v. Machine Learning: Predicting Chess Game Results"
-date:   2022-02-23 00:00:00 -0800
+date:   2022-02-27 00:02:00 -0800
 categories: Tournament
 ---
 <head>
