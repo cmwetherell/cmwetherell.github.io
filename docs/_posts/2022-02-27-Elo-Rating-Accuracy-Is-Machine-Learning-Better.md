@@ -66,9 +66,9 @@ It would be a let down if I just told you all about this new fancy model and did
 
 For games with a higher average Elo rating, the white player has a slightly larger first move advantage. The advantage goes from 0.034 to to 0.048 expected points, a 40% increase in the first move advantage for Super GMs compared to players at about 2000 Elo.
 
-### I can't believe you're still reading this
+### You're still reading?
 
-Many kudos are still in order for Arpad Elo - his system is still quite useful today, 60+ years later. Were wondering why I didn't use machine learning to build a new rating system? The main challenge in doing that would be curating a really high quality dataset. Elo ratings from FIDE and USCF are effectively just that - high quality (aggregated) data for each player. If there was a good way to get a high quality database of all FIDE rated games ever played, we could do some damage with machine learning!
+Many kudos are still in order for Arpad Elo - his system is still quite useful today, 60+ years later. Were you wondering why I didn't use machine learning to build a new rating system? The main challenge in doing that would be curating a really high quality dataset. Elo ratings from FIDE and USCF are effectively just that - high quality (aggregated) data for each player. If there was a good way to get a high quality database of all FIDE rated games ever played, we could do some damage with machine learning!
 
 For now, the best I've come up with is using Elo ratings and machine learning together. Combining math from the 60s with math from today, we can make good predictions about chess games.
 
