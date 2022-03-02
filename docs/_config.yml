@@ -27,11 +27,19 @@ url: "https://pawnalyze.com" # the base hostname & protocol for your site, e.g. 
 twitter_username: pawnalyze
 github_username:  cmwetherell
 
+
+
 # Google Analytics
 google_analytics: G-59WSL645R4
 
+#Link to header pages in nav bar in order
+header_pages:
+  - about.md
+
 # Build settings
 theme: minima
+
+
 plugins:
   - jekyll-feed
 
