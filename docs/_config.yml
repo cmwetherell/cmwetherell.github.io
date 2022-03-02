@@ -32,9 +32,9 @@ github_username:  cmwetherell
 # Google Analytics
 google_analytics: G-59WSL645R4
 
-#Link to header pages in nav bar in order
+# #Link to header pages in nav bar in order
 header_pages:
-  - about.md
+  - about.markdown
 
 # Build settings
 theme: minima
