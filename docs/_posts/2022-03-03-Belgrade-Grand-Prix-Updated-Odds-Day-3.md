@@ -24,7 +24,7 @@ Two players won with the white pieces today: Rapport (beat Vidit) and Fedoseev (
 
 Every game in Pool D contues to be drawn, with all four players on 1.5 points. MVL and Shakh are still the favorites. Shakh's draw with the white pieces while MVL drew with the black pieces represents a missed opportunity for Shakh to jump ahead in Pool D, so you'll notices MVL's odds have jumped up a bit while Shakh's have decreased.
 
-So far I've run 10,000 simulations and the results are posted below. I will update with 50,000 simulations later today.
+The results of 50,000 simulations are below.
 
 **Belgrade Odds**
 
