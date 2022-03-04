@@ -87,4 +87,3 @@ The results of 50,000 simulations are below.
 | Pentala Harikrishna    |       0.0 |                  3.9 |
 | Etienne Bacrot         |       0.0 |                  2.3 |
 | Alexei Shirov          |       0.0 |                  0.5 |
-
