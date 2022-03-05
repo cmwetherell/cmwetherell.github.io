@@ -24,7 +24,7 @@ Maxime Vachier-Lagrave was today's big winner. He beat Alexandr Predke with the 
 
 Action takes a break tomorrow before th players return on Sunday for Round 5 of 6 in the round robin pool stage. Monday's game with Mamedyarov vs. MVL is likely to be critical, assuming Sunday sees two draws in the pool, as an MVL draw or win would secure him the pool, but Mamedyarov will wield the white pieces and need to go for a win. If it's anything like their first game in the round robin, it will surely be a sharp and intense game.
 
-Results of 50,000 simulations below.
+Results of 200,000 simulations below.
 
 **Belgrade Odds**
 
