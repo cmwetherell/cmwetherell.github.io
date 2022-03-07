@@ -26,6 +26,8 @@ I'm working on getting the odds of each pairing in the semifinals and each poten
 
 Results from 50,000 simulations below.
 
+**Note:** I think there is a bug in my code somewhere; MVL and Rapport whould have similar odds. I'll be digging into that tonight.
+
 **Belgrade Odds**
 
 | Name                   | Win % |   Expected GP Points |
