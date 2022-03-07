@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "FIDE Grand Prix Belgrade Knockout Stage Odds"
-date:   2022-03-06 00:11:00 -0800
+date:   2022-03-07 00:12:00 -0800
 categories: Tournament
 ---
 
