@@ -4,6 +4,7 @@ title:  "FIDE Grand Prix Belgrade Knockout Interactive Bracket"
 date:   2022-03-08 00:00:00 -0800
 categories: Tournament
 ---
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="/assets/bracket.js"></script>
 
