@@ -5,7 +5,7 @@ date:   2022-03-08 00:00:00 -0800
 categories: Tournament
 ---
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="{{ base.url | prepend: site.url }}/assets/js/bracket.js"></script>
+<script src="/assets/bracket.js"></script>
 
 ### March Madness is here!
 
