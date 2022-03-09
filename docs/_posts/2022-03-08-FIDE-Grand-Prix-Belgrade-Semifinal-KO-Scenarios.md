@@ -13,29 +13,29 @@ I ran 1,000 simulations for each scenario. The numbers should be at most 1-2% of
 
 I *think* Andreikin has the white pieces against Giri and Rapport has the white pieces against MVL. 
 
-**If Andreikin beats Giri:** <br>
-    Giri wins semi: 0.202<br>
-    Andreikin wins semi: 0.798<br>
-<br>
-**If they draw:**
-<br>    Giri wins semi: 0.702
-<br>    Andreikin wins semi: 0.298
-<br>
-<br>**If Giri wins:**
-<br>    Giri wins semi: 0.963
-<br>    Andreikin wins semi: 0.037
-<br>
-<br>**If Rapport beats MVL:**
-<br>    Rapport wins semi: 0.847
-<br>    MVL wins semi: 0.153
+**If Andreikin beats Giri:**
+<br>Giri wins semi: 0.221
+<br>Andreikin wins semi: 0.779
 <br>
 <br>**If they draw:**
-<br>    Rapport wins semi: 0.403
-<br>    MVL wins semi: 0.597
+<br>Giri wins semi: 0.694
+<br>Andreikin wins semi: 0.306
 <br>
-<br>**If MVL beats Rapport:**
-<br>    Anish wins semi: 0.202
-<br>    Demitri wins semi: 0.798
+<br>**If Giri wins:**
+<br>Giri wins semi: 0.964
+<br>Andreikin wins semi: 0.036
+<br>
+<br>**If Rapport beats MVL:**
+<br>Rapport wins semi: 0.855
+<br>MVL wins semi: 0.145
+<br>
+<br>**If they draw:**
+<br>Rapport wins semi: 0.432
+<br>MVL wins semi: 0.568
+<br>
+<br>**If MVL wins:**
+<br>Rapport wins semi: 0.066
+<br>MVL wins semi: 0.934
 
 
 [b]: https://pawnalyze.com/tournament/2022/03/08/FIDE-Grand_Prix-Belgrade-Knockout-Bracket.html
