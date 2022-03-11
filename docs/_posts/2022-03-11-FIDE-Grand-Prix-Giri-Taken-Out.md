@@ -20,7 +20,7 @@ categories: Tournament
 
 ### Giri upset by Andreikin
 
-In what might be one of the most surprising individual game results of the FIDE Grand Prix so far, Andreikin beat Giri in a Rapid game, a result that we should only see about 10% of the time for someone with an 83 point Elo deficit. They drew the other game, so Andreikin advances to face Rapport, and Giri is sidelined with 10 Grand Prix points.
+In what might be one of the most surprising individual game results of the FIDE Grand Prix so far, Andreikin beat Giri in a Rapid game, a result that we should only see about 10% of the time for someone with an 83 point Elo deficit. They drew the other game, so Andreikin advances to face Rapport and Giri is sidelined with a solid, but surely disappointing, seven Grand Prix points.
 
 **Belgrage Finals Odds**
 
