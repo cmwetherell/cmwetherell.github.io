@@ -23,7 +23,7 @@ The final leg of the 2022 FIDE Grand Prix kicks off in Berlin today, and there i
 
 It would be confusing to add the complexity of qualifying for the Candidates from either Elo or Grnad Prix, so my odds below only consider the odds of qualifying via Grand Prix. Richárd Rapport played in the first two events and scored 20 points and has a 96% chance of qualifying, so the likely result is the players in Berlin are fighting for one last spot via Grand Prix, and one last spot via rating.
 
-Dmitry Andreikin, who had reasonable chances to qualify if he did well in Pool A, withdrew from the tournament for personal reasons and no longer has an opportunity to qualify for the Candidate's Tournament. Andrey Esipenko will be his replacement who will almost certainly if he were to win the Leg.
+Dmitry Andreikin, who had reasonable chances to qualify if he did well in Pool A, withdrew from the tournament for personal reasons and no longer has an opportunity to qualify for the Candidate's Tournament. Andrey Esipenko will be his replacement who will almost certainly qualify if he were to win the Leg.
 
 Levon Aronian and Hikaru Nakamura face off on Day 1 of round robin play of Pool A, and Aronian wielding the white pieces has a chance to give himself a significant edge over Hikaru. If Hikaru holds or wins with Black, he will be well positioned to take the crown in Pool A.
 
