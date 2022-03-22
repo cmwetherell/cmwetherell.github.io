@@ -9,7 +9,6 @@ def main():
 
     hash_pool = set(pd.util.hash_pandas_object(current[current.played==1])) # gets a hash for each row of the df where the pool game was played
     # hash_ko = ? This hashing technique might not work because the ko games will be different for every grand prix (until the pools are final... maybe thats the only time we care about ko results anyways)
-
     standings = pickle.load(open( "./chess-sim/data/sims/standings.p", "rb" ) )
     # koGames = pickle.load(open( "./chess-sim/data/sims/koGames.p", "rb" ) )
     poolGames = pickle.load(open( "./chess-sim/data/sims/poolGames.p", "rb" ) )
@@ -22,7 +21,7 @@ def main():
     standings = [standings[i] for i in simMatchPool]
     poolGames = [poolGames[i] for i in simMatchPool]
     # koGames = [koGames[i] for i in simMatchPool]
-
+    
     standings = pd.concat(standings)
 
     standings['Wins'] = 1 * (standings.event3Points==13) # TODO should move this to simulation function
