@@ -1,0 +1,20 @@
+[[source]]
+url = "https://repo.forge.lmig.com/api/pypi/python/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pandas = "*"
+plotly = "*"
+ipykernel = "*"
+lightgbm = "*"
+sklearn = "*"
+numpy = "*"
+chess = "*"
+tqdm = "*"
+
+[dev-packages]
+jupyterlab = "*"
+
+[requires]
+python_version = "3.9"

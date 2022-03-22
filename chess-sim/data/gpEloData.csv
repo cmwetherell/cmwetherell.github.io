@@ -1,0 +1,26 @@
+﻿Name,event1,event2,event3,event1Points,event2Points,EloC,EloR,EloB,event2Pool,TF,TS,GP,GW,event3Pool
+Hikaru Nakamura,1,0,1,13,0,2750,2837,2850,,1,0,6.5,3,A
+Levon Aronian,1,0,1,10,0,2785,2705,2773,,0,1,7,4,A
+Leinier Domínguez,1,0,1,7,0,2756,2735,2728,,0,0,4.5,3,B
+Richárd Rapport,1,1,0,7,13,2767,2785,2646,C,1,0,11,6,
+Wesley So,1,0,1,4,0,2778,2769,2814,,0,0,4,2,C
+Andrey Esipenko,1,0,1,4,0,2723,2679,2617,,0,0,3.5,2,A
+Radosław Wojtaszek,1,0,0,4,0,2686,2802,2610,,0,0,3.5,1,
+Daniil Dubov,1,0,1,3,0,2711,2712,2791,,0,0,3,1,B
+Vidit Gujrathi,1,1,0,3,4,2723,2617,2654,C,0,0,6,3,
+Vladimir Fedoseev,1,1,0,2,1,2704,2739,2726,C,0,0,5.5,3,
+Alexander Grischuk,1,1,0,2,0,2758,2759,2762,A,0,0,5,1,
+Pentala Harikrishna,1,1,0,2,0,2716,2624,2574,B,0,0,4.5,0,
+Dmitry Andreikin,0,1,0,0,10,2729,2675,2736,A,0,1,5.5,2,
+Anish Giri,0,1,1,0,7,2773,2730,2766,B,0,0,5,2,D
+Maxime Vachier-Lagrave,0,1,1,0,7,2758,2743,2813,D,0,0,4,1,C
+Grigoriy Oparin,1,0,1,0,0,2674,2650,2665,,0,0,2,0,A
+Sam Shankland,0,1,1,0,4,2709,2625,2618,A,0,0,3.5,1,C
+Vincent Keymer,1,0,1,0,0,2655,2542,2557,,0,0,1.5,0,B
+Shakhriyar Mamedyarov,0,1,1,0,3,2771,2722,2769,D,0,0,3,0,B
+Nikita Vitiugov,0,1,1,0,3,2724,2580,2673,B,0,0,3,1,D
+Alexandr Predke,0,1,1,0,3,2682,2601,2614,D,0,0,3,1,C
+Amin Tabatabaei,0,1,1,0,3,2623,2425,2544,B,0,0,3,1,D
+Étienne Bacrot,1,1,0,0,2,2642,2720,2673,A,0,0,4,0,
+Alexei Shirov,1,1,0,0,1,2704,2614,2664,C,0,0,4,1,
+Yu Yangyi,0,1,1,0,0,2710,2738,2808,D,0,0,2.5,0,D
