@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "FIDE Grand Prix Berlin Odds After Round 2"
+title:  "FIDE Grand Prix Berlin Odds After Round 3"
 date:   2022-03-24 12:00:00 -0700
 categories: Tournament
 ---
