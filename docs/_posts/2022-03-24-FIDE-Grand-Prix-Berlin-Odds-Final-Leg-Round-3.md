@@ -23,7 +23,7 @@ After yesterday's round two with eight draws, we saw seven draws today. The deci
 
 Overall, not a lot changes with today's odds except that I fixed a mistake I made in recording games that made Giri's odds worse than they actually are.
 
-Nakamura faced a tough battle again today and eeked out the half point, but Stockfish indicated the position was clearly lost at some points. It was a missed opportunity, as wielding the white pieces against Oparin is the "easiest" way to come by points in Pool A.
+Nakamura faced a tough battle again today and eeked out the half point, but Stockfish indicated the position was clearly lost at some points so the half point was a good result. I accidentally recorded Hikaru playing today with the white pieces, so I am rerunning the simulations now and will update soon.
 
 Halfway through the pool stages and we will start to see people pressing a bit harder than they otherwise would in an effort to advance and maintain their chances at qualifying for the Candidate's Tournament.
 
