@@ -21,7 +21,7 @@ categories: Tournament
 
 We saw five wins with white pieces today, and only three draws. That's a big change from the last two days where we saw one decisive game out of the last 16! The results of today sure shook things up. A favorite to win it all after yesterday was Aronian, but he fell to Hikaru today greatly dropping his chances of winning and qualifying. Now, there is no clear favorite to win, with  six players all above a 10% chance.
 
-Grigory Oparin is the biggest surprise, up a half point in his pool with just two games left he is the surprising favorite to take down Pool A. He faces two tough remaining games, though. On Sunday he will face Nakamura with the black pieces, and on MOnday Aronian with the white pieces.
+Grigory Oparin is the biggest surprise up a half point in his pool with just two games left. He is the favorite to take down Pool A. He faces two tough remaining games, though, and on Sunday he will face Nakamura with the black pieces, and on Monday Aronian with the white pieces.
 
 Check out the odds for everything below, and we will see you here on Sunday for another update after Round 5.
 
