@@ -57,7 +57,7 @@ Go ahead and press some buttons.
 | <input type="checkbox" value="w3"/> Daniil Dubov |<input type="checkbox" value="d3"/> | <input type="checkbox" value="b3"/> Shakhriyar Mamedyarov|
 | <input type="checkbox" value="w4"/> Grigoriy Oparin |<input type="checkbox" value="d4"/> | <input type="checkbox" value="b4"/> Levon Aronian|
 | <input type="checkbox" value="w5"/> Sam Shankland |<input type="checkbox" value="d5"/> | <input type="checkbox" value="b5"/> Maxime Vachier-Lagrave|
-| <input type="checkbox" value="w6"/> Vincent Keymer |<input type="checkbox" value="d6"/> | <input type="checkbox" value="b6"/> Leinier Dom√≠nguez|
+| <input type="checkbox" value="w6"/> Vincent Keymer |<input type="checkbox" value="d6"/> | <input type="checkbox" value="b6"/> Leinier Dominguez|
 | <input type="checkbox" value="w7"/> Wesley So |<input type="checkbox" value="d7"/> | <input type="checkbox" value="b7"/> Alexandr Predke|
 | <input type="checkbox" value="w8"/> Yu Yangyi |<input type="checkbox" value="d8"/> | <input type="checkbox" value="b8"/> Nikita Vitiugov|
 
