@@ -12,6 +12,7 @@ sklearn = "*"
 numpy = "*"
 chess = "*"
 tqdm = "*"
+tabulate = "*"
 
 [dev-packages]
 jupyterlab = "*"

@@ -8,29 +8,33 @@ import pickle
 from tqdm import tqdm
 import time
 
-terminalArgs = sys.argv
 
-##python poolOdds.py 100 True <- terminal command to get results for 100 sims with new pool draws for GP2
-
-nSims = 100
-if len(terminalArgs) > 1:
-    nSims = int(terminalArgs[1])
-    
-resetPools = False #Option to test the impact of redrawing the pools
-if len(terminalArgs) > 2:
-    resetPools = terminalArgs[2]
-
-gpData = pd.read_csv('./chess-sim/data/gpEloData.csv')
-current = pd.read_csv('./chess-sim/data/berlinPoolGames.csv')
 
 ##Run this script with Override True and False to see the impact of the pool drawing on results. GP2 w and wo pools, Overall Qualification impact. 
 def main():
+
+    terminalArgs = sys.argv
+
+##python poolOdds.py 100 True <- terminal command to get results for 100 sims with new pool draws for GP2
+
+    nSims = 100
+    if len(terminalArgs) > 1:
+        nSims = int(terminalArgs[1])
+        
+    resetPools = False #Option to test the impact of redrawing the pools
+    if len(terminalArgs) > 2:
+        resetPools = terminalArgs[2]
+
+    gpData = pd.read_csv('./chess-sim/data/gpEloData.csv')
+    current = pd.read_csv('./chess-sim/data/berlinPoolGames.csv')
+    # preds = pickle.load(open( "./chess-sim/models/preds.p", "rb" ) )
     
     print('running sims: ', nSims)
     inputs = zip(
         repeat(gpData, nSims),
         repeat(resetPools, nSims),
         repeat(current, nSims)
+        # repeat(preds, nSims)
     )
 
     start_time = time.time()
