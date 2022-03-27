@@ -1,11 +1,14 @@
 import numpy as np
 import pandas as pd
 import lightgbm as lgb
+import pickle
 
+# No longer needed to to preprocessing of preds dict
 bst = lgb.Booster(model_file = './chess-sim/models/model.txt')
+# preds = pickle.load(open( "./chess-sim/models/preds.p", "rb" ) )
 
 def chessMLPred(model, whiteElo, blackElo):
-    avgRange = range(-5, 6, 5)
+    avgRange = range(-20, 6, 20)
     
     dat = [[whiteElo - i, blackElo - i, whiteElo - blackElo,((whiteElo - i) + (blackElo - i)) / 2] for i in avgRange]
     preds = model.predict(dat,num_iteration=model.best_iteration).mean(axis = 0).tolist()
@@ -23,6 +26,11 @@ class GrandPrix:
         players is a df with name, elo, pool if assigned (include rapid and blitz Elos)
 
         '''
+        # if preds == None:
+        #     raise Exception('No preds dict loaded')
+        # else:
+        #     self.preds = preds
+
         self.players = players
         self.players['koScore'] = 0
         self.players['koWins'] = 0
@@ -121,6 +129,7 @@ class GrandPrix:
             if row.played == 0:
 
                 x = chessMLPred(bst, row.whiteElo, row.blackElo)
+                # x = np.random.choice([0,0.5,1], p=preds[(row.whiteElo, row.blackElo)])
 
                 self.gameData.loc[i, 'played'] = 1
                 self.gameData.loc[i, 'whiteResult'] = x

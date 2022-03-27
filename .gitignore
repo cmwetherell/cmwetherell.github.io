@@ -3,6 +3,11 @@ scrap.ipynb
 chess-sim/data/*
 chess-sim/models/*
 !chess-sim/data/gpEloData.csv
+!chess-sim/data/berlinPoolGames.csv
+!chess-sim/data/sims/
+chess-sim/data/sims/*
+!chess-sim/data/sims/.gitkeep
+
 .DS_Store
 
 # Everything below is from a .gitignore Python template.

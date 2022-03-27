@@ -3,6 +3,8 @@ import numpy as np
 import sys
 import pickle
 
+
+
 def main():
 
     current = pd.read_csv('./chess-sim/data/berlinPoolGames.csv')
@@ -21,11 +23,10 @@ def main():
     standings = [standings[i] for i in simMatchPool]
     poolGames = [poolGames[i] for i in simMatchPool]
     # koGames = [koGames[i] for i in simMatchPool]
-    
+
     standings = pd.concat(standings)
 
     standings['Wins'] = 1 * (standings.event3Points==13) # TODO should move this to simulation function
-
     # sorry for not naming the dataframes below well... will clean it up later
 
     df = standings[['Name', 'Qualify', 'gpScore']]
