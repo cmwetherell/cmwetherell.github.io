@@ -20,8 +20,8 @@ def main():
     simMatchPool = [ind for ind, simHash in enumerate(simHashesPool) if hash_pool <= simHash] # checks if all the played games match that simulations games
     # simMatchKO = [ind for ind, simHash in enumerate(simHashesKO) if hash_ko <= simHash] # checks if all the played games match that simulations games
 
-    standings = [standings[i] for i in simMatchPool]
-    poolGames = [poolGames[i] for i in simMatchPool]
+    # standings = [standings[i] for i in simMatchPool]
+    # poolGames = [poolGames[i] for i in simMatchPool]
     # koGames = [koGames[i] for i in simMatchPool]
 
     standings = pd.concat(standings)
