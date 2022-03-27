@@ -37,7 +37,7 @@ def main():
 
     names = iter([(x[0], x[1]) for x in games[0::3]])  #This selects every 3rd game so we can extract the names without duplicates
 
-    for i, (t1, t2, t3), names in zip(range(16), groupTables, names):
+    for i, (t1, t2, t3), names in zip(range(8), groupTables, names):
         i+=1
         nm = names[0] + ' vs. ' + names[1]
         # candQual = 'Possibilities for Qualification into Candidates Tournament'
