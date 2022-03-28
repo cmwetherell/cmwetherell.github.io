@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "FIDE Grand Prix Berlin Odds After Round 6"
-date:   2022-03-28 10:00:00 -0700
+date:   2022-03-28 09:00:00 -0700
 categories: Tournament
 ---
 
