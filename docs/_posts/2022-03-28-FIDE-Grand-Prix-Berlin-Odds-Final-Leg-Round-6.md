@@ -17,7 +17,7 @@ categories: Tournament
 
 ### Nakamura and Rapport Qualify
 
-In a day of unexpected events, the candidate qualification spots are setlled. Nakamura and Rapport punch their tickets to the 2022 Candidate's Tournament. Many players leave today disappointed as their journey to the Candidate's is over until the next World Championship cycle.
+In a day of unexpected events, the candidate qualification spots are settled. Nakamura and Rapport punch their tickets to the 2022 Candidate's Tournament. Many players leave today disappointed as their journey to the Candidate's is over until the next World Championship cycle.
 
 Nakamura has jumped all the way to World #11 in the live ratings on 2700 Chess. It appears Ding Liren is planning to complete the requisite games to earn the Candidate's rating spot, and has earned a few rating points so far separating himself from the others.
 
