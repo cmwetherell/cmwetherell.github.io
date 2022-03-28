@@ -5,8 +5,6 @@ date:   2022-03-28 09:00:00 -0700
 categories: Tournament
 ---
 
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script> 
-
 <style>
     table th, table td { padding: 5px 5px; }
     #content-desktop {display: block;}
