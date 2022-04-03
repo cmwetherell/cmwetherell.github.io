@@ -1,12 +1,12 @@
 ##My stuff:
 scrap.ipynb
-chess-sim/data/*
-chess-sim/models/*
-!chess-sim/data/gpEloData.csv
-!chess-sim/data/berlinPoolGames.csv
-!chess-sim/data/sims/
-chess-sim/data/sims/*
-!chess-sim/data/sims/.gitkeep
+chessSim/data/*
+chessSim/models/*
+!chessSim/data/gpEloData.csv
+!chessSim/data/berlinPoolGames.csv
+!chessSim/data/sims/
+chessSim/data/sims/*
+!chessSim/data/sims/.gitkeep
 
 .DS_Store
 

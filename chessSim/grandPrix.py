@@ -3,7 +3,6 @@ import pandas as pd
 import lightgbm as lgb
 import pickle
 
-# No longer needed to to preprocessing of preds dict
 bst = lgb.Booster(model_file = './chess-sim/models/model.txt')
 # preds = pickle.load(open( "./chess-sim/models/preds.p", "rb" ) )
 
