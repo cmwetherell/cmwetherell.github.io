@@ -1,10 +1,20 @@
-from grandPrix import GrandPrix
+from sys import getallocatedblocks
+# from grandPrix import GrandPrix
+from candidatesTorunament import Candidates
+from candidatesTorunament import getCandidates
 import pandas as pd
 import plotly
 import plotly.express as px
 import pickle
 
-def simGrandPrix(playerData, overridePool = False, gameData = None):
+def simCandidatesTournament(_): #_ is because map has to pass an argument to the function
+    candidates = getCandidates()
+    tournament = Candidates(candidates)
+    tournament.simCandidates()
+    return tournament.winner
+
+'''
+ def simGrandPrix(playerData, overridePool = False, gameData = None):
 
     GP3 = GrandPrix(playerData, 'event3', overridePool, gameData)
     GP3.simGP()
@@ -26,7 +36,7 @@ def simGrandPrix(playerData, overridePool = False, gameData = None):
     fs.loc[fs.Name == fs.Name[1], 'Qualify'] = "Second"
 
     return fs, GP3.gameData, pd.DataFrame(GP3.koGames, columns = ['whitePlayer', 'blackPlayer', 'result', 'koType'])
-
+'''
 
 ## Want to add code that exports MD for table under each scenario for each pool game.
 
