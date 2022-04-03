@@ -15,6 +15,9 @@ imageCaption:  "photo: Lennart Ootes, FIDE"
     .post-title{
         margin-bottom: 10px;
     }
+    .pad{
+        padding: 5px;
+    }
 .postImage {
   display: block;
   text-align: center;
@@ -58,6 +61,9 @@ The field is (almost) set, and the eight candidates will head to Madrid in June 
 Why am I including Rapid and Blitz ratings in a **Classical** tournament that is being played to determine who will go on to fight for the **Classical** chess world championship? Because there is a **whopping 22% chance the event is decided in Rapid or Blitz tiebreaks!** Of note, Firouzja's Rapid rating is likely well below his skill level. If his true skill level is higher than his current rating, I'm understating his chances of winning by about 2% below.
 
 At long last! Here are the probabilities of each player winning:
+
+**2022 Candidates Tournament Probabilities**
+{: .narrow .pad}
 
 | Name           |  Win %|
 |:---------------|:-----:|
