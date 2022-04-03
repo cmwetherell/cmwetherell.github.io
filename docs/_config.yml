@@ -34,7 +34,9 @@ google_analytics: G-59WSL645R4
 
 # #Link to header pages in nav bar in order
 header_pages:
-  - about.markdown
+  - tournaments/2022-candidates-tournament/index.md
+  - archive.md
+  - about.md
 
 # Build settings
 theme: minima
