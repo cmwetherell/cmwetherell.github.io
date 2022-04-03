@@ -15,6 +15,28 @@ imageCaption:  "photo: Lennart Ootes, FIDE"
     .post-title{
         margin-bottom: 10px;
     }
+.postImage {
+  display: block;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 12px;
+  max-height: 300px;
+  padding-top: 0px;
+}
+
+.postImage img {
+  height: auto;
+  max-height: 300px;
+}
+
+.caption {
+  display: block;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 12px;
+}
 </style>
 
 The field is (almost) set, and the eight candidates will head to Madrid in June for the 2022 iteration of the [Candidates Tournament][wiki]. Ding Liren is fighting for (and likely to get) the last spot which opened up when Sergey Karjakin received a six month ban from FIDE.
