@@ -34,6 +34,8 @@ def main():
     playerData.Blitz = playerData.Blitz.apply(splitRating)
     playerData.Name = playerData.Name.apply(splitName)
 
+    # print(playerData)
+
     pickle.dump(playerData, open( "./chessSim/data/playerData.p", "wb" ) )
 if __name__=="__main__":
     main()

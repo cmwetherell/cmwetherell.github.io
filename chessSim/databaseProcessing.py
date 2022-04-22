@@ -1,4 +1,4 @@
-
+#TODO: I want to know what all the headers possible in the db are so I can do a better job preprocessing the data
 import chess.pgn # I would normally do 'from chess import pgn', but the developer examples did it this way.
 import pandas as pd
 

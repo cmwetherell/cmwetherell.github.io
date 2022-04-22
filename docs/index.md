@@ -6,9 +6,7 @@ layout: home
 ---
 **Quick update:**
 
-For future tournaments I plan to create a single page that will be updated as the tournament progresses. Current tournaments will have a link in the navigation bar. I plan to add graphs showing probabilities over time so you can track the history as well. And I'll make the home page prettier later!
-
-[2022 Candidates Tournament][2022-candidates]
+You can see current analysis by clicking the links in the navigation bar, and historical analysis in the Posts below. Hoping to make this more aesthetic in the future!
 
 
 [2022-candidates]: tournaments/2022-candidates-tournament/index.md
