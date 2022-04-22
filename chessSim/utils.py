@@ -2,6 +2,10 @@ from sys import getallocatedblocks
 # from grandPrix import GrandPrix
 from candidatesTorunament import Candidates
 from candidatesTorunament import getCandidates
+
+from norwayChess import Norway
+from norwayChess import getNorway
+
 import pandas as pd
 import plotly
 import plotly.express as px
@@ -12,6 +16,12 @@ def simCandidatesTournament(_): #_ is because map has to pass an argument to the
     tournament = Candidates(candidates)
     tournament.simCandidates()
     return tournament.winner
+
+def simNorway(_): #_ is because map has to pass an argument to the function
+    players = getNorway()
+    tournament = Norway(players)
+    tournament.simNorway()
+    return tournament.winner, tournament.magnus, tournament.newElo
 
 '''
  def simGrandPrix(playerData, overridePool = False, gameData = None):
