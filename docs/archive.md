@@ -2,6 +2,7 @@
 layout: page
 title: Archive
 permalink: /archive/
+shortTitle: Archive
 ---
 
 Here you can find links to analysis and simulations of previous tournaments.
