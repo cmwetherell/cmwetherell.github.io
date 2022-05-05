@@ -6,6 +6,9 @@ from candidatesTorunament import getCandidates
 from norwayChess import Norway
 from norwayChess import getNorway
 
+from superbetClassic import Superbet
+from superbetClassic import getSuperbet
+
 import pandas as pd
 import plotly
 import plotly.express as px
@@ -22,6 +25,12 @@ def simNorway(_): #_ is because map has to pass an argument to the function
     tournament = Norway(players)
     tournament.simNorway()
     return tournament.winner, tournament.magnus, tournament.newElo
+
+def simSuperbet(_): #_ is because map has to pass an argument to the function
+    players = getSuperbet()
+    tournament = Superbet(players)
+    tournament.simSuperbet()
+    return tournament.winner, 0, tournament.newElo
 
 '''
  def simGrandPrix(playerData, overridePool = False, gameData = None):

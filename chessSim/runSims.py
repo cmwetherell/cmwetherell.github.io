@@ -1,6 +1,7 @@
 import pandas as pd
 from utils import simCandidatesTournament
 from utils import simNorway
+from utils import simSuperbet
 from multiprocessing import Pool
 from itertools import repeat
 import time
@@ -26,13 +27,13 @@ def main():
     start_time = time.time()
 
     with Pool() as p:
-        results =  p.map(simNorway, range(nSims))  
+        results =  p.map(simSuperbet, range(nSims))  
         
     print("--- %s seconds ---" % (time.time() - start_time))
 
     start_time = time.time()
 
-    pickle.dump(results, open( "./chessSim/data/sims/norway.p", "wb" ) ) #Save simulations
+    pickle.dump(results, open( "./chessSim/data/sims/superbet.p", "wb" ) ) #Save simulations
     
     print("--- %s seconds ---" % (time.time() - start_time))
 
@@ -40,13 +41,13 @@ def main():
     magnusElo = [Elo for _, Elo, _ in results]
     allElo = [EloDict for _, _, EloDict in results]
 
-    pickle.dump(magnusElo, open( "./chessSim/data/sims/magnusEloSims.p", "wb" ) ) #Save simulations
-    pickle.dump(allElo, open( "./chessSim/data/sims/allElo.p", "wb" ) ) #Save simulations
+    # pickle.dump(magnusElo, open( "./chessSim/data/sims/magnusEloSims.p", "wb" ) ) #Save simulations
+    # pickle.dump(allElo, open( "./chessSim/data/sims/allElo.p", "wb" ) ) #Save simulations
 
-    ct = Counter(magnusElo)
-    for key in ct:
-        ct[key] /= (nSims / 100)
-    print(ct)
+    # ct = Counter(magnusElo)
+    # for key in ct:
+    #     ct[key] /= (nSims / 100)
+    # print(ct)
 
     ct = Counter(winners)
     for key in ct:

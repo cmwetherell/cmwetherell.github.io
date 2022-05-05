@@ -34,9 +34,10 @@ google_analytics: G-59WSL645R4
 
 # #Link to header pages in nav bar in order
 header_pages:
+  - 2022-superbet-chess-classic-romania/index.md
   - magnus-carlsen-2900-elo/index.md
   - tournaments/2022-candidates-tournament/index.md
-  - archive.md
+  # - archive.md
   - about.md
 
 # Build settings
