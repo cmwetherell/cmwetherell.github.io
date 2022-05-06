@@ -43,10 +43,10 @@ imageCaption:  "photo: Lennart Ootes, FIDE"
 }
 </style>
 
-### So jumps in front, Firouzja battles for an important draw
-The [Grand Chess Tour][gct] kicked off today with the first of five events in Bucharest, Romania. Wesley So won against Shakh with the white pieces,and the other four games were a draw. Alireza Firouzja held a draw against the formidable Fabiano Caruana with the black pieces, no doubt one of his toughest games in the round robin.
+### Down goes Firouzja
+Ok, that's a pretty creative heading if you ask me. The Superbet Chess Classic is in full swing with two of nine rounds complete. Wesley So and Ian Nepomniachtchi are tied for first with 1.5 points each, Shakh and Firouzja are in the rear with just 0.5 points. Everyone else has two draws.
 
-Below you can find the probabilities for every player to win the tournament as of the end of round 1. This page will be updated after every round. You can read about the [methodology][meth] as well as the model I am using to make [individual game predictions][model].
+Below you can find the probabilities for every player to win the tournament as of the end of round 2. This page will be updated after every round. You can read about the [methodology][meth] as well as the model I am using to make [individual game predictions][model].
 
 **2022 Superbet Chess Classic Win Probabilities**
 *After Round 1*
@@ -54,23 +54,23 @@ Below you can find the probabilities for every player to win the tournament as o
 
 | Name            | Win % |
 |:----------------|------:|
-| So              |  22.6 |
-| Firouzja        |  19.0 |
-| Nepomniachtchi  |  14.7 |
-| Rapport         |  14.2 |
-| Caruana         |  11.1 |
-| Vachier-Lagrave |   7.0 |
-| Aronian         |   4.0 |
-| Dominguez Perez |   3.3 |
-| Mamedyarov      |   2.5 |
-| Deac            |   1.6 |
+| Nepomniachtchi  |  31.7 |
+| So              |  24.5 |
+| Caruana         |  15.8 |
+| Rapport         |   9.5 |
+| Dominguez Perez |   6.4 |
+| Aronian         |   5.7 |
+| Firouzja        |   3.2 |
+| Vachier-Lagrave |   2.4 |
+| Mamedyarov      |   0.8 |
+| Deac            |   0.0 |
 {: .field .narrow}
 
 <br>
 *Soon: a pretty graph showing the probabilities as each round passes.*
 <br>
 
-Firouzja was the slight favorite to before the tournament started, but Wesley So is the new favorite after his victory in round 1. So is the only player on one point, and he has the white pieces against MVL in round 2 and will look to extend his lead.
+Firouzja was the slight favorite to before the tournament started, but Wesley So Ian Nepomniachtchi are the favorites after two rounds. Firouzja losing today with the white pieces could be telling for his chances at the Candidates Tournament next month. It will be interesting to see how he responds tomorrow.
 
 To be notified when this page is updated follow me on [Twitter][twit], and let me know what you'd like to see on this page!
 
