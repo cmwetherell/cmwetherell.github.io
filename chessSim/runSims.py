@@ -17,6 +17,7 @@ from collections import Counter
 def main():
 
     terminalArgs = sys.argv
+    current = pd.read_csv("./chessSim/data/superbetGames.csv")
 
 ##python poolOdds.py 100 True <- terminal command to get results for 100 sims with new pool draws for GP2
 
@@ -24,10 +25,15 @@ def main():
     if len(terminalArgs) > 1:
         nSims = int(terminalArgs[1])
 
+    
+    inputs = zip(
+        repeat(current, nSims),
+    )
+
     start_time = time.time()
 
     with Pool() as p:
-        results =  p.map(simSuperbet, range(nSims))  
+        results =  p.starmap(simSuperbet, tqdm(inputs, total = nSims))
         
     print("--- %s seconds ---" % (time.time() - start_time))
 

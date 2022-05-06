@@ -26,9 +26,9 @@ def simNorway(_): #_ is because map has to pass an argument to the function
     tournament.simNorway()
     return tournament.winner, tournament.magnus, tournament.newElo
 
-def simSuperbet(_): #_ is because map has to pass an argument to the function
+def simSuperbet(games): #_ is because map has to pass an argument to the function
     players = getSuperbet()
-    tournament = Superbet(players)
+    tournament = Superbet(players, games)
     tournament.simSuperbet()
     return tournament.winner, 0, tournament.newElo
 

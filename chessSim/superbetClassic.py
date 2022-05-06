@@ -73,24 +73,28 @@ class Superbet:
 
         self.games = games
 
-    def simRR(self):
-
         stage = 'rr'
 
         self.games['format'] = 'c'
         self.games['stage'] = stage
         self.games['played'] = 0
         self.games['result'] = 0
+        self.games.sort_values(by = 'whitePlayer', inplace = True)
+
+        # self.games.to_csv("./chessSim/data/superbetGames.csv", index=False)
+
+    def simRR(self):
 
         for idx, row in self.games.iterrows():
-            whitePlayer = self.players[row.whitePlayer]
-            blackPlayer = self.players[row.blackPlayer]
+            if row.played == 0:
+                whitePlayer = self.players[row.whitePlayer]
+                blackPlayer = self.players[row.blackPlayer]
 
-            self.games.at[idx, 'played'] = 1
-            result = playChess(bst, whitePlayer, blackPlayer, format = 'c') #points white player scored
-            self.games.at[idx, 'result'] = result
+                self.games.at[idx, 'played'] = 1
+                result = playChess(bst, whitePlayer, blackPlayer, format = 'c') #points white player scored
+                self.games.at[idx, 'result'] = result
         
-        # self.games = pd.concat([self.games, games], ignore_index = True, axis = 0)
+        # self.games = pd.concat([self.games, games], i gnore_index = True, axis = 0)
 
         whiteResults = self.games[['whitePlayer', 'result']].values
         blackResults = self.games[['blackPlayer', 'result']].values
@@ -187,7 +191,8 @@ class Superbet:
         else: raise Exception("Something went wrong; there shouldn't have been a tiebreak")  
 
     def simSuperbet(self):
-        self.createGames()
+        if self.games is None:
+            self.createGames()
         self.simRR()
         self.tie = 0
         if not hasattr(self, 'winner'):
