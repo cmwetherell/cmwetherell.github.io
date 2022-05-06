@@ -43,36 +43,36 @@ imageCaption:  "photo: Lennart Ootes, FIDE"
 }
 </style>
 
-### Firouzja is slight favorite
-The [Grand Chess Tour][gct] kicks off today with the first of five events taking place in Bucharest with a 10 player classical round robin. Alireza Firouzja is sure to draw headlines with his first classical tournament since breaking the 2800 Elo threshold after an incredible performance at the European Teams in 2021. He is also a considered a front runner to challenge Magnus Carlsen in the World Championship in '23 (the real one...). Firouzja will wield the black pieces against a formidable Fabiano Caruana in round 1.
+### So jumps in front, Firouzja battles for an important draw
+The [Grand Chess Tour][gct] kicked off today with the first of five events in Bucharest, Romania. Wesley So won against Shakh with the white pieces,and the other four games were a draw. Alireza Firouzja held a draw against the formidable Fabiano Caruana with the black pieces, no doubt one of his toughest games in the round robin.
 
-Below you can find the probabilities for every player to win the tournament. This page will be updated after every round. You can read about the [methodology][meth] as well as the model I am using to make [individual game predictions][model].
+Below you can find the probabilities for every player to win the tournament as of the end of round 1. This page will be updated after every round. You can read about the [methodology][meth] as well as the model I am using to make [individual game predictions][model].
 
 **2022 Superbet Chess Classic Win Probabilities**
-*Pre-Tournament*
+*After Round 1*
 {: .narrow .pad}
 
 | Name            | Win % |
 |:----------------|------:|
-| Firouzja        |  15.0 |
-| Caruana         |  14.3 |
-| Nepomniachtchi  |  12.4 |
-| So              |  11.8 |
-| Rapport         |  11.6 |
-| Aronian         |  11.0 |
-| Mamedyarov      |   9.3 |
-| Vachier-Lagrave |   7.1 |
-| Dominguez Perez |   6.9 |
-| Deac            |   0.6 |
+| So              |  22.6 |
+| Firouzja        |  19.0 |
+| Nepomniachtchi  |  14.7 |
+| Rapport         |  14.2 |
+| Caruana         |  11.1 |
+| Vachier-Lagrave |   7.0 |
+| Aronian         |   4.0 |
+| Dominguez Perez |   3.3 |
+| Mamedyarov      |   2.5 |
+| Deac            |   1.6 |
 {: .field .narrow}
 
 <br>
 *Soon: a pretty graph showing the probabilities as each round passes.*
 <br>
 
-Firouzja is the slight favorite, and the probabilities are not that interesting yet because they mostly follow the ratings. But as the tournament progresses things will get more interesting as there will be imbalances between who has white games and black games left, the pairings that remain, etc.  So, be sure to check back!
+Firouzja was the slight favorite to before the tournament started, but Wesley So is the new favorite after his victory in round 1. So is the only player on one point, and he has the white pieces against MVL in round 2 and will look to extend his lead.
 
-In the meantime, follow me on [Twitter][twit] and let me know what you'd like to see on this page!
+To be notified when this page is updated follow me on [Twitter][twit], and let me know what you'd like to see on this page!
 
 
 
