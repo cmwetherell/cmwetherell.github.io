@@ -43,37 +43,36 @@ imageCaption:  "photo: Lennart Ootes, FIDE"
 }
 </style>
 
-### Down goes Firouzja
-Ok, that's a pretty creative heading if you ask me. The Superbet Chess Classic is in full swing with two of nine rounds complete. Wesley So and Ian Nepomniachtchi are tied for first with 1.5 points each, Shakh and Firouzja are in the rear with just 0.5 points. Everyone else has two draws.
+### Deac surprises, joins the lead
+Bogan-Daniel Deac surprised everyone today by winning with the black pieces against Richard Rapport who was in top form recently at the FIDE Grand Prix. Deac joins So and Nepo in the lead with 2.0/3 points.
 
-Below you can find the probabilities for every player to win the tournament as of the end of round 2. This page will be updated after every round. You can read about the [methodology][meth] as well as the model I am using to make [individual game predictions][model].
+Below you can find the probabilities for every player to win the tournament as of the end of round 2. You can see Deac is still not favored given the rating differences between him and the field. This page will be updated after every round. You can read about the [methodology][meth] as well as the model I am using to make [individual game predictions][model].
 
 **2022 Superbet Chess Classic Win Probabilities**
-*After Round 1*
+*After Round 3*
 {: .narrow .pad}
 
 | Name            | Win % |
 |:----------------|------:|
-| Nepomniachtchi  |  31.7 |
-| So              |  24.5 |
-| Caruana         |  15.8 |
-| Rapport         |   9.5 |
-| Dominguez Perez |   6.4 |
-| Aronian         |   5.7 |
-| Firouzja        |   3.2 |
-| Vachier-Lagrave |   2.4 |
-| Mamedyarov      |   0.8 |
-| Deac            |   0.0 |
+| Nepomniachtchi  |  31.9 |
+| So              |  26.2 |
+| Caruana         |   7.8 |
+| Aronian         |   7.1 |
+| Firouzja        |   6.3 |
+| Vachier-Lagrave |   5.5 |
+| Dominguez Perez |   4.9 |
+| Mamedyarov      |   3.9 |
+| Rapport         |   3.2 |
+| Deac            |   3.1 |
 {: .field .narrow}
 
 <br>
 *Soon: a pretty graph showing the probabilities as each round passes.*
 <br>
 
-Firouzja was the slight favorite to before the tournament started, but Wesley So Ian Nepomniachtchi are the favorites after two rounds. Firouzja losing today with the white pieces could be telling for his chances at the Candidates Tournament next month. It will be interesting to see how he responds tomorrow.
+Firouzja was the slight favorite to before the tournament started, but Wesley So Ian Nepomniachtchi are the favorites after three rounds.
 
 To be notified when this page is updated follow me on [Twitter][twit], and let me know what you'd like to see on this page!
-
 
 
 [gct]: https://grandchesstour.org/2022-grand-chess-tour/2022-superbet-chess-classic
