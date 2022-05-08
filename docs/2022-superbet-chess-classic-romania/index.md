@@ -43,34 +43,34 @@ imageCaption:  "photo: Lennart Ootes, FIDE"
 }
 </style>
 
-### Deac surprises, joins the lead
-Bogan-Daniel Deac surprised everyone today by winning with the black pieces against Richard Rapport who was in top form recently at the FIDE Grand Prix. Deac joins So and Nepo in the lead with 2.0/3 points.
+### So takes down Nepo, grabs sole lead
+Three decisive games today saw So, MVL, and Aronian all winning. That puts So in the lead on his own, 0.5 points ahead of Aronian, MVL, and the big surprise Deac.
 
-Below you can find the probabilities for every player to win the tournament as of the end of round 2. You can see Deac is still not favored given the rating differences between him and the field. This page will be updated after every round. You can read about the [methodology][meth] as well as the model I am using to make [individual game predictions][model].
+Below you can find the probabilities for every player to win the tournament as of the end of round 4. You can see Deac is still not favored given the rating differences between him and the field, despite his performance thus far. This page will be updated after every round. You can read about the [methodology][meth] as well as the model I am using to make [individual game predictions][model].
 
 **2022 Superbet Chess Classic Win Probabilities**
-*After Round 3*
+*After Round 4*
 {: .narrow .pad}
 
 | Name            | Win % |
 |:----------------|------:|
-| Nepomniachtchi  |  31.9 |
-| So              |  26.2 |
-| Caruana         |   7.8 |
-| Aronian         |   7.1 |
-| Firouzja        |   6.3 |
-| Vachier-Lagrave |   5.5 |
-| Dominguez Perez |   4.9 |
-| Mamedyarov      |   3.9 |
-| Rapport         |   3.2 |
-| Deac            |   3.1 |
+| So              |  32.7 |
+| Aronian         |  22.9 |
+| Vachier-Lagrave |  21.2 |
+| Nepomniachtchi  |   8.3 |
+| Caruana         |   6.3 |
+| Firouzja        |   3.1 |
+| Mamedyarov      |   2.2 |
+| Rapport         |   1.6 |
+| Deac            |   1.6 |
+| Dominguez Perez |   0.2 |
 {: .field .narrow}
 
 <br>
 *Soon: a pretty graph showing the probabilities as each round passes.*
 <br>
 
-Firouzja was the slight favorite to before the tournament started, but Wesley So Ian Nepomniachtchi are the favorites after three rounds.
+Firouzja was the slight favorite to before the tournament started, but Wesley So is the favorite after four rounds.
 
 To be notified when this page is updated follow me on [Twitter][twit], and let me know what you'd like to see on this page!
 

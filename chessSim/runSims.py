@@ -31,7 +31,7 @@ def main():
     )
 
     start_time = time.time()
-
+ 
     with Pool() as p:
         results =  p.starmap(simSuperbet, tqdm(inputs, total = nSims))
         
