@@ -10,7 +10,7 @@ import random
 def getSuperbet(): 
     candidates = pickle.load(open( "./chessSim/data/playerData.p", "rb" ) )
     candidates = candidates[candidates.Name.isin(['Firouzja','Aronian', 'Caruana', 'So', 'Mamedyarov', 'Nepomniachtchi', 'Dominguez Perez', 'Vachier-Lagrave', 'Rapport'])]
-    candidates.loc[len(candidates.index)] = ['Deac', 2671, 2553, 2648] 
+    candidates.loc[len(candidates.index)] = ['Deac', 2685, 2553, 2648] 
     candidates = {x[0]: Player(x[0], x[1], x[2] , x[3]) for x in np.array(candidates)}
     return candidates
 

@@ -43,26 +43,26 @@ imageCaption:  "photo: Lennart Ootes, FIDE"
 }
 </style>
 
-### So takes down Nepo, grabs sole lead
-Three decisive games today saw So, MVL, and Aronian all winning. That puts So in the lead on his own, 0.5 points ahead of Aronian, MVL, and the big surprise Deac.
+### So maintains lead, Caruana beats Shakh
+We nearly had our first day of all draws, which isn't all that uncommon prior to a rest day. In the end, Caruana was able to take down Mamdeyarov to inch closer to the lead, but is still a full point back. Deac continues to hang with the frontrunners, but in most simulations where he has a chance to win it would be through a tiebreak, and his Rapid rating in the 2500s is really pulling down his chances. So is now the odds-on favorite to win the event.
 
-Below you can find the probabilities for every player to win the tournament as of the end of round 4. You can see Deac is still not favored given the rating differences between him and the field, despite his performance thus far. This page will be updated after every round. You can read about the [methodology][meth] as well as the model I am using to make [individual game predictions][model].
+Below you can find the probabilities for every player to win the tournament as of the end of round 5. This page will be updated after every round. You can read about the [methodology][meth] as well as the model I am using to make [individual game predictions][model].
 
 **2022 Superbet Chess Classic Win Probabilities**
-*After Round 4*
+*After Round 5*
 {: .narrow .pad}
 
 | Name            | Win % |
 |:----------------|------:|
-| So              |  32.7 |
-| Aronian         |  22.9 |
-| Vachier-Lagrave |  21.2 |
-| Nepomniachtchi  |   8.3 |
-| Caruana         |   6.3 |
-| Firouzja        |   3.1 |
-| Mamedyarov      |   2.2 |
-| Rapport         |   1.6 |
+| So              |  52.3 |
+| Aronian         |  17.1 |
+| Vachier-Lagrave |  15.5 |
+| Caruana         |   4.0 |
+| Rapport         |   3.2 |
+| Firouzja        |   2.8 |
+| Nepomniachtchi  |   2.4 |
 | Deac            |   1.6 |
+| Mamedyarov      |   1.0 |
 | Dominguez Perez |   0.2 |
 {: .field .narrow}
 
@@ -70,7 +70,7 @@ Below you can find the probabilities for every player to win the tournament as o
 *Soon: a pretty graph showing the probabilities as each round passes.*
 <br>
 
-Firouzja was the slight favorite to before the tournament started, but Wesley So is the favorite after four rounds.
+Firouzja was the slight favorite to before the tournament started, but Wesley So is the favorite after five rounds.
 
 To be notified when this page is updated follow me on [Twitter][twit], and let me know what you'd like to see on this page!
 
