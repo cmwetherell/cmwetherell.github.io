@@ -6,7 +6,7 @@ date: 2022-05-05 00:00:00 -0700
 postImage: /assets/img/alireza.jpeg # https://www.flickr.com/photos/fide/51782665101/in/photolist-2mTRGfH-2mF3T2E-2mFPiS8-2mGLprG-2mFPiSP-2mGHx2B-2mFraoE-2mH8cTG-2mGWPqT-2mbnW9r-2mbMGAE-2mFFqui-2mFTz2N-2mUmAc9-2mGhtwZ-2mbC9n9-2mFRHrs-2mFDYtd-2mGjizs-2mHa4JP-2mbihND-2mHccpR-2mGKNVX-2mGrZgb-2mbKy8k-2mGp2pN-2mGQHfx-2mbNKm2-2mGoSmJ-2mGoSoC-2mFRfug-2mFRfqP-2mFUBEj-2mFVCsk-2mFSnPS-2mFVCmy-2mGrg6K-2mFJEpo-2mHbFrj-2mHbFoi-2mH9npq-2mHcFF6-2mFDgYa-2mHcbab-2mK1g2L-2mGWPuF-2mH18QK-2mGZ8oD-2mGWPwE-2mGWPM4
 imageCaption:  "photo: Lennart Ootes, FIDE"
 ---
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script> 
+
 <style>
     .field td {padding: 3px 3px; }
     .field th {padding: 3px 3px; }
@@ -43,6 +43,7 @@ imageCaption:  "photo: Lennart Ootes, FIDE"
   font-size: 12px;
 }
 </style>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script> 
 
 ### So maintains lead, Caruana beats Shakh
 We nearly had our first day of all draws, which isn't all that uncommon prior to a rest day. In the end, Caruana was able to take down Mamdeyarov to inch closer to the lead, but is still a full point back. Deac continues to hang with the frontrunners, but in most simulations where he has a chance to win it would be through a tiebreak, and his Rapid rating in the 2500s is really pulling down his chances. So is now the odds-on favorite to win the event.
