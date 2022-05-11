@@ -11,13 +11,13 @@ from tqdm import tqdm
 import time
 from collections import Counter
 
-
+current = pd.read_csv("./chessSim/data/superbetGames.csv")
 
 ##Run this script with Override True and False to see the impact of the pool drawing on results. GP2 w and wo pools, Overall Qualification impact. 
 def main():
 
     terminalArgs = sys.argv
-    current = pd.read_csv("./chessSim/data/superbetGames.csv")
+    # current = pd.read_csv("./chessSim/data/superbetGames.csv")
 
 ##python poolOdds.py 100 True <- terminal command to get results for 100 sims with new pool draws for GP2
 
@@ -34,6 +34,9 @@ def main():
  
     with Pool() as p:
         results =  p.starmap(simSuperbet, tqdm(inputs, total = nSims))
+
+        
+
         
     print("--- %s seconds ---" % (time.time() - start_time))
 

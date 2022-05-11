@@ -43,9 +43,9 @@ def playChess(model, whitePlayer, blackPlayer, format):
 class Superbet:
     
     def __init__(self, players, games = None):
-        self.players = players
+        self.players = players.copy()
         self.playerNames = players.keys()
-        self.games = games
+        self.games = games.copy()
         self.loadGames = self.games != None
 
     def createGames(self):
