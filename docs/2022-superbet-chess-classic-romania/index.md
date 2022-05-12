@@ -45,7 +45,7 @@ imageCaption:  "photo: Lennart Ootes, FIDE"
 </style>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script> 
 
-### MVL inches closes
+### MVL inches closer
 Two quick draws from the leaders and a win from MVL tightens things at the top with MVL now just 0.5 points behind So and Aronian. All three will avoid each other in the final two rounds as they have already played.
 
 Below you can find the probabilities for every player to win the tournament as of the end of round 6. This page will be updated after every round. You can read about the [methodology][meth] as well as the model I am using to make [individual game predictions][model].
