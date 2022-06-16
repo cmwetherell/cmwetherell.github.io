@@ -43,20 +43,27 @@ imageCaption:  "photo: Lennart Ootes, FIDE"
 }
 </style>
 
-The field is (almost) set, and the eight candidates will head to Madrid in June for the 2022 iteration of the [Candidates Tournament][wiki]. Ding Liren is fighting for (and likely to get) the last spot which opened up when Sergey Karjakin received a six month ban from FIDE.
+The field is set, and the eight candidates are in Madrid, ready for the 2022 iteration of the [Candidates Tournament][wiki]. Lot's of storylines to follow with this torunament:
+
+- The young prodigy Alireza hasn't played an OTB event since 2021; will he be rusty?
+- Magnus has stated that he's likely to not play another WC match unless it's against Alireza, what will he say as the tournament unfolds? 
+- Hikaru Nakamura will draw tons of attention to the tournament - if we were to win, a WC match against El Magneto would bring a sonic boom to the chess world dring that matcup. 
+- Meanwhile, Ding Liren is the favorite based on my simulations, but many pundits are also projectiong Nepo and Caruana to perform well.
+
+In any case, we're in for three exciting weeks of chess!
 
 **The Field**
 
 | Name           |   Classic |   Rapid |   Blitz |
 |:---------------|:---------:|:-------:|:-------:|
-| Ding Liren     |      2810 |    2836 |    2788 |
-| Firouzja       |      2804 |    2670 |    2791 |
-| Caruana        |      2781 |    2784 |    2744 |
-| Rapport        |      2776 |    2785 |    2646 |
-| Nepomniachtchi |      2773 |    2821 |    2740 |
-| Nakamura       |      2759 |    2850 |    2850 |
-| Radjabov       |      2753 |    2747 |    2705 |
-| Duda           |      2750 |    2806 |    2760 |
+| Ding Liren     |      2806 |    2836 |    2788 |
+| Firouzja       |      2793 |    2670 |    2791 |
+| Caruana        |      2783 |    2766 |    2847 |
+| Nepomniachtchi |      2766 |    2821 |    2740 |
+| Rapport        |      2764 |    2802 |    2613 |
+| Nakamura       |      2760 |    2837 |    2850 |
+| Duda           |      2750 |    2808 |    2779 |
+| Radjabov       |      2738 |    2747 |    2684 |
 {: .field}
 
 Why am I including Rapid and Blitz ratings in a **Classical** tournament that is being played to determine who will go on to fight for the **Classical** chess world championship? Because there is a **whopping 22% chance the event is decided in Rapid or Blitz tiebreaks!** Of note, Firouzja's Rapid rating is likely well below his skill level. If his true skill level is higher than his current rating, I'm understating his chances of winning by about 2% below.
@@ -68,18 +75,18 @@ At long last! Here are the probabilities of each player winning:
 
 | Name           |  Win %|
 |:---------------|:-----:|
-| Ding Liren     |  18.6 |
-| Firouzja       |  15.0 |
-| Caruana        |  14.5 |
-| Nepomniachtchi |  13.8 |
-| Rapport        |  13.1 |
-| Nakamura       |  10.4 |
-| Duda           |   7.5 |
-| Radjabov       |   7.2 |
+| Ding Liren     |  19.3 |
+| Caruana        |  16.8 |
+| Firouzja       |  15.1 |
+| Nepomniachtchi |  13.2 |
+| Rapport        |  11.4 |
+| Nakamura       |  11.3 |
+| Duda           |   8.1 |
+| Radjabov       |   4.9 |
 {: .field .narrow}
 
 <br>
-Ding Liren is the favorite, but not by much. Realistically, everyone has good winning chances, which will make for an exciting tournament. **I'll keep this page updated as the tournament progresses, be sure to check back then!**
+Ding Liren is the favorite, but only by 2.5%. Realistically, everyone has good winning chances, which will make for an exciting tournament. **I'll keep this page updated as the tournament progresses, be sure to check back then!**
 
 In the meantime, follow me on [Twitter][twit] and let me know what you'd like to see on this page!
 
