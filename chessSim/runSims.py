@@ -1,7 +1,7 @@
 import pandas as pd
 from utils import simCandidatesTournament
-from utils import simNorway
-from utils import simSuperbet
+# from utils import simNorway
+# from utils import simSuperbet
 from multiprocessing import Pool
 from itertools import repeat
 import time
@@ -33,7 +33,7 @@ def main():
     start_time = time.time()
  
     with Pool() as p:
-        results =  p.starmap(simSuperbet, tqdm(inputs, total = nSims))
+        results =  p.starmap(simCandidatesTournament, tqdm(inputs, total = nSims))
 
         
 
@@ -42,13 +42,13 @@ def main():
 
     start_time = time.time()
 
-    pickle.dump(results, open( "./chessSim/data/sims/superbet.p", "wb" ) ) #Save simulations
+    pickle.dump(results, open( "./chessSim/data/sims/candidates.p", "wb" ) ) #Save simulations
     
     print("--- %s seconds ---" % (time.time() - start_time))
 
-    winners = [winner for winner, _, _ in results]
-    magnusElo = [Elo for _, Elo, _ in results]
-    allElo = [EloDict for _, _, EloDict in results]
+    winners = [winner for winner in results]
+    # magnusElo = [Elo for _, Elo, _ in results]
+    # allElo = [EloDict for _, _, EloDict in results]
 
     # pickle.dump(magnusElo, open( "./chessSim/data/sims/magnusEloSims.p", "wb" ) ) #Save simulations
     # pickle.dump(allElo, open( "./chessSim/data/sims/allElo.p", "wb" ) ) #Save simulations
