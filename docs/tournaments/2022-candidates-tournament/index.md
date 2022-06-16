@@ -48,7 +48,7 @@ The field is set, and the eight candidates are in Madrid, ready for the 2022 ite
 - The young prodigy Alireza hasn't played an OTB event since 2021; will he be rusty?
 - Magnus has stated that he's likely to not play another WC match unless it's against Alireza, what will he say as the tournament unfolds? 
 - Hikaru Nakamura will draw tons of attention to the tournament - if we were to win, a WC match against El Magneto would bring a sonic boom to the chess world dring that matcup. 
-- Meanwhile, Ding Liren is the favorite based on my simulations, but many pundits are also projectiong Nepo and Caruana to perform well.
+- Meanwhile, Ding Liren is the favorite based on my simulations, but many pundits are also projecting Nepo and Caruana to perform well.
 
 In any case, we're in for three exciting weeks of chess!
 
