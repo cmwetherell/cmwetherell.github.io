@@ -38,9 +38,9 @@ def playChess(model, whitePlayer, blackPlayer, format):
 class Candidates:
     
     def __init__(self, players, games = None):
-        self.players = players
+        self.players = players.copy()
         self.playerNames = players.keys()
-        self.games = games
+        self.games = games.copy()
         self.loadGames = self.games != None
 
     def createGames(self):
@@ -51,22 +51,27 @@ class Candidates:
         rrGames.sort()
         self.games = pd.DataFrame([[game[0], game[1]] for game in rrGames], columns = ['whitePlayer', 'blackPlayer'])
 
-    def simRR(self):
-        #https://handbook.fide.com/files/handbook/Regulations_for_the_FIDE_Candidates_Tournament_2022.pdf
         self.games['format'] = 'c'
         self.games['stage'] = 'rr'
         self.games['played'] = 0
         self.games['result'] = 0
 
+        # self.games.to_csv("./chessSim/data/candidatesGames.csv", index=False)
+
+    def simRR(self):
+        #https://handbook.fide.com/files/handbook/Regulations_for_the_FIDE_Candidates_Tournament_2022.pdf
+
+
         for idx, row in self.games.iterrows():
-            whitePlayer = self.players[row.whitePlayer]
-            blackPlayer = self.players[row.blackPlayer]
+            if row.played == 0:
+                whitePlayer = self.players[row.whitePlayer]
+                blackPlayer = self.players[row.blackPlayer]
 
-            self.games.at[idx, 'played'] = 1
-            result = playChess(bst, whitePlayer, blackPlayer, format = 'c') #points white player scored
+                self.games.at[idx, 'played'] = 1
+                result = playChess(bst, whitePlayer, blackPlayer, format = 'c') #points white player scored
 
-            #TODO should I use the update ratings function or not?
-            self.games.at[idx, 'result'] = result
+                #TODO should I use the update ratings function or not?
+                self.games.at[idx, 'result'] = result
         
         whiteResults = self.games[['whitePlayer', 'result']].values
         blackResults = self.games[['blackPlayer', 'result']].values
@@ -86,6 +91,8 @@ class Candidates:
         self.remaining = list(self.rrSummary[self.rrSummary['first'] == 1].name)
         if len(self.remaining) == 1:
             self.winner = self.remaining[0]
+
+        # print(self.games)
 
     def tieS12(self):
 
@@ -231,7 +238,8 @@ class Candidates:
             raise Exception("Something is broke. S3 ended without a winner")
 
     def simCandidates(self):
-        self.createGames()
+        if self.games is None:
+            self.createGames()
         self.simRR()
         self.tie = 0
         if not hasattr(self, 'winner'):
