@@ -14,9 +14,9 @@ import plotly
 import plotly.express as px
 import pickle
 
-def simCandidatesTournament(_): #_ is because map has to pass an argument to the function
+def simCandidatesTournament(games): #_ is because map has to pass an argument to the function
     candidates = getCandidates()
-    tournament = Candidates(candidates)
+    tournament = Candidates(candidates, games)
     tournament.simCandidates()
     return tournament.winner
 

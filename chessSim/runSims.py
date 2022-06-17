@@ -11,7 +11,7 @@ from tqdm import tqdm
 import time
 from collections import Counter
 
-current = pd.read_csv("./chessSim/data/superbetGames.csv")
+current = pd.read_csv("./chessSim/data/candidatesGames.csv")
 
 ##Run this script with Override True and False to see the impact of the pool drawing on results. GP2 w and wo pools, Overall Qualification impact. 
 def main():
