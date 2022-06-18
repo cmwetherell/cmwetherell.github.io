@@ -88,7 +88,7 @@ After two rounds Caruana is the favorite, though it remains within the reach of 
 
 Why am I including Rapid and Blitz ratings in a **Classical** tournament that is being played to determine who will go on to fight for the **Classical** chess world championship? Because there is a **whopping 22% chance the event is decided in Rapid or Blitz tiebreaks!** Of note, Firouzja's Rapid rating is likely well below his skill level. If his true skill level is higher than his current rating, I'm understating his chances of winning by about 2% below.
 
-Before the tournament, Ding Liren ws the favorite, but only by 2.5%. Everyone had and still has good winning chances, which will make for an exciting tournament. **I'll keep this page updated as the tournament progresses, be sure to check back then!**
+Before the tournament, Ding Liren was the favorite, but only by 2.5%. Everyone had and still has good winning chances, which will make for an exciting tournament. **I'll keep this page updated as the tournament progresses, be sure to check back then!**
 
 In the meantime, follow me on [Twitter][twit] and let me know what you'd like to see on this page!
 
