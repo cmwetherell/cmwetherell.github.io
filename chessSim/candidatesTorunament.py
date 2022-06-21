@@ -31,7 +31,7 @@ def playChess(model, whitePlayer, blackPlayer, format):
 
     result = chessMLPred(model, whiteElo, blackElo) #points white player scored
     whitePlayer.addGame(result, whiteElo, blackElo, format)
-    blackPlayer.addGame(result, blackElo, whiteElo, format)
+    blackPlayer.addGame((1 - result), blackElo, whiteElo, format)
 
     return result
 
