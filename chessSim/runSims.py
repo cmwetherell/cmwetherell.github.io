@@ -42,11 +42,12 @@ def main():
 
     start_time = time.time()
 
-    pickle.dump(results, open( "./chessSim/data/sims/candidates.p", "wb" ) ) #Save simulations
+    # pickle.dump(results, open( "./chessSim/data/sims/candidates.p", "wb" ) ) #Save simulations
     
     print("--- %s seconds ---" % (time.time() - start_time))
 
-    winners = [winner for winner in results]
+    winners = [winner for winner, second in results]
+    seconds = [second for winner, second in results]
     # magnusElo = [Elo for _, Elo, _ in results]
     # allElo = [EloDict for _, _, EloDict in results]
 
@@ -62,6 +63,12 @@ def main():
     for key in ct:
         ct[key] /= (nSims / 100)
     print(ct)
+
+    ct = Counter(seconds)
+    for key in ct:
+        ct[key] /= (nSims / 100)
+    print(ct)
+
 
 if __name__=="__main__":
     main()
