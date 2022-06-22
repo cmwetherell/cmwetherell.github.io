@@ -42,7 +42,7 @@ def main():
 
     start_time = time.time()
 
-    pickle.dump(results, open( "./chessSim/data/sims/candidates.p", "wb" ) ) #Save simulations
+    pickle.dump(results, open( "./chessSim/data/sims/candidates_whatifrd5.p", "wb" ) ) #Save simulations
     
     print("--- %s seconds ---" % (time.time() - start_time))
 
