@@ -27,6 +27,21 @@ class Player:
 
             return (result - expectedScore) * k #k = 10 for GMs for C
 
+    def performance(self):
+        # source: https://handbook.fide.com/chapter/B012022
+        score = sum([result for result, _, _, _ in self.games])
+        numGames = len([result for result, _, _, _ in self.games])
+        Ra = round(np.mean([oppElo for _, _, oppElo, _ in self.games]))
+        p = round(score / numGames, 2)
+        if p == 0.5:
+            dp = 0
+        elif p > 0.5:
+            dp = self.fidePD[self.fidePD.pd == p]['diff'].values[0]
+        elif p < 0.5:
+            # print(round(1-p),2)
+            dp = -1 * self.fidePD[self.fidePD.pd == round(1-p,2)]['diff'].values[0]
+        return Ra + dp
+
     
     def updateRatings(self):
 

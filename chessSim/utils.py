@@ -1,4 +1,6 @@
 from sys import getallocatedblocks
+
+from prometheus_client import Summary
 # from grandPrix import GrandPrix
 from candidatesTorunament import Candidates
 from candidatesTorunament import getCandidates
@@ -13,12 +15,63 @@ import pandas as pd
 import plotly
 import plotly.express as px
 import pickle
+import numpy as np
+
+def summarizeCurrent(games):
+
+    playersCopy = getCandidates()
+    # print(playersCopy[1])
+    # print(playersCopy[1])
+    gamesCopy = games.copy()
+
+    gamesCopy = gamesCopy[gamesCopy.played == 1]
+
+    for _, row in gamesCopy.iterrows():
+        whitePlayer = playersCopy[row.whitePlayer]
+        blackPlayer = playersCopy[row.blackPlayer]
+
+        whiteElo = getattr(whitePlayer, 'EloC') 
+        blackElo = getattr(blackPlayer, 'EloC')
+
+        whitePlayer.addGame(row.result, whiteElo, blackElo, 'c')
+        blackPlayer.addGame((1 - row.result), blackElo, whiteElo, 'c')
+
+    gamesCopy['blackWin'] = 0
+
+    whiteResults = gamesCopy[['whitePlayer', 'blackPlayer', 'result', 'blackWin']].values
+    blackResults = gamesCopy[['blackPlayer', 'whitePlayer', 'result', 'blackWin']].values
+    blackResults[:, 2] = 1 - blackResults[:, 2] # to change the game results to black player POV
+    blackResults[:, 3] = 1 * (blackResults[:, 2] == 1) #checking for black wins, used for tb
+    
+    tbrrSummary = pd.DataFrame(np.concatenate(
+        (whiteResults, blackResults)
+        , axis = 0))
+    tbrrSummary.columns = ['name', 'oppName','result', 'blackWin']
+    tbrrSummary['wins'] = 1 * (tbrrSummary.result == 1)
+
+    tmpScores = tbrrSummary.groupby(['name']).agg(
+        score = ('result','sum')).reset_index() # df[name, score]
+
+    #add SB tiebreak, move sort values code to this df
+    tbrrSummary['sbPoints'] = 0
+    for idx, row in tbrrSummary.iterrows():
+        tbrrSummary.at[idx, 'sbPoints'] = row.result * tmpScores.loc[tmpScores.name == row.oppName, 'score'].values[0]
+
+    tbrrSummary = tbrrSummary.groupby(['name']).agg( #using more sorting mechanisms than needed, but still advancing everyone with same score to TBs
+        score = ('result','sum'),
+        sb = ('sbPoints', 'sum'),
+        wins = ('wins','sum'),
+        blackWins = ('blackWin','sum'),
+        ).reset_index()
+
+    tprSummary = pd.DataFrame([[playerZ.name, playerZ.performance()] for (_, playerZ) in playersCopy.items()], columns = ['name', 'tpr'])
+    return pd.merge(tprSummary, tbrrSummary).sort_values(by = ['score', 'sb', 'wins', 'blackWins'], ascending = False)
 
 def simCandidatesTournament(games): #_ is because map has to pass an argument to the function
     candidates = getCandidates()
     tournament = Candidates(candidates, games)
     tournament.simCandidates()
-    return tournament.winner, tournament.second
+    return tournament.winner, tournament.second, tournament.winScore
 
 def simNorway(_): #_ is because map has to pass an argument to the function
     players = getNorway()

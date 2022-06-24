@@ -109,6 +109,7 @@ class Candidates:
 
 
         self.tbrrSummary['first'] = 1 * (self.tbrrSummary.score == max(self.tbrrSummary.score))
+        self.winScore = max(self.tbrrSummary.score)
 
 
 
@@ -282,6 +283,8 @@ class Candidates:
                 if not hasattr(self, 'winner'):
                     self.tieS3()
             # print(self.rrSummary)
+        # if self.winner == 'Radjabov':
+        #     print(self.tbrrSummary)
         if not hasattr(self, 'winner'):
             print('something is broken, there is no winner after stage 3 is over')
         if not hasattr(self, 'second'):
