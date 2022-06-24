@@ -1,5 +1,6 @@
 import pandas as pd
 from utils import simCandidatesTournament
+from utils import summarizeCurrent
 # from utils import simNorway
 # from utils import simSuperbet
 from multiprocessing import Pool
@@ -12,6 +13,9 @@ import time
 from collections import Counter
 
 current = pd.read_csv("./chessSim/data/candidatesGames.csv")
+currentResults = summarizeCurrent(current)
+
+pickle.dump(currentResults, open( "./chessSim/data/sims/candidatesCurrent.p", "wb" ) ) #Save simulations
 
 ##Run this script with Override True and False to see the impact of the pool drawing on results. GP2 w and wo pools, Overall Qualification impact. 
 def main():
@@ -46,8 +50,9 @@ def main():
     
     print("--- %s seconds ---" % (time.time() - start_time))
 
-    winners = [winner for winner, second in results]
-    seconds = [second for winner, second in results]
+    winners = [winner for winner, second, winScore in results]
+    seconds = [second for winner, second, winScore in results]
+    winScore = [winScore for winner, second, winScore in results]
     # magnusElo = [Elo for _, Elo, _ in results]
     # allElo = [EloDict for _, _, EloDict in results]
 
@@ -65,6 +70,11 @@ def main():
     print(ct)
 
     ct = Counter(seconds)
+    for key in ct:
+        ct[key] /= (nSims / 100)
+    print(ct)
+
+    ct = Counter(winScore)
     for key in ct:
         ct[key] /= (nSims / 100)
     print(ct)
