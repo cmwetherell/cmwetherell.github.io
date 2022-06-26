@@ -2,7 +2,7 @@
 layout: post
 title:  "2022 Candidates Tournament"
 shortTitle: 'Candidates'
-date: 2022-06-22 12:00:00 -0700
+date: 2022-06-26 13:00:00 -0700
 postImage: /assets/img/alireza-hikaru.jpg # https://www.flickr.com/photos/fide/51782665101/in/photolist-2mTRGfH-2mF3T2E-2mFPiS8-2mGLprG-2mFPiSP-2mGHx2B-2mFraoE-2mH8cTG-2mGWPqT-2mbnW9r-2mbMGAE-2mFFqui-2mFTz2N-2mUmAc9-2mGhtwZ-2mbC9n9-2mFRHrs-2mFDYtd-2mGjizs-2mHa4JP-2mbihND-2mHccpR-2mGKNVX-2mGrZgb-2mbKy8k-2mGp2pN-2mGQHfx-2mbNKm2-2mGoSmJ-2mGoSoC-2mFRfug-2mFRfqP-2mFUBEj-2mFVCsk-2mFSnPS-2mFVCmy-2mGrg6K-2mFJEpo-2mHbFrj-2mHbFoi-2mH9npq-2mHcFF6-2mFDgYa-2mHcbab-2mK1g2L-2mGWPuF-2mH18QK-2mGZ8oD-2mGWPwE-2mGWPM4
 imageCaption:  "photo: Lennart Ootes, FIDE"
 ---
@@ -46,7 +46,7 @@ imageCaption:  "photo: Lennart Ootes, FIDE"
 
 ### Nakamura makes a mess out of Madrid
 
-Nepo was the clear favorite entering round eight and he decided to go for a quick draw in an attempt to simply maintain his lead. Then, Hikaru Nakamura went on the offensive and got revenge on Caruana from their ealrier match, dealing a blow to his fellow American's chances of winning the Candidates.
+Nepo was the clear favorite entering round eight and he decided to go for a quick draw in an attempt to simply maintain his lead. Then, Hikaru Nakamura went on the offensive and got revenge on Caruana from their earlier match, dealing a blow to his fellow American's chances of winning the Candidates.
 
 Now, Nepo enjoys a full one-point lead and a 75% chance of winning the tournament entering round nine where he will have to fight off Caruana in the most important game of the tournament. Caruana will wield the white pieces and certainly bring his most aggressive preperation as a win is all but necessary.
 
