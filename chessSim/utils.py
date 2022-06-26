@@ -24,6 +24,15 @@ def summarizeCurrent(games):
     # print(playersCopy[1])
     gamesCopy = games.copy()
 
+    playersCopy['Ding Liren'].EloC = 2806
+    playersCopy['Firouzja'].EloC = 2793
+    playersCopy['Caruana'].EloC = 2783
+    playersCopy['Nepomniachtchi'].EloC = 2766
+    playersCopy['Duda'].EloC = 2750
+    playersCopy['Radjabov'].EloC = 2753
+    playersCopy['Rapport'].EloC = 2764
+    playersCopy['Nakamura'].EloC = 2760
+
     gamesCopy = gamesCopy[gamesCopy.played == 1]
 
     for _, row in gamesCopy.iterrows():
