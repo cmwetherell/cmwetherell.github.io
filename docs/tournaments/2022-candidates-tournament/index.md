@@ -57,7 +57,7 @@ Round 9 was the most decisive day yet. But, the game many chess fans were rootin
 
 Nakamura lost to Radjabov, who won his first classical game in more than three years. Surely a disappointing result for Nakamura, as he is all but out of contention now. He still has second place chances, which could be important. It was also exciting to see Ding Liren and Firouzja return to form with wins of their own.
 
-GM Anish Giri has been posting recaps of each days gamers, which you can see below for Round 8:
+GM Anish Giri has been posting recaps of each days games, which you can see below for Round 8:
 
 <div class="ttt">
   <iframe width="560" height="315" class="yt" src="https://www.youtube.com/embed/PvDRMBaEWAA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
