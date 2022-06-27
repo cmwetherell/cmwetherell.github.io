@@ -2,7 +2,7 @@
 layout: post
 title:  "2022 Candidates Tournament"
 shortTitle: 'Candidates'
-date: 2022-06-26 13:00:00 -0700
+date: 2022-06-27 12:00:00 -0700
 postImage: /assets/img/alireza-hikaru.jpg # https://www.flickr.com/photos/fide/51782665101/in/photolist-2mTRGfH-2mF3T2E-2mFPiS8-2mGLprG-2mFPiSP-2mGHx2B-2mFraoE-2mH8cTG-2mGWPqT-2mbnW9r-2mbMGAE-2mFFqui-2mFTz2N-2mUmAc9-2mGhtwZ-2mbC9n9-2mFRHrs-2mFDYtd-2mGjizs-2mHa4JP-2mbihND-2mHccpR-2mGKNVX-2mGrZgb-2mbKy8k-2mGp2pN-2mGQHfx-2mbNKm2-2mGoSmJ-2mGoSoC-2mFRfug-2mFRfqP-2mFUBEj-2mFVCsk-2mFSnPS-2mFVCmy-2mGrg6K-2mFJEpo-2mHbFrj-2mHbFoi-2mH9npq-2mHcFF6-2mFDgYa-2mHcbab-2mK1g2L-2mGWPuF-2mH18QK-2mGZ8oD-2mGWPwE-2mGWPM4
 imageCaption:  "photo: Lennart Ootes, FIDE"
 ---
@@ -41,12 +41,29 @@ imageCaption:  "photo: Lennart Ootes, FIDE"
   margin-right: auto;
   font-size: 12px;
 }
+
+.yt {
+  display: block;
+  margin: 0 auto;
+}
+
+}
 </style>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script> 
 
 ### Nepo close to victory
 
-More thoughts coming soon, until then, see below!
+Round 9 was the most decisive day yet. But, the game many chess fans were rooting to be decisive was a draw. Caruana needed a win against Nepo today to put himself in position to win, but he was only able to earn a draw. There's still five rounds left, but Nepo is closing in on victory.
+
+Nakamura lost to Radjabov, who won his first classical game in more than three years. Surely a disappointing result for Nakamura, as he is all but out of contention now. He still has second place chances, which could be important. It was also exciting to see Ding Liren and Firouzja return to form with wins of their own.
+
+GM Anish Giri has been posting recaps of each days gamers, which you can see below for Round 8:
+
+<div class="ttt">
+  <iframe width="560" height="315" class="yt" src="https://www.youtube.com/embed/PvDRMBaEWAA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+<br>
+**And, now, predictions!**
 
 **2022 Candidates Tournament Probabilities**
 *After Round 9*
