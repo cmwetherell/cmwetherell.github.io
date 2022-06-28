@@ -2,7 +2,7 @@
 layout: post
 title:  "Richard Rapport Favorite To Win Candidates"
 subtitle: "If he wears his pink suit every day"
-date:   2022-06-27 08:00:00 -0700
+date:   2022-06-28 00:00:00 -0600
 postImage: /assets/img/RapportPink.jpeg # https://www.flickr.com/photos/fide/51782665101/
 imageCaption:  "photo: FIDE/Stev Bonhage"
 categories: chess-simulations
