@@ -12,8 +12,9 @@ from tqdm import tqdm
 import time
 from collections import Counter
 
-current = pd.read_csv("./chessSim/data/candidatesGames.csv")
+current = pd.read_csv("./chessSim/data/candidatesGamesRapport.csv")
 currentResults = summarizeCurrent(current)
+# print(currentResults)
 
 pickle.dump(currentResults, open( "./chessSim/data/sims/candidatesCurrent.p", "wb" ) ) #Save simulations
 
