@@ -55,7 +55,7 @@ imageCaption:  "photo: FIDE/Stev Bonhage"
 
 Ian Nepomniachtchi quickly drew his game with Radjabov today earning an additional 0.5 points. Meanwhile the smoldering battle for second turned into a raging inferno with wins by Ding Liren and Hikaru Nakamura and a loss by Fabiano Caruana.
 
-Caruana and Nakamura are tied with 5.5 points, and Ding Liren is on 5 points. According to the [FIDE regulations (4.4.2)][regs], if there is an outright first place winner, the remaining positions are determined without a playoff in the following order:
+Caruana, Nakamura and Ding Liren are all tied with 5.5 points. According to the [FIDE regulations (4.4.2)][regs], if there is an outright first place winner, the remaining positions are determined without a playoff in the following order:
 
   1. Sonneborn-Berger System;
   2. Total number of wins in the tournament;
