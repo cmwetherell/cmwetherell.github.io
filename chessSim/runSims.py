@@ -12,7 +12,7 @@ from tqdm import tqdm
 import time
 from collections import Counter
 
-current = pd.read_csv("./chessSim/data/candidatesGamesRapport.csv")
+current = pd.read_csv("./chessSim/data/candidatesGames.csv")
 currentResults = summarizeCurrent(current)
 # print(currentResults)
 
