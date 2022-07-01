@@ -80,7 +80,7 @@ def simCandidatesTournament(games): #_ is because map has to pass an argument to
     candidates = getCandidates()
     tournament = Candidates(candidates, games)
     tournament.simCandidates()
-    return tournament.winner, tournament.second, tournament.winScore
+    return tournament.winner, tournament.second, tournament.tie
 
 def simNorway(_): #_ is because map has to pass an argument to the function
     players = getNorway()
