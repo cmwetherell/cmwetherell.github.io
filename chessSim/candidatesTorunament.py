@@ -11,6 +11,7 @@ def getCandidates():
     candidates = pickle.load(open( "./chessSim/data/playerData.p", "rb" ) )
     candidates = candidates[candidates.Name.isin(['Ding Liren','Firouzja', 'Caruana', 'Nepomniachtchi', 'Duda', 'Radjabov', 'Rapport', 'Nakamura' ])]
     candidates = {x[0]: Player(x[0], x[1], x[2] , x[3]) for x in np.array(candidates)}
+
     return candidates
 
 bst = lgb.Booster(model_file = './chessSim/models/model.txt')
@@ -278,6 +279,7 @@ class Candidates:
         if not hasattr(self, 'winner'):
             self.tieS12()
             self.tie = 1
+            print("TIE")
             if not hasattr(self, 'winner'):
                 self.tieS12()
                 if not hasattr(self, 'winner'):

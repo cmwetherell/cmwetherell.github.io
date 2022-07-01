@@ -40,9 +40,6 @@ def main():
     with Pool() as p:
         results =  p.starmap(simCandidatesTournament, tqdm(inputs, total = nSims))
 
-        
-
-        
     print("--- %s seconds ---" % (time.time() - start_time))
 
     start_time = time.time()

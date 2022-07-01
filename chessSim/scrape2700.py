@@ -8,6 +8,8 @@ from urllib3.exceptions import InsecureRequestWarning
 urllib3.disable_warnings(InsecureRequestWarning)
 
 def splitRating(string):
+    if string == "unrat":
+        return 2700
     if '.' in str(string):
         return int(str(string).rpartition('.')[0])
     elif ' ' in str(string):
@@ -20,6 +22,7 @@ def splitName(string):
         if ' ' in tmp:
             return tmp.rpartition(' ')[0].rstrip()
     else: raise Exception('Unexpected format for names')
+    
 
 def main():
 
@@ -29,12 +32,14 @@ def main():
 
     playerData = tables[0].loc[:,["Name", "Classic", "Rapid", "Blitz"]]
 
+
+
     playerData.Classic = playerData.Classic.apply(splitRating)
     playerData.Rapid = playerData.Rapid.apply(splitRating)
     playerData.Blitz = playerData.Blitz.apply(splitRating)
     playerData.Name = playerData.Name.apply(splitName)
 
-    # print(playerData)
+    playerData.loc[playerData.Name == 'Ding', 'Name'] = 'Ding Liren'
 
     pickle.dump(playerData, open( "./chessSim/data/playerData.p", "wb" ) )
 if __name__=="__main__":
