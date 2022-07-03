@@ -59,7 +59,7 @@ Second place is really simple: if Ding Liren beats Nakamura in round 14, Ding Li
 
 [My model][model] predicts that Ding Liren has a 30% chance of winning. Presumably, he'll throw caution to the wind and sacrifice some drawing chances in favor of slightly improving his winning chances, just in case Magnus is not full of baloney. So maybe it's more like 35%?
 
-GM Anish Giri has been posting recaps of each days games, which you can see below for Round 11:
+GM Anish Giri has been posting recaps of each days games, which you can see below for Round 12:
 
 <div class="ttt">
   <iframe width="560" height="315" class="yt" src="https://www.youtube.com/embed/j4GarKScv6o" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
