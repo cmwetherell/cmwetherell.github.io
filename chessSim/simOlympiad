@@ -1,0 +1,70 @@
+import requests
+import pandas as pd
+import pickle
+import chess.pgn # I would normally do 'from chess import pgn', but the developer examples did it this way.
+
+#To surpress a warning I don't care about...
+import urllib3
+from urllib3.exceptions import InsecureRequestWarning
+
+# from chessSim.utils import summarizeCurrent
+urllib3.disable_warnings(InsecureRequestWarning)
+
+def main():
+
+    # get Olympiad players
+    players = pd.read_csv('./chessSim/data/olympiad/players2018.csv')
+    
+    #  get teams
+    teams = pd.read_csv('./chessSim/data/olympiad/teams2018.csv')
+
+    # get games
+    games = pd.read_csv('./chessSim/data/olympiad/games2018.csv')
+
+    print(players, teams, games)
+
+    def summarizeResults(games):
+        matchups = {}
+        for idx, game in games.iterrows():
+            matchups[list(set([game.whiteTeam, game.blackTeam]))] = []
+        for idx, game in games.iterrows():
+            matchups[list(set([game.whiteTeam, game.blackTeam]))].append( \
+                [game.whiteName, game.whiteTeam, game.blackName, game.blackTeam, game.board, game.result])
+        
+        matchupSummary = {}
+        for matchup, matchGames in matchups.items():
+            
+
+            print(matchup, matchGames)
+    summarizeResults(games)
+
+
+
+
+
+
+
+if __name__ == "__main__":
+    main()
+
+
+
+# Example game headers
+# [Event "43rd Olympiad Batumi 2018 Open"]
+# [Site "Batumi"]
+# [Date "2018.09.24"]
+# [Round "1"]
+# [Board "1"]
+# [White "So, Wesley"]
+# [Black "Sanchez Alvarez, Roberto Carlos"]
+# [Result "1-0"]
+# [ECO "B90"]
+# [WhiteElo "2776"]
+# [BlackElo "2391"]
+# [PlyCount "0"]
+# [EventDate "2018.09.24"]
+# [EventType "team"]
+# [EventRounds "11"]
+# [EventCountry "GEO"]
+# [WhiteTeam "United States of America"]
+# [BlackTeam "Panama"]

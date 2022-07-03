@@ -18,12 +18,32 @@ def main():
     players = players[3]
     players.columns = players.iloc[0]
     players = players.drop(players.index[0])
-    print(players)
+    players.Rtg = players.Rtg.astype(int)
+    players.loc[players.Rtg==0, 'Rtg'] = 1700
+    players.to_csv('./chessSim/data/olympiad/players2018.csv', index = False)
+    
+    #  make teams
+    teams = pd.DataFrame(players.Team.unique(), columns = ['team'])
 
-    #TODO: make teams
+    def getTeamRating(team, players):
+        avgRating = players.Rtg[players.Team == team].sort_values(ascending = False).head(4).mean()
+        fifthRating = 0
+        if players.Rtg[players.Team == team].shape[0] > 4:
+            # print(players.Rtg[players.Team == team].sort_values(ascending = False).reset_index())
+            fifthRating = players.Rtg[players.Team == team].sort_values(ascending = False).reset_index(drop = True).iloc[4] #get reserve rating
+
+        return pd.Series([avgRating, fifthRating])
+
+    
+    teams[['avgRating', 'fifthRating']] = teams.team.apply(getTeamRating, players = players)
+    teams = teams.sort_values(by = ['avgRating', 'fifthRating'], ascending = False).reset_index(drop = True)
+
+    teams['mp'], teams['IS10'], teams['gp'], teams['oppMP10'] = 0,0,0,0
+
+    teams.to_csv('./chessSim/data/olympiad/teams2018.csv', index = False)
 
     #Process games from chess-results: http://chess-results.com/partieSuche.aspx?lan=1&art=4&tnr=368908&rd=1
-    pgn = open("./chessSim/data/olympiadGames/2018.pgn") # http://caissabase.co.uk/ download Scid files, export to pgn
+    pgn = open("./chessSim/data/olympiad/2018.pgn") # http://caissabase.co.uk/ download Scid files, export to pgn
 
     gameData = []
     while True:
@@ -60,9 +80,9 @@ def main():
     df['EloDiff'] = df.whiteElo - df.blackElo
     df['EloAvg'] =((df.whiteElo + df.blackElo) / 2 ).astype(int)
 
-    print(df)
+    # print(df)
     # write to csv for future use
-    df.to_csv('./chessSim/data/olympiadGames/2018.csv', index = False)
+    df.to_csv('./chessSim/data/olympiad/games2018.csv', index = False)
 
 if __name__ == "__main__":
     main()
