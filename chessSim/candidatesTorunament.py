@@ -22,6 +22,7 @@ def chessMLPred(model, whiteElo, blackElo):
     dat = [[whiteElo - i, blackElo - i, whiteElo - blackElo,((whiteElo - i) + (blackElo - i)) / 2] for i in avgRange]
     preds = model.predict(dat,num_iteration=model.best_iteration).mean(axis = 0).tolist()
     result = np.random.choice([0,0.5,1], p=preds) 
+    print(whiteElo, blackElo, preds)
 
     return result
 
@@ -48,6 +49,7 @@ class Candidates:
         self.playerNames = players.keys()
         self.games = games.copy()
         self.loadGames = self.games != None
+        self.dingSecond = 0
 
     def createGames(self):
 
@@ -76,6 +78,10 @@ class Candidates:
 
                 self.games.at[idx, 'played'] = 1
                 result = playChess(bst, whitePlayer, blackPlayer, format = 'c') #points white player scored
+
+                if (row.whitePlayer == 'Ding Liren') & (row.blackPlayer == 'Nakamura'):
+                    if result == 1:
+                        self.dingSecond = result
 
                 #TODO should I use the update ratings function or not?
                 self.games.at[idx, 'result'] = result
@@ -106,7 +112,12 @@ class Candidates:
             sb = ('sbPoints', 'sum'),
             wins = ('wins','sum'),
             blackWins = ('blackWin','sum'),
-            ).sort_values(by = ['score', 'sb', 'wins', 'blackWins'], ascending = False).reset_index()
+            ).reset_index()
+            
+        self.tbrrSummary['dingSecond'] = 0
+        self.tbrrSummary.loc[self.tbrrSummary.name == 'Ding Liren', 'dingSecond'] = self.dingSecond
+
+        self.tbrrSummary = self.tbrrSummary.sort_values(by = ['score', 'sb', 'wins', 'dingSecond', 'blackWins'], ascending = False).reset_index()
 
 
         self.tbrrSummary['first'] = 1 * (self.tbrrSummary.score == max(self.tbrrSummary.score))
@@ -119,7 +130,8 @@ class Candidates:
             self.winner = self.remaining[0]
 
         self.second = list(self.tbrrSummary.name)[1] #Gets second entry of sorted names based on FIDE regulations TB criteria, overwritten later if there is TBs
-
+        if self.dingSecond == 1:
+            self.second == 'Ding Liren'
 
     def tieS12(self):
 
