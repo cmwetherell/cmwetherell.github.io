@@ -8,39 +8,53 @@ import urllib3
 from urllib3.exceptions import InsecureRequestWarning
 urllib3.disable_warnings(InsecureRequestWarning)
 
+def getTeamRating(team, players):
+    avgRating = players.Rtg[players.Team == team].sort_values(ascending = False).head(4).mean()
+    fifthRating = 0
+    if players.Rtg[players.Team == team].shape[0] > 4:
+        # print(players.Rtg[players.Team == team].sort_values(ascending = False).reset_index())
+        fifthRating = players.Rtg[players.Team == team].sort_values(ascending = False).reset_index(drop = True).iloc[4] #get reserve rating
+
+    return pd.Series([avgRating, fifthRating])
+
+def whiteGames(gamesWhite, teams):
+
+    gamesWhite = gamesWhite[gamesWhite.board == 1].whiteTeam.value_counts().to_frame().reset_index()
+    gamesWhite.columns = ['team', ' whiteCount']
+    teamsWhite = teams.merge(gamesWhite)
+
+    return teamsWhite
+
 def main():
 
     # get Olympiad players
 
-    playersURL = 'http://chess-results.com/tnr368908.aspx?lan=1&art=16&flag=30&zeilen=99999'
+    playersURL = 'http://chess-results.com/tnr653631.aspx?lan=1&art=16&flag=30&zeilen=99999'
     players = pd.read_html(requests.get(playersURL, verify = False,
                                     headers={'User-agent': 'Mozilla/5.0'}).text)
-    players = players[3]
+
+    players = players[4]
     players.columns = players.iloc[0]
     players = players.drop(players.index[0])
+    print(players)
     players.Rtg = players.Rtg.astype(int)
     players.loc[players.Rtg==0, 'Rtg'] = 1700
-    players.to_csv('./chessSim/data/olympiad/players2018.csv', index = False)
+    players.to_csv('./chessSim/data/olympiad/players2022.csv', index = False)
     
     #  make teams
     teams = pd.DataFrame(players.Team.unique(), columns = ['team'])
 
-    def getTeamRating(team, players):
-        avgRating = players.Rtg[players.Team == team].sort_values(ascending = False).head(4).mean()
-        fifthRating = 0
-        if players.Rtg[players.Team == team].shape[0] > 4:
-            # print(players.Rtg[players.Team == team].sort_values(ascending = False).reset_index())
-            fifthRating = players.Rtg[players.Team == team].sort_values(ascending = False).reset_index(drop = True).iloc[4] #get reserve rating
 
-        return pd.Series([avgRating, fifthRating])
 
     
     teams[['avgRating', 'fifthRating']] = teams.team.apply(getTeamRating, players = players)
     teams = teams.sort_values(by = ['avgRating', 'fifthRating'], ascending = False).reset_index(drop = True)
 
+    teams['initRank'] = teams.index + 1
     teams['mp'], teams['IS10'], teams['gp'], teams['oppMP10'] = 0,0,0,0
+    
 
-    teams.to_csv('./chessSim/data/olympiad/teams2018.csv', index = False)
+    # print(teams)
 
     #Process games from chess-results: http://chess-results.com/partieSuche.aspx?lan=1&art=4&tnr=368908&rd=1
     pgn = open("./chessSim/data/olympiad/2018.pgn") # http://caissabase.co.uk/ download Scid files, export to pgn
@@ -82,7 +96,12 @@ def main():
 
     # print(df)
     # write to csv for future use
-    df.to_csv('./chessSim/data/olympiad/games2018.csv', index = False)
+    df[df['round'] < '1'].to_csv('./chessSim/data/olympiad/games2022.csv', index = False)
+    # print(df.columns)
+
+
+
+    teams.to_csv('./chessSim/data/olympiad/teams2022.csv', index = False)
 
 if __name__ == "__main__":
     main()

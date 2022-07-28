@@ -14,6 +14,8 @@ chess = "*"
 tqdm = "*"
 tabulate = "*"
 lxml = "*"
+pygame = "*"
+memoization = "*"
 
 [dev-packages]
 jupyterlab = "*"

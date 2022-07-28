@@ -4,11 +4,19 @@
 
 layout: home
 ---
-**Quick update:**
+**Active Tournaments:**
 
-You can see current analysis by clicking the links in the navigation bar, and historical analysis in the Posts below. Hoping to make this more aesthetic in the future!
+Working on predictions for the 44th Chess Olympiad!
 
-[2022 FIDE Candidates Predictions][2022-candidates]
+**Past Tournaments:**
+
+[2022 FIDE Candidates Predictions][2022-candidates] <br>
+[2022 Superbet Chess Classic Predictions][2022-superbet-classic] <br>
+[2022 FIDE Grand Prix Berlin Leg 3][2022-gp-berlin] <br>
+[2022 FIDE Grand Prix Belgrade Leg 2][2022-gp-belgrade] <br>
 
 
 [2022-candidates]: tournaments/2022-candidates-tournament/index.md
+[2022-superbet-classic]: tournaments/2022-superbet-chess-classic-romania/index.md
+[2022-gp-berlin]: tournament/2022/03/22/FIDE-Grand-Prix-Berlin-Odds-Final-Leg.html
+[2022-gp-belgrade]: tournament/2022/03/01/Belgrade-Grand-Prix-Updated-Odds-Day-1.html
