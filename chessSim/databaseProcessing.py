@@ -3,7 +3,7 @@ import chess.pgn # I would normally do 'from chess import pgn', but the develope
 import pandas as pd
 
 def main():
-    pgn = open("./chess-sim/data/caissabase.pgn") # http://caissabase.co.uk/ download Scid files, export to pgn
+    pgn = open("./chessSim/data/caissabase.pgn") # http://caissabase.co.uk/ download Scid files, export to pgn
 
     gameData = []
     while True:
@@ -35,7 +35,8 @@ def main():
     df['EloAvg'] =((df.whiteElo + df.blackElo) / 2 ).astype(int)
 
     # write to csv for future use
-    df.to_csv('./chess-sim/data/caissabase_df.csv', index = False)
+    # df.to_csv('./chess-sim/data/caissabase_df.csv', index = False)
+    print(min(df.whiteElo))
 
 if __name__ == "__main__":
     main()
