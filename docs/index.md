@@ -6,7 +6,7 @@ layout: home
 ---
 **Active Tournaments:**
 
-Working on predictions for the 44th Chess Olympiad!
+[44th Chess Olympiad][2022-olympiad]
 
 **Past Tournaments:**
 
@@ -20,3 +20,4 @@ Working on predictions for the 44th Chess Olympiad!
 [2022-superbet-classic]: tournaments/2022-superbet-chess-classic-romania/index.md
 [2022-gp-berlin]: tournament/2022/03/22/FIDE-Grand-Prix-Berlin-Odds-Final-Leg.html
 [2022-gp-belgrade]: tournament/2022/03/01/Belgrade-Grand-Prix-Updated-Odds-Day-1.html
+[2022-olympiad]: tournaments/2022-44th-chess-olympiad-batumi/

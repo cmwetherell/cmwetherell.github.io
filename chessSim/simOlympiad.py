@@ -428,7 +428,7 @@ def makeHappyPools(topPools, bottomPools, medianPool, prevMatches):
             teamsPlayedALl = playedAllTeams(pool, prevMatches)
             # print(teamsPlayedALl)
             
-            for team in teamsPlayedALl:
+            for team in reversed(teamsPlayedALl):
 
                 pool.remove(team) # Once we float it to the next pool, its no longer in current pool
 
@@ -466,8 +466,9 @@ def makeHappyPools(topPools, bottomPools, medianPool, prevMatches):
                         poolIterator +=1
                         i = 0
 
+                    
+                    tryFloat = pd.Series(pool).iat[i]
                     i += 1
-                    tryFloat = pd.Series(pool).iat[-i]
                     # print(tryFloat)
 
                     tempCurrPool = [team for team in pool if team != tryFloat]
@@ -705,7 +706,7 @@ evaluating a pool:
 '''
 
 
-def summarizeResults(games, teams, players):
+def summarizeResults(games, teams, players, current = None):
     # print('this is the teams input', teams, 'end of teams input')
     ##Need table of games from each players perspective, and their score + team
     ##Then we can summarize the number of points each team scored in the match by looking at team points in that round
@@ -734,9 +735,14 @@ def summarizeResults(games, teams, players):
 
     matchSummary = completeResults.groupby(['playerTeam', 'oppTeam', 'round']).agg(
         gp = ('result','sum'),
-        numGames = ('result', 'size')
-        ).sort_values(by = ['round', 'gp', ], ascending = False).reset_index()
+        ).sort_values(by = ['round', 'gp', ], ascending = True).reset_index()
     # print(len(matchSummary.playerTeam.unique()))
+    # print(matchSummary, 'new game match summary')
+
+    if current is not None:
+        matchSummary = pd.concat([current, matchSummary])
+
+    # print(matchSummary, 'this is the match summary')
     
     mpConditions = [
         (matchSummary.gp > 2),
@@ -746,7 +752,10 @@ def summarizeResults(games, teams, players):
     mpValues = [2,1,0]
 
     matchSummary['mp'] = np.select(mpConditions, mpValues)
+    matchSummary.loc[matchSummary.oppTeam == 'bye', 'mp'] = 2
+
     # print(matchSummary)
+
     teamSummary = matchSummary.groupby(['playerTeam',]).agg(
         mpTotal = ('mp','sum'),
         ).sort_values(by = ['mpTotal', ], ascending = False).reset_index()
@@ -786,20 +795,27 @@ def main(_):
     # get games
     games = pd.read_csv('./chessSim/data/olympiad/games2022.csv')
 
+    # get current
+    current = pd.read_csv('./chessSim/data/olympiad/matches2022.csv')
+
     # games = games.loc[games['round'] < olympiadRound] #TODO remove this, just using to test simulating future rounds. eventually want to loop through all rounds
     
     teams = whiteGamesCount(games, teams)
 
-    teamSummary, matchSummary = summarizeResults(games, teams, players)
+    teamSummary, matchSummary = summarizeResults(games, teams, players, current)
+    # print(matchSummary)
+    # print('beginning next round', max(matchSummary['round']))
     # print(teamSummary.shape[0],'number of teams in beginning')
 
     # print(teamSummary, matchSummary)
 
     #TODO create first round pairings, code that folows simulates remaining rounds only
 
-    if games.shape[0] == 0:
-        nextRound = 1
-    else: nextRound = max(matchSummary['round']) + 1
+    # if games.shape[0] == 0:
+    #     nextRound = 1
+    # else: nextRound = max(matchSummary['round']) + 1
+
+    nextRound = max(matchSummary['round']) + 1
 
     for pairingRound in range(nextRound, 12): # 11 rounds total, start after last round
         # print('new round: ', pairingRound)
@@ -811,7 +827,7 @@ def main(_):
 
         #remove bye team and find median team to find median group.
         nTeams = len(teamsMatching.team.unique())
-        # print(nTeams, 'this is the pre bye removal number of teams')
+
 
 
         # remove odd team out and give them a bye
@@ -845,7 +861,8 @@ def main(_):
 
             medianIndex = round(nTeams / 2) if nTeams % 2 == 0 else round(nTeams / 2 - 0.5)
             medianTeamMP = teamsMatching.iloc[medianIndex].mpTotal
-            # print('median pts', medianTeamMP)
+
+            # print('median points', medianTeamMP)
 
             mps = teamsMatching.mpTotal.unique()
             mpsAsc = np.sort(mps)
@@ -873,6 +890,11 @@ def main(_):
                 mpPool = teamsMatching[(teamsMatching.mpTotal == mp)]
                 mpPool = mpPool.sort_values(by = ['mpTotal', 'initRank'], ascending = [False, True])
                 medianPool.append(list(mpPool.team))
+            # print(bottomPools, ' this is the bottom')
+            # print('len bottom', len(bottomPools[0]))
+            
+            # if pairingRound ==2:
+            #     print(medianPool)
 
             # print('number of pooled teams:', len([team for pool in topPools+medianPool+bottomPools for team in pool]))
             # print('number of pre pool teams', nTeams)
@@ -884,6 +906,10 @@ def main(_):
             pairingDiagnostics(matchups, previousMatchups, allPoolsDiagnostic, verbose = True) #Diagnostic to evlauate pairing process heuristics
 
             matchups = makeHappyPools(topPools, bottomPools, medianPool, previousMatchups)
+
+            # if pairingRound == 2:
+            #     # print(bottomPools, ' this is the bottom')
+            #     print(matchups)
             # print('number of matches made', len(matchups))
 
         else: raise Exception("Pairing round number error (<1)")
@@ -899,17 +925,19 @@ def main(_):
             newGames['EloDiff'] = newGames.whiteElo - newGames.blackElo
             newGames['EloAvg'] =((newGames.whiteElo + newGames.blackElo) / 2 ).astype(int)
             newGamesList.append(newGames)
+
         # print(matchups)
         # print(newGamesList, 'new games')
         
         games = pd.concat([games] + newGamesList)
         # print(games.shape[0], 'game rows')
 
-        teamSummary, matchSummary = summarizeResults(games, teams, players)
+        teamSummary, matchSummary = summarizeResults(games, teams, players, current)
         # print('completed round')
         # print(teamSummary, matchSummary)
 
-    a, b = summarizeResults(games, teams, players)
+
+    a, b = summarizeResults(games, teams, players, current)
 
     # print(b[b.playerTeam=='Russia'])
 
@@ -922,7 +950,7 @@ def main(_):
 
 if __name__ == "__main__":
     # while True:
-    main()
+    main(0)
 
 # Example game headers
 # [Event "43rd Olympiad Batumi 2018 Open"]
