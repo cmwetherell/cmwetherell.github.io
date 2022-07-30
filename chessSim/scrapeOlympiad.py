@@ -1,6 +1,7 @@
 import requests
 import pandas as pd
 import pickle
+import numpy as np
 import chess.pgn # I would normally do 'from chess import pgn', but the developer examples did it this way.
 
 #To surpress a warning I don't care about...
@@ -36,28 +37,42 @@ def main():
     players = players[4]
     players.columns = players.iloc[0]
     players = players.drop(players.index[0])
-    print(players)
+    # print(players)
     players.Rtg = players.Rtg.astype(int)
     players.loc[players.Rtg==0, 'Rtg'] = 1700
     players.to_csv('./chessSim/data/olympiad/players2022.csv', index = False)
     
     #  make teams
-    teams = pd.DataFrame(players.Team.unique(), columns = ['team'])
+    teamURL = 'http://chess-results.com/tnr653631.aspx?lan=1&art=32&turdet=YES&flag=30&zeilen=99999'
+
+    teams = pd.read_html(requests.get(teamURL, verify = False,
+                                    headers={'User-agent': 'Mozilla/5.0'}).text)
 
 
+    teams = teams[6]
 
-    
-    teams[['avgRating', 'fifthRating']] = teams.team.apply(getTeamRating, players = players)
-    teams = teams.sort_values(by = ['avgRating', 'fifthRating'], ascending = False).reset_index(drop = True)
+    teams.columns = teams.iloc[0]
+    teams = teams.drop(teams.index[0])
+    # teams = teams.drop(teams.index[0])
+    teams = teams[['No.', 'Team']]
+    teams.columns = ['initRank', 'short', 'team']
+    teams = teams[['team', 'initRank']]
 
-    teams['initRank'] = teams.index + 1
+    # teams[['avgRating', 'fifthRating']] = teams.team.apply(getTeamRating, players = players)
+    # teams = teams.sort_values(by = ['avgRating', 'fifthRating'], ascending = False).reset_index(drop = True)
+
+    # teams['initRank'] = teams.index + 1
     teams['mp'], teams['IS10'], teams['gp'], teams['oppMP10'] = 0,0,0,0
-    
+
+    invalidTeams = ['Pakistan', 'Cote d\'Ivoire', 'Rwanda', 'Lesotho']
+    teams = teams[~teams['team'].isin(invalidTeams)]
+
+    teams.to_csv('./chessSim/data/olympiad/teams2022.csv', index = False)
 
     # print(teams)
 
     #Process games from chess-results: http://chess-results.com/partieSuche.aspx?lan=1&art=4&tnr=368908&rd=1
-    pgn = open("./chessSim/data/olympiad/2018.pgn") # http://caissabase.co.uk/ download Scid files, export to pgn
+    pgn = open("./chessSim/data/olympiad/2022.pgn") # http://caissabase.co.uk/ download Scid files, export to pgn
 
     gameData = []
     while True:
@@ -99,9 +114,67 @@ def main():
     df[df['round'] < '1'].to_csv('./chessSim/data/olympiad/games2022.csv', index = False)
     # print(df.columns)
 
+    rounds = ['https://chess-results.com/tnr653631.aspx?lan=1&art=2&rd=1&flag=30',
+            # 'http://chess-results.com/tnr653631.aspx?lan=1&art=2&rd=2&flag=30',
+
+    ]
+
+    i = 1
+    matchResults = []
+    for roundURL in rounds:
 
 
-    teams.to_csv('./chessSim/data/olympiad/teams2022.csv', index = False)
+        roundResults = pd.read_html(requests.get(roundURL, verify = False,
+                                        headers={'User-agent': 'Mozilla/5.0'}).text)
+
+
+        roundResults = roundResults[4]
+        roundResults.columns = roundResults.iloc[1]
+        roundResults = roundResults.drop(roundResults.index[0])
+        roundResults = roundResults.drop(roundResults.index[0])
+
+        whiteTeams = roundResults.iloc[:, [4, 7, 12]]
+        blackTeams = roundResults.iloc[:, [12, 9, 4]]
+        # print(whiteTeams)
+
+        whiteTeams.columns = ['playerTeam', 'gp', 'oppTeam']
+        blackTeams.columns = ['playerTeam', 'gp', 'oppTeam']
+
+        results = pd.concat([whiteTeams, blackTeams]).reset_index(drop=True)
+        results['round'] = i
+        i+=1
+
+        results.gp = results.gp.replace('3½', '3.5')
+        results.gp = results.gp.replace('2½', '2.5')
+        results.gp = results.gp.replace('1½', '1.5')
+        results.gp = results.gp.replace('½', '0.5')
+        # print(results.gp)
+
+        results.gp = results.gp.astype(float)
+
+        # print(results)
+
+        mpConditions = [
+            (results.gp > 2),
+            (results.gp == 2),
+            (results.gp < 2),
+        ]
+        mpValues = [2,1,0]
+
+        results['mp'] = np.select(mpConditions, mpValues)
+
+        results.loc[results.playerTeam == 'India *)', 'playerTeam'] = 'India'
+        results.loc[results.oppTeam == 'India *)', 'oppTeam'] = 'India'
+
+        results = results[['playerTeam', 'oppTeam', 'round', 'gp']]
+
+        invalidTeams = ['Pakistan', 'Cote d\'Ivoire', 'Rwanda', 'Lesotho']
+        results = results[~results['playerTeam'].isin(invalidTeams)]  
+
+        matchResults.append(results)
+
+    matchResults = pd.concat(matchResults)
+    matchResults.to_csv('./chessSim/data/olympiad/matches2022.csv', index = False)
 
 if __name__ == "__main__":
     main()
@@ -127,3 +200,22 @@ if __name__ == "__main__":
 # [EventCountry "GEO"]
 # [WhiteTeam "United States of America"]
 # [BlackTeam "Panama"]
+
+# [Event "Chennai Chess Olympiad | Open"]
+# [Site "chess24.com"]
+# [Date "2022.07.29"]
+# [Round "1"]
+# [White "Vidit, Santosh Gujrathi"]
+# [Black "Makoto, Rodwell"]
+# [Result "1-0"]
+# [Board "1"]
+# [WhiteCountry "IND"]
+# [WhiteFideId "5029465"]
+# [WhiteElo "2714"]
+# [WhiteTitle "GM"]
+# [WhiteEloChange "1"]
+# [BlackCountry "ZIM"]
+# [BlackFideId "11000120"]
+# [BlackElo "2346"]
+# [BlackTitle "IM"]
+# [BlackEloChange "-2"]
