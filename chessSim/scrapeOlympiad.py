@@ -115,7 +115,8 @@ def main():
     # print(df.columns)
 
     rounds = ['https://chess-results.com/tnr653631.aspx?lan=1&art=2&rd=1&flag=30',
-            # 'http://chess-results.com/tnr653631.aspx?lan=1&art=2&rd=2&flag=30',
+            'http://chess-results.com/tnr653631.aspx?lan=1&art=2&rd=2&flag=30',
+            'https://chess-results.com/tnr653631.aspx?lan=1&art=2&rd=3&flag=30',
 
     ]
 
@@ -168,7 +169,7 @@ def main():
 
         results = results[['playerTeam', 'oppTeam', 'round', 'gp']]
 
-        invalidTeams = ['Pakistan', 'Cote d\'Ivoire', 'Rwanda', 'Lesotho']
+        invalidTeams = ['Pakistan',  'Rwanda', ]
         results = results[~results['playerTeam'].isin(invalidTeams)]  
 
         matchResults.append(results)

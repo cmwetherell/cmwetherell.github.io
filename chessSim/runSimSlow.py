@@ -22,7 +22,7 @@ def main():
 
 # ##python poolOdds.py 100 True <- terminal command to get results for 100 sims with new pool draws for GP2
 
-    nSims = 1000
+    nSims = 50
     if len(terminalArgs) > 1:
         nSims = int(terminalArgs[1])
     
@@ -31,9 +31,14 @@ def main():
     # print(i, time.time())
 
     start_time = time.time()
+    results = []
+    for i in range(100):
+        result = simOlympiad(i)
+        results.append(result)
+        print(i, result)
 
-    with Pool() as p:
-        results =  p.map(simOlympiad, range(0,nSims))
+    # with Pool() as p:
+    #     results =  p.map(simOlympiad, repeat(0, nSims))
 
     print("--- %s seconds ---" % (time.time() - start_time))
 
@@ -52,7 +57,7 @@ def main():
 
     print('dumping')
 
-    pickle.dump(winsByRound, open( "./chessSim/data/sims/olympiad44.p", "wb" ) ) #Save simulations
+    pickle.dump(winsByRound, open( "./chessSim/data/sims/olympiad44Slow.p", "wb" ) ) #Save simulations
 
     print('done dumping')
     # print(winsByRound)
