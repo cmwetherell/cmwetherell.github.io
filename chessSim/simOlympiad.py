@@ -9,7 +9,6 @@ import itertools
 from copy import deepcopy
 import random
 import lightgbm as lgb
-from soupsieve import match
 
 # https://handbook.fide.com/files/handbook/Olympiad2022MainCompetition.pdf
 # https://handbook.fide.com/chapter/OlympiadPairingRules2022
@@ -113,6 +112,8 @@ def pairingFast(teams: list, previousPairings: set = set()):
 
     if len(teams) == 0:
         return []
+    # if len(teams) % 2 > 0:
+    #     raise Exception("odd number of teams passed into pairing algorithm")
 
     # oppTeams = []
 
@@ -237,6 +238,7 @@ def findFloater(currGroup, nextGroup, prevMatches, poolHalf = 'bottom'):
 
 
 def makeHappyPools(topPools, bottomPools, medianPool, prevMatches):
+    #TODO: If two teams have +2 or -2, then they can't be matched, unless it doesnt create a floater.
     # print(type(topPools), 'sdwffe')
     # print('top', topPools)
     # print('bottom', bottomPools)
@@ -254,7 +256,8 @@ def makeHappyPools(topPools, bottomPools, medianPool, prevMatches):
             medianPool = []
 
     # print(len(topPools), len(bottomPools), len(medianPool))
-    allPools = topPools + medianPool + bottomPools
+    allPools = topPools + medianPool + list(reversed(bottomPools))
+    allPoolsCopy = deepcopy(allPools)
     floatedMatches = set()
     goodMatches = set()
     poolNumber = 0
@@ -414,8 +417,7 @@ def makeHappyPools(topPools, bottomPools, medianPool, prevMatches):
 
     poolNumber = len(allPools)-1 #set index to the last pool in allPools list, then we traverse backwards
 
-    for pool in reversed(bottomPools):
-        # print(pool)
+    for pool in bottomPools:
 
         # print(pool)
 
@@ -483,20 +485,22 @@ def makeHappyPools(topPools, bottomPools, medianPool, prevMatches):
                         oppIterator = 1
                         while not foundValidOpp: #check if floated team has played all opponents in the next pool
                             # print('whileID: ghfdhrety')
-                            if oppIterator < len(allPools[(poolNumber-poolIterator)]):
+                            if oppIterator <= len(allPools[(poolNumber-poolIterator)]):
                                 # print(poolNumber)
                                 # print(poolIterator)
                                 opp = allPools[(poolNumber-poolIterator)][-oppIterator]
                                 remainingNextPool = [x for x in allPools[(poolNumber-poolIterator)] if x != opp]
                                 if (tryFloat, opp) not in prevMatches:
                                     if pairingFast(remainingNextPool, prevMatches) is not None:
-                                        # print(tryFloat)
                                         floatedMatches.add((tryFloat, opp))
                                         foundValidOpp = True
                                         foundValidFloat = True
+
                                         allPools[(poolNumber-poolIterator)].remove(opp)
+                                        # print(bottomPools)
+
                                         pool.remove(tryFloat)
-                            elif oppIterator >= len(allPools[(poolNumber-poolIterator)]): # If he has, go to the next pool since this team has to be floated, bec they already played all teams in their own pool too
+                            elif oppIterator > len(allPools[(poolNumber-poolIterator)]): # If he has, go to the next pool since this team has to be floated, bec they already played all teams in their own pool too
                                 break
                             oppIterator += 1
             # a.where(a!=3).dropna().reset_index(drop = True)
@@ -598,6 +602,10 @@ def makeHappyPools(topPools, bottomPools, medianPool, prevMatches):
 
         # print(set(pairingFast(medianPool[0], prevMatches)))
         else:
+            # print(goodMatches,' current good matches', len(goodMatches))
+            # print(floatedMatches,' current floatedMatches matches', len(floatedMatches))
+            # print(medianPool)
+            # print(pairingFast(medianPool[0], prevMatches), 'median pairings')
             goodMatches = goodMatches.union(set(pairingFast(medianPool[0], prevMatches)))
 
     # print('good matches:', goodMathces)
@@ -605,7 +613,29 @@ def makeHappyPools(topPools, bottomPools, medianPool, prevMatches):
 
     # print('these are unmatched teams', teamSet.difference(set([team for match in goodMatches.union(floatedMatches) for team in match])))
     if any([a==b for a,b in goodMatches.union(floatedMatches)]):
-        print(topPools, bottomPools, medianPool, prevMatches)
+        for a,b in goodMatches.union(floatedMatches):
+            if a==b:
+                print(a,b)
+        print('')
+        print('')
+        print('')
+        print('')
+        print('original pools',allPoolsCopy)
+        print('')
+        print('')
+        print('')
+        print('')
+        print('previous matchups',prevMatches)
+        print('')
+        print('')
+        print('')
+        print('')
+        print('good matches', goodMatches)
+        print('')
+        print('')
+        print('')
+        print('')
+        print('floated matches', floatedMatches)
         raise Exception("Something went wrong, matched with itself?")
     return goodMatches.union(floatedMatches)
     # print(medianPool)
@@ -752,7 +782,7 @@ def summarizeResults(games, teams, players, current = None):
     mpValues = [2,1,0]
 
     matchSummary['mp'] = np.select(mpConditions, mpValues)
-    matchSummary.loc[matchSummary.oppTeam == 'bye', 'mp'] = 2
+    matchSummary.loc[matchSummary.oppTeam == 'bye', 'mp'] = 1
 
     # print(matchSummary)
 
@@ -783,8 +813,8 @@ def summarizeResults(games, teams, players, current = None):
 
     return teamSummary, matchSummary
 
-def main(_):
-
+def main(nSim):
+    print('Simulation: ', nSim)
     # get Olympiad players
     players = pd.read_csv('./chessSim/data/olympiad/players2022.csv')
     
@@ -824,9 +854,12 @@ def main(_):
         previousMatchups = set(zip(matchSummary.playerTeam, matchSummary.oppTeam))
 
         teamsMatching = teamSummary.sort_values(by = ['mpTotal', 'initRank'], ascending = [False, True]).reset_index(drop = True)
+        # print(teamsMatching.to_string())
+        # print(matchSummary.to_string())
 
         #remove bye team and find median team to find median group.
         nTeams = len(teamsMatching.team.unique())
+        # print(nTeams, 'there are nteams')
 
 
 
@@ -907,11 +940,11 @@ def main(_):
 
             matchups = makeHappyPools(topPools, bottomPools, medianPool, previousMatchups)
 
-            # if pairingRound == 2:
+            # if pairingRound == 3:
             #     # print(bottomPools, ' this is the bottom')
             #     print(matchups)
             # print('number of matches made', len(matchups))
-
+# 
         else: raise Exception("Pairing round number error (<1)")
         # print(matchups)
 
