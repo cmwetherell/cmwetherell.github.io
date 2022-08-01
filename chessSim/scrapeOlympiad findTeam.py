@@ -31,7 +31,6 @@ def main():
     # get Olympiad players
 
     playersURL = 'http://chess-results.com/tnr653631.aspx?lan=1&art=16&flag=30&zeilen=99999'
-    
     players = pd.read_html(requests.get(playersURL, verify = False,
                                     headers={'User-agent': 'Mozilla/5.0'}).text)
 
@@ -42,7 +41,6 @@ def main():
     players.Rtg = players.Rtg.astype(int)
     players.loc[players.Rtg==0, 'Rtg'] = 1700
     players.to_csv('./chessSim/data/olympiad/players2022.csv', index = False)
-    # print(players)
     
     #  make teams
     teamURL = 'http://chess-results.com/tnr653631.aspx?lan=1&art=32&turdet=YES&flag=30&zeilen=99999'
@@ -74,7 +72,7 @@ def main():
     # print(teams)
 
     #Process games from chess-results: http://chess-results.com/partieSuche.aspx?lan=1&art=4&tnr=368908&rd=1
-    pgn = open("./chessSim/data/olympiad/2022.pgn") # http://caissabase.co.uk/ download Scid files, export to pgn
+    pgn = open("./chessSim/data/olympiad/olym22.pgn") # http://caissabase.co.uk/ download Scid files, export to pgn
 
     gameData = []
     while True:
@@ -84,16 +82,22 @@ def main():
         
         headerElements = [header for header in headers] #create list of meta data for each game, could be dict instead
 
-        # if this criteria is met, the game has all the criteria we need for our model training data.
-        if ('WhiteElo' in headerElements) & ('BlackElo' in headerElements) & ('Result' in headerElements) \
-           & ('White' in headerElements) & ('Black' in headerElements) & ('WhiteTeam' in headerElements) & ('BlackTeam' in headerElements):
+        if 'WhiteElo' not in headerElements:
+            print(headers)
+            continue
+        if 'BlackElo' not in headerElements:
+            print(headers)
+            continue
 
-            # append relevant data to what will become our pandas df
-            dat = [headers['White'], headers['WhiteTeam'], headers['WhiteElo'], \
-                 headers['Black'], headers['BlackTeam'], headers['BlackElo'], headers['Result'] \
-                     ,headers['Round'], headers['Board']]
-            gameData.append(dat)
-    df = pd.DataFrame(gameData, columns = ['whiteName', 'whiteTeam', 'whiteElo', 'blackName', 'blackTeam', 'blackElo', 'result', 'round', 'board'])
+
+        # append relevant data to what will become our pandas df
+        dat = [headers['White'], headers['WhiteFideId'], headers['WhiteElo'], \
+                headers['Black'], headers['BlackFideId'], headers['BlackElo'], headers['Result'] \
+                    ,headers['Round'], headers['Board']]
+        gameData.append(dat)
+
+
+    df = pd.DataFrame(gameData, columns = ['whiteName', 'whiteFideID', 'whiteElo', 'blackName', 'blackFideId', 'blackElo', 'result', 'round', 'board'])
 
     ##Cleaning Data
     df = df[df.result != '*'] # cleaning some games that didn't have a valid result recorded
@@ -114,7 +118,9 @@ def main():
     df['EloAvg'] =((df.whiteElo + df.blackElo) / 2 ).astype(int)
 
 
-    # print(df)
+    df.merge(players, how = 'left', left_on = 'whiteFideID', right_on = 'FideID')
+
+    print(df)
     # write to csv for future use
     df.to_csv('./chessSim/data/olympiad/games2022.csv', index = False)
     # print(df.columns)
@@ -122,7 +128,6 @@ def main():
     rounds = ['https://chess-results.com/tnr653631.aspx?lan=1&art=2&rd=1&flag=30',
             'http://chess-results.com/tnr653631.aspx?lan=1&art=2&rd=2&flag=30',
             'https://chess-results.com/tnr653631.aspx?lan=1&art=2&rd=3&flag=30',
-            'http://chess-results.com/tnr653631.aspx?lan=1&art=2&rd=4&flag=30',
 
     ]
 

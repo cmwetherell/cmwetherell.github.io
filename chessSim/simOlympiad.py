@@ -1,10 +1,5 @@
-from statistics import median, median_grouped
-from time import clock_getres
-import requests
 import pandas as pd
 import numpy as np
-import pickle
-import chess.pgn # I would normally do 'from chess import pgn', but the developer examples did it this way.
 import itertools
 from copy import deepcopy
 import random
@@ -28,7 +23,7 @@ def chessMLPred(model, whiteElo, blackElo):
     avgRange = range(-10, 11, 5)
     
     dat = [[whiteElo - i, blackElo - i, whiteElo - blackElo,((whiteElo - i) + (blackElo - i)) / 2] for i in avgRange]
-    preds = model.predict(dat,num_iteration=model.best_iteration).mean(axis = 0).tolist()
+    preds = model.predict(dat,num_iteration=model.best_iteration, num_threads = 1).mean(axis = 0).tolist()
     result = np.random.choice([0,0.5,1], p=preds) 
     # print(whiteElo, blackElo, preds)
 
@@ -837,7 +832,7 @@ def main(nSim):
     # print('beginning next round', max(matchSummary['round']))
     # print(teamSummary.shape[0],'number of teams in beginning')
 
-    # print(teamSummary, matchSummary)
+    # print(teamSummary.to_string(), matchSummary)
 
     #TODO create first round pairings, code that folows simulates remaining rounds only
 
@@ -940,7 +935,7 @@ def main(nSim):
 
             matchups = makeHappyPools(topPools, bottomPools, medianPool, previousMatchups)
 
-            # if pairingRound == 3:
+            # if pairingRound == 5:
             #     # print(bottomPools, ' this is the bottom')
             #     print(matchups)
             # print('number of matches made', len(matchups))
@@ -974,7 +969,7 @@ def main(nSim):
 
     # print(b[b.playerTeam=='Russia'])
 
-    # print(a)
+    # print(a.to_string())
     # print(a.mpTotal.sum())
     return a.team.iloc[0]
 
