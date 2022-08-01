@@ -67,7 +67,7 @@ justify-content: center;
 
 As each round passes we see more and more close matchups and upsets. In Round 3, Norway was dealt a big blow by the Italian team and their 5.4% winning chances have plummeted to just 2.3%. In Round 4 the pairings are even more balanced so we should see many close matchups and many upsets. After Round 4, it will be difficult to call the outcome of any matchup an upset because all the piairings should be relatively balanced.
 
-A key storyline so far in the event is the favorites to win entering the event, the United States, are currently back in 20th place in the standings. This is a little misleading, though, as they are still the favorites to win the event. The slow start will make it a bit harder to win in the tiebreaks (a version of Sonneborn-Berger), if it comes to that. But, their still likely to win the event outright, in which case it won't matter.
+A key storyline so far in the event is the favorites to win entering the event, the United States, are currently back in 20th place in the standings. This is a little misleading, though, as they are still the favorites to win the event. The slow start will make it a bit harder to win in the tiebreaks (a version of Sonneborn-Berger), if it comes to that. But, they're still likely to win the event outright, in which case it won't matter.
 
 Apologies for not getting this page updated sooner. I was 'bug hunting' in my pairing algorithm and finally found a rogue '<' that was supposed to be '<='. 😱 It took more time and effort than I'd like to admit spending on finding it, but at least I can truthfully say I've learned some things about writing good code, unit testing, and debugging!
 
