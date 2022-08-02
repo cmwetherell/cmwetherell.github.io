@@ -78,7 +78,7 @@ I'll continue to update this page after every round so we can track how likely e
 <div class = 'sponsor' style="width:400px; margin:0 auto;">
 These predictions brought to you by:
   <div class = 'chessable-logo' >
-    <a href = 'https://chessable.com' >
+    <a href = 'https://chessable.com?utm_source=pawnalyze&utm_medium=partner' >
     <img src='/assets/img/chessable.webp' width = '200' style= "margin:0 auto;">
     </a>
   </div>
