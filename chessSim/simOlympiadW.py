@@ -811,17 +811,17 @@ def summarizeResults(games, teams, players, current = None):
 def main(nSim):
     print('Simulation: ', nSim)
     # get Olympiad players
-    players = pd.read_csv('./chessSim/data/olympiad/players2022.csv')
+    players = pd.read_csv('./chessSim/data/olympiad/playersW2022.csv')
     
     #  get teams
-    teams = pd.read_csv('./chessSim/data/olympiad/teams2022.csv')
+    teams = pd.read_csv('./chessSim/data/olympiad/teamsW2022.csv')
     # print(teams.shape[0], 'num temas')
 
     # get games
-    games = pd.read_csv('./chessSim/data/olympiad/games2022.csv')
+    games = pd.read_csv('./chessSim/data/olympiad/gamesW2022.csv')
 
     # get current
-    current = pd.read_csv('./chessSim/data/olympiad/matches2022.csv')
+    current = pd.read_csv('./chessSim/data/olympiad/matchesW2022.csv')
 
     # games = games.loc[games['round'] < olympiadRound] #TODO remove this, just using to test simulating future rounds. eventually want to loop through all rounds
     
@@ -832,7 +832,7 @@ def main(nSim):
     # print('beginning next round', max(matchSummary['round']))
     # print(teamSummary.shape[0],'number of teams in beginning')
 
-    print(teamSummary.to_string(), matchSummary.to_string())
+    # print(teamSummary.to_string(), matchSummary.to_string())
 
     #TODO create first round pairings, code that folows simulates remaining rounds only
 
@@ -971,6 +971,7 @@ def main(nSim):
 
     # print(a.to_string())
     # print(a.mpTotal.sum())
+    # print(a.team.iloc[0])
     return a.team.iloc[0]
 
     # print(a)

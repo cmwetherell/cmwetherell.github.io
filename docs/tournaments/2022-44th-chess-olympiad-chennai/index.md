@@ -65,6 +65,8 @@ justify-content: center;
 
 ### India 2 continues to shine, currently in 1st place
 
+*Note: I've added women's Olympiad predictions below*
+
 India 2 is made up of talented young superstars, and they are showing their talent in a big way through four rounds. They've dominated just about everyone so far and only lost their first game points via two draws in todays match! Will we see India (1) vs. India 2? It seems like it might happen later on, which would sure be fun to watch. India 2 has a tough match against Spain in Round 5. Shirov v. Gukesh will be a game to keep an eye on. India 2 will be put to the test round after round from here on out, so we're in for some exciting chess.
 
 Despite the early round success of India 2, my predictions still don't favor them winning the event. For every game simulated within every match within every round, I simply use a machine learning model, the Elo of each player, and which player is white to make a prediction for the outcome of a game. Based on this method, the United States is still a clear favorite, despite currently sitting one match-point behind in 11th place. If you think a team is better than their average rating suggests you can judgementally adjust my predictions to reflect that. If I did that adjustment myself it would be difficult to explain my predictions objectively, so my preference is to leave the subjective adjustments up to you. But, I will say that it seems likely there is some young talent performing above their current Elo.
@@ -113,6 +115,25 @@ These predictions brought to you by:
 | Georgia                  |     0.1 |
 | Serbia                   |     0.1 |
 | Romania                  |     0.1 |
+{: .field .narrow}
+<br>
+
+**44th Chess Olympiad Womens Predictions**
+*After Round 4*
+
+| Country                  |   Win % |
+|:-------------------------|--------:|
+| India                    |    32.6 |
+| Ukraine                  |    28.0 |
+| Georgia                  |    24.4 |
+| Poland                   |     7.8 |
+| France                   |     3.0 |
+| Azerbaijan               |     1.9 |
+| Germany                  |     0.7 |
+| Armenia                  |     0.7 |
+| United States of America |     0.6 |
+| India 2                  |     0.2 |
+| Kazakhstan               |     0.1 |
 {: .field .narrow}
 <br>
 Follow me on [Twitter][twit] and be the first to know when I update this page!

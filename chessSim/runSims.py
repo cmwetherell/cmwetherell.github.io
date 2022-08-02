@@ -13,7 +13,7 @@ from tqdm import tqdm
 import time
 from collections import Counter
 
-from simOlympiad import main as simOlympiad
+from simOlympiadW import main as simOlympiad
 
 def main():
 
@@ -52,7 +52,7 @@ def main():
 
     print('dumping')
 
-    pickle.dump(winsByRound, open( "./chessSim/data/sims/olympiad44.p", "wb" ) ) #Save simulations
+    pickle.dump(winsByRound, open( "./chessSim/data/sims/olympiad44W.p", "wb" ) ) #Save simulations
 
     print('done dumping')
     # print(winsByRound)
