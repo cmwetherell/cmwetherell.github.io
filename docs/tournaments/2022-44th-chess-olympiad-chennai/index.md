@@ -65,7 +65,7 @@ justify-content: center;
 
 ### Gukesh D continues dominance, but India 2 finally stumbles
 
-After today's matches we have our first sole leader of the event - Armenia! Tomorrow they will play the second place team, and still the favorite accoridng to my predictions, the United States.
+After today's matches we have our first sole leader of the event - Armenia! After the rest day, they will play the second place team and still the favorite accoridng to my predictions, the United States.
 
 Gukesh D has continues his incredible streak, winning his first six games. His current tournemanet performance rating is 3329, which would shatter the [record of 3103][record] if he is able to continue. It's all a tall order to continue a performance like this for five more rounds, and losing just one game will drop him well below 3000 TPR.
 
