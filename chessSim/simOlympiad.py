@@ -832,7 +832,7 @@ def main(nSim):
     # print('beginning next round', max(matchSummary['round']))
     # print(teamSummary.shape[0],'number of teams in beginning')
 
-    print(teamSummary.to_string())
+    # print(teamSummary.to_string())
 
     #TODO create first round pairings, code that folows simulates remaining rounds only
 
