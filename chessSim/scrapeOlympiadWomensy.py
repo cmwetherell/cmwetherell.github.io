@@ -125,6 +125,7 @@ def main():
             'http://chess-results.com/tnr653632.aspx?lan=1&art=2&rd=4&flag=30',
             'http://chess-results.com/tnr653632.aspx?lan=1&art=2&rd=5&flag=30',
             'http://chess-results.com/tnr653632.aspx?lan=1&art=2&rd=6&flag=30',
+            'http://chess-results.com/tnr653632.aspx?lan=1&art=2&rd=7&flag=30',
 
     ]
 
