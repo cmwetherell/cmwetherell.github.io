@@ -31,7 +31,13 @@ def chessMLPred(model, whiteElo, blackElo):
 
 def getIS10(team, matchSummary):
     teamMatches = matchSummary[matchSummary.playerTeam == team].sort_values(by = ['mpTotalOpp', 'ISi'], ascending = [False, False])
-    return teamMatches.ISi[0:9].sum() #IS(10)
+
+    nOpp = teamMatches.shape[0]
+    # if team == "India 2":
+    #     print(teamMatches)
+    #     print(teamMatches.ISi[0:(nOpp-1)])
+    #     print(teamMatches.ISi[0:(nOpp-1)].sum())
+    return teamMatches.ISi[0:(nOpp-1)].sum() #IS(10)
 
 def getGP(team, matchSummary):
     teamMatches = matchSummary[matchSummary.playerTeam == team].sort_values(by = ['mpTotalOpp', 'ISi'], ascending = [False, False])
@@ -39,7 +45,8 @@ def getGP(team, matchSummary):
 
 def getMP10(team, matchSummary):
     teamMatches = matchSummary[matchSummary.playerTeam == team].sort_values(by = ['mpTotalOpp', 'ISi'], ascending = [False, False])
-    return teamMatches.mpTotalOpp[0:9].sum() #MP(10)
+    nOpp = teamMatches.shape[0]
+    return teamMatches.mpTotalOpp[0:(nOpp-1)].sum() #MP(10)
 
 def pairing(teams: list = [], usedTeams = [], initPass = False):
     """
@@ -718,6 +725,9 @@ def playMatch(matchTeams, teams, players, model):
 
     newGames['result'] = results
 
+    # newGames.loc[newGames.whiteName == 'Gukesh D.', 'result'] = 1
+    # newGames.loc[newGames.blackName == 'Gukesh D.', 'result'] = 0
+
     return newGames
 
 
@@ -935,9 +945,9 @@ def main(nSim):
 
             matchups = makeHappyPools(topPools, bottomPools, medianPool, previousMatchups)
 
-            if pairingRound == 6:
-                # print(bottomPools, ' this is the bottom')
-                print(matchups)
+            # if pairingRound == 6:
+            #     # print(bottomPools, ' this is the bottom')
+            #     print(matchups)
             # print('number of matches made', len(matchups))
 # 
         else: raise Exception("Pairing round number error (<1)")
@@ -971,7 +981,7 @@ def main(nSim):
 
     # print(a.to_string())
     # print(a.mpTotal.sum())
-    return a.team.iloc[0]
+    return (a.team.iloc[0], a.team.iloc[1], a.team.iloc[2])
 
     # print(a)
     # print(b.sort_values(by = 'mpTotal', ascending = False))

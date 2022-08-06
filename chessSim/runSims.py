@@ -12,8 +12,9 @@ import pickle
 from tqdm import tqdm
 import time
 from collections import Counter
+from multiprocessing import set_start_method
 
-from simOlympiadW import main as simOlympiad
+from simOlympiad import main as simOlympiad
 
 def main():
 
@@ -37,16 +38,14 @@ def main():
 
     print("--- %s seconds ---" % (time.time() - start_time))
 
-    winsByRound.append(results)
+    winners = [winner for winner, second, third in results]
+    seconds = [second for winner, second, third in results]
+    thirds = [third for winner, second, third in results]
 
-    j=0
-    for winners in winsByRound:
-
-        ct = Counter(winners)
-        for key in ct:
-            ct[key] /= (nSims / 100)
-        print('Round ', j , 'results', ct)
-        j+=1
+    ct = Counter(winners)
+    for key in ct:
+        ct[key] /= (nSims / 100)
+    print('Round ', 7 , 'results', ct)
 
         # start_time = time.time()
 
@@ -65,6 +64,7 @@ def main():
 
 
 if __name__=="__main__":
+    set_start_method("spawn")
     main()
 
 # current = pd.read_csv("./chessSim/data/candidatesGames.csv")

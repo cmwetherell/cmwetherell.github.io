@@ -39,12 +39,17 @@ def main():
     players.columns = players.iloc[0]
     players = players.drop(players.index[0])
     # print(players)
+    players.loc[players['rtg+/-'].isnull(), 'rtg+/-'] = 0
     players.Rtg = players.Rtg.astype(int)
-    players.loc[players.Rtg==0, 'Rtg'] = 1700
+    players['dR'] = players['rtg+/-'].astype(int) / 10
+    players.loc[players.Rtg==0, 'Rtg'] = players.Rp.astype(int)
+    players.loc[players.Rtg==0, 'Rtg'] = 1200
+    players.Rtg = round(players.Rtg + players['dR']).astype(int)
+    # players.Rtg = players.Rp
     players.to_csv('./chessSim/data/olympiad/players2022.csv', index = False)
     # print(players)
     
-    #  make teams
+    # make teams
     teamURL = 'http://chess-results.com/tnr653631.aspx?lan=1&art=32&turdet=YES&flag=30&zeilen=99999'
 
     teams = pd.read_html(requests.get(teamURL, verify = False,
@@ -125,6 +130,8 @@ def main():
             'http://chess-results.com/tnr653631.aspx?lan=1&art=2&rd=4&flag=30',
             'http://chess-results.com/tnr653631.aspx?lan=1&art=2&rd=5&flag=30',
             'http://chess-results.com/tnr653631.aspx?lan=1&art=2&rd=6&flag=30',
+            'http://chess-results.com/tnr653631.aspx?lan=1&art=2&rd=7&flag=30',
+            'http://chess-results.com/tnr653631.aspx?lan=1&art=2&rd=8&flag=30',
     ]
 
     i = 1
