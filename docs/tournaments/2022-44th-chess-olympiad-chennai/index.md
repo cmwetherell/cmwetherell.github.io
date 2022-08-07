@@ -65,7 +65,7 @@ justify-content: center;
 
 ### Uzbekistan in front with two rounds to go
 
-The young Uzbek's have emerged as favorites to win the Olympiad with just two rounds to go, after their impressive match-victory over the tournament leading Armenian's. In round 10 we'll see one of the most exciting matches of the event: Uzbekistan vs. India 2. That means Gukesh (with white) vs Abdusattorov. Grab your popcorn!
+The young Uzbek's have emerged as favorites to win the Olympiad with just two rounds to go after their impressive match-victory over the tournament leading Armenian's. In round 10 we'll see one of the most exciting matches of the event: Uzbekistan vs. India 2. That means Gukesh (with white) vs Abdusattorov. Grab your popcorn!
 
 Keeping my comments light today, but I'll continue to update this page after every round so we can track how likely each country is to win. I plan to make predictions available for each teams chances of medaling, and hope to do that soon!
 
