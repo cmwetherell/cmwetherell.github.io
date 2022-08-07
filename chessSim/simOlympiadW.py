@@ -972,7 +972,7 @@ def main(nSim):
     # print(a.to_string())
     # print(a.mpTotal.sum())
     # print(a.team.iloc[0])
-    return a.team.iloc[0]
+    return (a.team.iloc[0], a.team.iloc[1], a.team.iloc[2])
 
     # print(a)
     # print(b.sort_values(by = 'mpTotal', ascending = False))

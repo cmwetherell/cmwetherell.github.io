@@ -14,7 +14,7 @@ import time
 from collections import Counter
 from multiprocessing import set_start_method
 
-from simOlympiad import main as simOlympiad
+from simOlympiadW import main as simOlympiad
 
 def main():
 
@@ -37,6 +37,7 @@ def main():
         results =  p.map(simOlympiad, range(0,nSims))
 
     print("--- %s seconds ---" % (time.time() - start_time))
+    # print(results)
 
     winners = [winner for winner, second, third in results]
     seconds = [second for winner, second, third in results]
@@ -45,13 +46,13 @@ def main():
     ct = Counter(winners)
     for key in ct:
         ct[key] /= (nSims / 100)
-    print('Round ', 7 , 'results', ct)
+    print('Round ', 9 , 'results', ct)
 
         # start_time = time.time()
 
     print('dumping')
 
-    pickle.dump(winsByRound, open( "./chessSim/data/sims/olympiad44W.p", "wb" ) ) #Save simulations
+    pickle.dump(winners, open( "./chessSim/data/sims/olympiad44W.p", "wb" ) ) #Save simulations
 
     print('done dumping')
     # print(winsByRound)
