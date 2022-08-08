@@ -279,6 +279,7 @@ def makeHappyPools(topPools, bottomPools, medianPool, prevMatches):
             # print(teamsPlayedALl)
             
             for team in teamsPlayedALl:
+                # print(team)
 
                 pool.remove(team) # Once we float it to the next pool, its no longer in current pool
 
@@ -288,17 +289,23 @@ def makeHappyPools(topPools, bottomPools, medianPool, prevMatches):
                 while not foundValidOpp: #check if floated team has played all opponents in the next pool
                     # print('whileID: sedfsadf')
                     if oppIterator < len(allPools[(poolNumber+poolIterator)]):
+                        # print(allPools[(poolNumber+poolIterator)])
                         opp = allPools[(poolNumber+poolIterator)][oppIterator]
+                        # print(opp, 'try opp')
                         remainingNextPool = [x for x in allPools[(poolNumber+poolIterator)] if x != opp]
+                        
                         if (team, opp) not in prevMatches:
+                            # print(team, opp)
                             if pairingFast(remainingNextPool, prevMatches) is not None:
+                                # print(team, opp)
                                 floatedMatches.add((team, opp))
                                 foundValidOpp = True
                                 allPools[(poolNumber+poolIterator)].remove(opp)
+                        oppIterator += 1
                     elif oppIterator >= len(allPools[(poolNumber+poolIterator)]): # If he has, go to the next pool since this team has to be floated, bec they already played all teams in their own pool too
                         poolIterator +=1
                         oppIterator = 0
-                    oppIterator += 1
+                   
 
             if len(pool) % 2 > 0:
                 # print(len(pool), 'this is the length of the pool')
@@ -387,10 +394,11 @@ def makeHappyPools(topPools, bottomPools, medianPool, prevMatches):
                                         floatedMatches.add((floater, opp))
                                         foundValidOpp = True
                                         allPools[(poolNumber+poolIterator)].remove(opp)
+                                oppIterator += 1
                             elif oppIterator >= len(allPools[(poolNumber+poolIterator)]): # If he has, go to the next pool since this team has to be floated, bec they already played all teams in their own pool too
                                 poolIterator +=1
                                 oppIterator = 0
-                            oppIterator += 1
+                            
 
 
 
@@ -443,10 +451,11 @@ def makeHappyPools(topPools, bottomPools, medianPool, prevMatches):
                                 floatedMatches.add((team, opp))
                                 foundValidOpp = True
                                 allPools[(poolNumber-poolIterator)].remove(opp)
+                        oppIterator += 1
                     elif oppIterator >= len(allPools[(poolNumber-poolIterator)]): # If he has, go to the next pool since this team has to be floated, bec they already played all teams in their own pool too
                         poolIterator +=1
                         oppIterator = 0
-                    oppIterator += 1
+                    
             
 
             if len(pool) % 2 > 0:
@@ -532,10 +541,11 @@ def makeHappyPools(topPools, bottomPools, medianPool, prevMatches):
                                         floatedMatches.add((floater, opp))
                                         foundValidOpp = True
                                         allPools[(poolNumber-poolIterator)].remove(opp)
+                                oppIterator += 1
                             elif oppIterator >= len(allPools[(poolNumber-poolIterator)]): # If he has, go to the next pool since this team has to be floated, bec they already played all teams in their own pool too
                                 poolIterator +=1
                                 oppIterator = 0
-                            oppIterator += 1
+                            
 
 
 

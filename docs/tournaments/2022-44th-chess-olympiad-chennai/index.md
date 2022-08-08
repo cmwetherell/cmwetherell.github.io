@@ -100,18 +100,15 @@ These predictions brought to you by:
 
 
 **44th Chess Olympiad Womens Predictions**
-*After Round 9*
+*After Round 10*
 
-| Country                  |   Win % |
-|:-------------------------|--------:|
-| India      |    47.3 |
-| Georgia    |    25.0 |
-| Poland     |    14.8 |
-| Ukraine    |     8.1 |
-| Kazakhstan |     2.3 |
-| Azerbaijan |     1.2 |
-| Armenia    |     0.8 |
-| Germany    |     0.5 |
+| Country    |   Win % |
+|:-----------|--------:|
+| India      |    74.9 |
+| Ukraine    |    11.3 |
+| Poland     |     7.7 |
+| Azerbaijan |     3.2 |
+| Georgia    |     2.9 |
 {: .field .narrow}
 <br>
 Follow me on [Twitter][twit] and be the first to know when I update this page!
