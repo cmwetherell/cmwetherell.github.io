@@ -132,6 +132,9 @@ def main():
             'http://chess-results.com/tnr653631.aspx?lan=1&art=2&rd=6&flag=30',
             'http://chess-results.com/tnr653631.aspx?lan=1&art=2&rd=7&flag=30',
             'http://chess-results.com/tnr653631.aspx?lan=1&art=2&rd=8&flag=30',
+            'http://chess-results.com/tnr653631.aspx?lan=1&art=2&rd=9&flag=30',
+            'http://chess-results.com/tnr653631.aspx?lan=1&art=2&rd=10&flag=30',
+            
     ]
 
     i = 1
@@ -180,6 +183,9 @@ def main():
 
         results.loc[results.playerTeam == 'India *)', 'playerTeam'] = 'India'
         results.loc[results.oppTeam == 'India *)', 'oppTeam'] = 'India'
+
+        results.loc[results.playerTeam == 'India 2 *)', 'playerTeam'] = 'India 2'
+        results.loc[results.oppTeam == 'India 2 *)', 'oppTeam'] = 'India 2'
 
         results = results[['playerTeam', 'oppTeam', 'round', 'gp']]
 
