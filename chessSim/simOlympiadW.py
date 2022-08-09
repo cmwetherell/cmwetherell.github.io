@@ -977,13 +977,22 @@ def main(nSim):
 
     a, b = summarizeResults(games, teams, players, current)
 
-    # print(b[b.playerTeam=='Russia'])
+    # print(b[b.playerTeam=='Ukraine'])
+    # print(b.loc[(b.playerTeam=="Ukraine") & (b['round'] == 11), "mp"])
+    # print(b.loc[(b.playerTeam=="Ukraine") & (b['round'] == 11), "mp"].values[0])
 
     # print(a.to_string())
     # print(a.mpTotal.sum())
     # print(a.team.iloc[0])
-    return (a.team.iloc[0], a.team.iloc[1], a.team.iloc[2])
+    if b.loc[(b.playerTeam=="Ukraine") & (b['round'] == 11), "mp"].values[0] == 2:
+        if b.loc[(b.playerTeam=="India") & (b['round'] == 11), "mp"].values[0]== 0:
+            z = a.reset_index(drop = True).team
+            print(z[z == "India"].index[0])
 
+    
+            return (a.team.iloc[0], a.team.iloc[1], a.team.iloc[2])
+    
+    return (None, None, None)
     # print(a)
     # print(b.sort_values(by = 'mpTotal', ascending = False))
 
