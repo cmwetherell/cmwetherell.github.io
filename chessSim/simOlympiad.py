@@ -989,7 +989,7 @@ def main(nSim):
 
     # print(b[b.playerTeam=='Russia'])
 
-    # print(a.to_string())
+    print(a.to_string())
     # print(a.mpTotal.sum())
     return (a.team.iloc[0], a.team.iloc[1], a.team.iloc[2])
 

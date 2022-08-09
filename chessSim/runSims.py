@@ -23,7 +23,7 @@ def main():
 
 # ##python poolOdds.py 100 True <- terminal command to get results for 100 sims with new pool draws for GP2
 
-    nSims = 1000
+    nSims = 500
     if len(terminalArgs) > 1:
         nSims = int(terminalArgs[1])
     
@@ -46,13 +46,13 @@ def main():
     ct = Counter(winners)
     for key in ct:
         ct[key] /= (nSims / 100)
-    print('Round ', 9 , 'results', ct)
+    print('Round ', 11 , 'results', ct)
 
         # start_time = time.time()
 
     print('dumping')
 
-    pickle.dump(winners, open( "./chessSim/data/sims/olympiad44W.p", "wb" ) ) #Save simulations
+    # pickle.dump(winners, open( "./chessSim/data/sims/olympiad44W.p", "wb" ) ) #Save simulations
 
     print('done dumping')
     # print(winsByRound)
