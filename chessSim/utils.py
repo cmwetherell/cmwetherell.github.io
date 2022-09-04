@@ -11,6 +11,9 @@ from norwayChess import getNorway
 from superbetClassic import Superbet
 from superbetClassic import getSuperbet
 
+from sinquefieldCup import SCup
+from sinquefieldCup import getPlayers
+
 import pandas as pd
 import plotly
 import plotly.express as px
@@ -81,6 +84,13 @@ def simCandidatesTournament(games): #_ is because map has to pass an argument to
     tournament = Candidates(candidates, games)
     tournament.simCandidates()
     return tournament.winner, tournament.second, tournament.tie
+
+
+def simSCup(games): #_ is because map has to pass an argument to the function
+    players = getPlayers()
+    tournament = SCup(players, games)
+    tournament.simCup()
+    return tournament.winner
 
 def simNorway(_): #_ is because map has to pass an argument to the function
     players = getNorway()
