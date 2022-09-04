@@ -974,7 +974,7 @@ def main(nSim):
             newGames['EloAvg'] =((newGames.whiteElo + newGames.blackElo) / 2 ).astype(int)
             newGamesList.append(newGames)
 
-        print(matchups)
+        # print(matchups)
         # print(newGamesList, 'new games')
         
         games = pd.concat([games] + newGamesList)
@@ -989,7 +989,9 @@ def main(nSim):
 
     # print(b[b.playerTeam=='Russia'])
 
-    print(a.to_string())
+    # print(a.to_string())
+
+    
     # print(a.mpTotal.sum())
     return (a.team.iloc[0], a.team.iloc[1], a.team.iloc[2])
 
