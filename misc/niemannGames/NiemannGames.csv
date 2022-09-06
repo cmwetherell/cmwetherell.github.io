@@ -1,0 +1,318 @@
+﻿Game,White Player,whiteElo,Black Player,blackElo,Moves,ECO,Site,Year,Result,HansWhite,HansResult,HansElo,oppElo,EloDiff,expPoints,residual
+1,"Carlsen, Magnus",2861,"Niemann, Hans Moke",2688,57,E20,Saint Louis,2022,0,0,1,2688,2861,-173,0.27,0.73
+2,"Niemann, Hans Moke",2688,"Mamedyarov, Shakhriyar",2757,49,A28,Saint Louis,2022,1,1,1,2688,2757,-69,0.4,0.6
+3,"Niemann, Hans Moke",2688,"Aronian, Levon",2759,50,C67,Saint Louis,2022,0.5,1,0.5,2688,2759,-71,0.4,0.1
+4,"Niemann, Hans Moke",2687,"Idani, Pouya",2641,46,B51,,2022,1,1,1,2687,2641,46,0.56,0.44
+5,"Kuzubov, Yuriy",2644,"Niemann, Hans Moke",2687,54,E10,,2022,0.5,0,0.5,2687,2644,43,0.55,-0.05
+6,"Niemann, Hans Moke",2687,"Maghsoodloo, Parham",2701,98,E10,,2022,0.5,1,0.5,2687,2701,-14,0.48,0.02
+7,"Kobalia, Mihail",2578,"Niemann, Hans Moke",2687,33,B31,,2022,0,0,1,2687,2578,109,0.64,0.36
+8,"Niemann, Hans Moke",2687,"Sanal, Vahap",2570,55,A13,,2022,0,1,0,2687,2570,117,0.65,-0.65
+9,"Niemann, Hans Moke",2688,"Huschenbeth, Niclas",2610,82,B90,Germany,2022,0.5,1,0.5,2688,2610,78,0.6,-0.1
+10,"Jones, Gawain C",2652,"Niemann, Hans Moke",2688,34,C45,Germany,2022,0,0,1,2688,2652,36,0.54,0.46
+11,"Grandelius, Nils",2655,"Niemann, Hans Moke",2688,59,C84,Germany,2022,0.5,0,0.5,2688,2655,33,0.54,-0.04
+12,"Niemann, Hans Moke",2688,"Caruana, Fabiano",2783,77,C53,Germany,2022,0,1,0,2688,2783,-95,0.37,-0.37
+13,"Keymer, Vincent",2686,"Niemann, Hans Moke",2688,61,A05,Germany,2022,0.5,0,0.5,2688,2686,2,0.5,0
+14,"Nguyen, Thai Dai Van",2610,"Niemann, Hans Moke",2678,32,E73,Armenia,2022,0.5,0,0.5,2678,2610,68,0.59,-0.09
+15,"Niemann, Hans Moke",2678,"Martirosyan, Haik M.",2656,60,C53,Armenia,2022,1,1,1,2678,2656,22,0.52,0.48
+16,"Donchenko, Alexander",2602,"Niemann, Hans Moke",2678,31,E01,Armenia,2022,1,0,0,2678,2602,76,0.6,-0.6
+17,"Niemann, Hans Moke",2678,"Petrosyan, Manuel",2638,68,C55,Armenia,2022,0.5,1,0.5,2678,2638,40,0.55,-0.05
+18,Nihal Sarin,2654,"Niemann, Hans Moke",2678,55,B13,Armenia,2022,0.5,0,0.5,2678,2654,24,0.52,-0.02
+19,"Niemann, Hans Moke",2678,"Ter-Sahakyan, Samvel",2640,49,C42,Armenia,2022,0,1,0,2678,2640,38,0.54,-0.54
+20,"Gharibyan, Mamikon",2487,"Niemann, Hans Moke",2678,42,E94,Armenia,2022,0,0,1,2678,2487,191,0.74,0.26
+21,"Niemann, Hans Moke",2678,"Tabatabaei, M. Amin",2650,14,C67,Armenia,2022,0.5,1,0.5,2678,2650,28,0.53,-0.03
+22,"Sargsyan, Shant",2648,"Niemann, Hans Moke",2678,29,E00,Armenia,2022,0.5,0,0.5,2678,2648,30,0.53,-0.03
+23,"Krzyzanowski, Marcin",2535,"Niemann, Hans Moke",2678,78,B10,Prague,2022,0,0,1,2678,2535,143,0.68,0.32
+24,"Niemann, Hans Moke",2678,"Michalik, Peter",2577,67,E10,Prague,2022,1,1,1,2678,2577,101,0.63,0.37
+25,"Niemann, Hans Moke",2678,"Hracek, Zbynek",2564,34,B98,Prague,2022,1,1,1,2678,2564,114,0.65,0.35
+26,"Pechac, Jergus",2598,"Niemann, Hans Moke",2678,30,E56,Prague,2022,0.5,0,0.5,2678,2598,80,0.6,-0.1
+27,"Niemann, Hans Moke",2678,"Sasikiran, Krishnan",2635,36,A20,Prague,2022,1,1,1,2678,2635,43,0.55,0.45
+28,"Keymer, Vincent",2675,"Niemann, Hans Moke",2678,60,E10,Prague,2022,0.5,0,0.5,2678,2675,3,0.5,0
+29,"Niemann, Hans Moke",2678,"Warmerdam, Max",2613,48,D32,Prague,2022,1,1,1,2678,2613,65,0.58,0.42
+30,"Stocek, Jiri",2541,"Niemann, Hans Moke",2678,26,E12,Prague,2022,1,0,0,2678,2541,137,0.68,-0.68
+31,"Niemann, Hans Moke",2678,"Abdusattorov, Nodirbek",2661,49,E49,Prague CZE,2022,0.5,1,0.5,2678,2661,17,0.52,-0.02
+32,"Ponkratov, Pavel",2624,"Niemann, Hans Moke",2656,54,B12,Sharjah,2022,0,0,1,2656,2624,32,0.54,0.46
+33,"Niemann, Hans Moke",2656,"Salem, A.R. Saleh",2690,51,D97,Sharjah,2022,0,1,0,2656,2690,-34,0.45,-0.45
+34,"Deac, Bogdan-Daniel",2671,"Niemann, Hans Moke",2656,31,C67,Sharjah,2022,0.5,0,0.5,2656,2671,-15,0.48,0.02
+35,"Niemann, Hans Moke",2656,"Muradli, Mahammad",2539,31,D31,Sharjah,2022,1,1,1,2656,2539,117,0.65,0.35
+36,"Ganguly, Surya Shekhar",2616,"Niemann, Hans Moke",2656,46,C55,Sharjah,2022,0,0,1,2656,2616,40,0.55,0.45
+37,"Niemann, Hans Moke",2656,"Moroni, Luca Jr",2581,57,D35,Sharjah,2022,1,1,1,2656,2581,75,0.59,0.41
+38,"Vokhidov, Shamsiddin",2536,"Niemann, Hans Moke",2656,37,C67,Sharjah,2022,0.5,0,0.5,2656,2536,120,0.65,-0.15
+39,"Niemann, Hans Moke",2656,"Mammadzada, Gunay",2454,49,B94,Sharjah,2022,1,1,1,2656,2454,202,0.75,0.25
+40,"Van Foreest, Lucas",2572,"Niemann, Hans Moke",2656,32,A50,Sharjah,2022,1,0,0,2656,2572,84,0.61,-0.61
+41,"Niemann, Hans Moke",2642,"Areshchenko, Alexander",2670,43,B51,,2022,1,1,1,2642,2670,-28,0.46,0.54
+42,"Fridman, Daniel",2628,"Niemann, Hans Moke",2642,52,E15,,2022,0.5,0,0.5,2642,2628,14,0.51,-0.01
+43,"Van Foreest, Jorden",2715,"Niemann, Hans Moke",2656,60,C55,Malmo,2022,0.5,0,0.5,2656,2715,-59,0.42,0.08
+44,"Niemann, Hans Moke",2656,"Grandelius, Nils",2635,38,D70,Malmo,2022,0.5,1,0.5,2656,2635,21,0.52,-0.02
+45,"Niemann, Hans Moke",2656,"Shirov, Alexei",2695,59,D12,Malmo,2022,1,1,1,2656,2695,-39,0.45,0.55
+46,"Salem, A.R. Saleh",2690,"Niemann, Hans Moke",2656,43,E48,Malmo,2022,0,0,1,2656,2690,-34,0.45,0.55
+47,"Niemann, Hans Moke",2637,"Erigaisi, Arjun",2675,68,D12,Malmo SWE,2022,1,1,1,2637,2675,-38,0.45,0.55
+48,"Niemann, Hans Moke",2656,Erigaisi Arjun,2675,68,D12,Malmo,2022,1,1,1,2656,2675,-19,0.47,0.53
+49,"Navara, David",2682,"Niemann, Hans Moke",2656,40,C55,Malmo,2022,0.5,0,0.5,2656,2682,-26,0.46,0.04
+50,"Niemann, Hans Moke",2656,"Adams, Michael",2698,49,D36,Malmo,2022,0.5,1,0.5,2656,2698,-42,0.44,0.06
+51,"Niemann, Hans Moke",2637,"Yilmaz, Mustafa",2626,39,B51,Havana,2022,1,1,1,2637,2626,11,0.51,0.49
+52,"Almeida Quintana, Omar",2536,"Niemann, Hans Moke",2637,28,E12,Havana,2022,0.5,0,0.5,2637,2536,101,0.63,-0.13
+53,"Niemann, Hans Moke",2637,"Albornoz Cabrera, Carlos Daniel",2574,55,B95,Havana,2022,1,1,1,2637,2574,63,0.58,0.42
+54,"Quesada Perez, Yasser",2579,"Niemann, Hans Moke",2637,53,A45,Havana,2022,0,0,1,2637,2579,58,0.57,0.43
+55,"Niemann, Hans Moke",2637,"Ganguly, Surya Shekhar",2609,90,A30,Havana,2022,1,1,1,2637,2609,28,0.53,0.47
+56,"Durarbayli, Vasif",2628,"Niemann, Hans Moke",2637,27,C65,Havana,2022,0.5,0,0.5,2637,2628,9,0.5,0
+57,"Niemann, Hans Moke",2637,"Mareco, Sandro",2652,26,E36,Havana,2022,1,1,1,2637,2652,-15,0.48,0.52
+58,"Ortiz Suarez, I.",2533,"Niemann, Hans Moke",2637,34,C77,Havana CUB,2022,0,0,1,2637,2533,104,0.63,0.37
+59,"Ortiz Suarez, Isan Reynaldo",2533,"Niemann, Hans Moke",2637,35,C77,Havana,2022,0,0,1,2637,2533,104,0.63,0.37
+60,"Niemann, Hans Moke",2637,"Quesada Perez, Luis Ernesto",2519,100,C10,Havana,2022,0.5,1,0.5,2637,2519,118,0.65,-0.15
+61,"Niemann, Hans Moke",2637,"Thorhallsson, Throstur",2422,21,A45,Reykjavik,2022,1,1,1,2637,2422,215,0.77,0.23
+62,"Thorfinnsson, Br",2419,"Niemann, Hans Moke",2637,60,A04,Reykjavik ISL,2022,0.5,0,0.5,2637,2419,218,0.77,-0.27
+63,"Thorfinnsson, Bragi",2419,"Niemann, Hans Moke",2637,60,A04,Reykjavik,2022,0.5,0,0.5,2637,2419,218,0.77,-0.27
+64,"Niemann, Hans Moke",2637,"Hedman, Erik",2362,36,B07,,2022,1,1,1,2637,2362,275,0.82,0.18
+65,"Hjartarson, Johann",2465,"Niemann, Hans Moke",2637,27,A20,,2022,1,0,0,2637,2465,172,0.72,-0.72
+66,"Niemann, Hans Moke",2637,"Gretarsson, Hjorvar Steinn",2542,37,B47,,2022,1,1,1,2637,2542,95,0.62,0.38
+67,"Jarmula, Lukasz",2434,"Niemann, Hans Moke",2637,57,C80,,2022,1,0,0,2637,2434,203,0.75,-0.75
+68,"Niemann, Hans Moke",2637,"Beerdsen, Thomas",2496,30,B51,Reykjavik,2022,1,1,1,2637,2496,141,0.68,0.32
+69,"Niemann, Hans Moke",2637,"Beerdsen, Thomas",2496,34,B31,Reykjavik,2022,0.5,1,0.5,2637,2496,141,0.68,-0.18
+70,"Sukandar, Irine Kharisma",2386,"Niemann, Hans Moke",2637,37,B23,Reykjavik,2022,0,0,1,2637,2386,251,0.8,0.2
+71,"Niemann, Hans Moke",2637,"Johansson, CF.",2221,48,B51,Reykjavik ISL,2022,1,1,1,2637,2221,416,0.92,0.08
+72,"Niemann, Hans Moke",2637,"Johansson, Carl Fredrik",2221,39,B51,,2022,1,1,1,2637,2221,416,0.92,0.08
+73,"Hakobyan, Aram",2601,"Niemann, Hans Moke",2642,46,B51,,2022,1,0,0,2642,2601,41,0.55,-0.55
+74,"Niemann, Hans Moke",2642,"Swiercz, Dariusz",2656,75,C88,,2022,0,1,0,2642,2656,-14,0.48,-0.48
+75,"Antipov, M2.",2615,"Niemann, Hans Moke",2642,44,C50,Saint Louis USA,2022,0,0,1,2642,2615,27,0.53,0.47
+76,"Niemann, Hans Moke",2642,"Xiong, Jeffery",2686,45,B51,,2022,0.5,1,0.5,2642,2686,-44,0.44,0.06
+77,"Dragun, K.",2590,"Niemann, Hans Moke",2642,82,C47,Saint Louis USA,2022,1,0,0,2642,2590,52,0.56,-0.56
+78,"Niemann, Hans Moke",2642,"Lenderman, Aleksandr",2600,74,E10,,2022,1,1,1,2642,2600,42,0.55,0.45
+79,"Niemann, Hans Moke",2642,"Sevian, Samuel",2684,48,C81,,2022,0.5,1,0.5,2642,2684,-42,0.44,0.06
+80,"Nyzhnyk, Illya",2674,"Niemann, Hans Moke",2642,58,A28,,2022,0.5,0,0.5,2642,2674,-32,0.46,0.04
+81,"Niemann, Hans Moke",2642,"Robson, Ray",2676,71,A28,,2022,0.5,1,0.5,2642,2676,-34,0.45,0.05
+82,"Niemann, Hans Moke",2645,"Thybo, Jesper Sondergaard",2592,63,A16,Italy,2022,1,1,1,2645,2592,53,0.57,0.43
+83,"Pantzar, Milton",2434,"Niemann, Hans Moke",2645,66,A46,Cattolica ITA,2022,0,0,1,2645,2434,211,0.76,0.24
+84,"Niemann, Hans Moke",2645,"Bharath, Subramaniyam H",2476,25,A04,Cattolica ITA,2022,1,1,1,2645,2476,169,0.71,0.29
+85,"Pantzar, Milton",2434,"Niemann, Hans Moke",2645,66,A46,Italy,2022,0,0,1,2645,2434,211,0.76,0.24
+86,"Niemann, Hans Moke",2645,Bharath Subramaniyam H,2476,25,A04,Italy,2022,1,1,1,2645,2476,169,0.71,0.29
+87,"Niemann, Hans Moke",2645,"Siddharth, Jagadeesh",2344,72,D20,Italy,2022,1,1,1,2645,2344,301,0.84,0.16
+88,"Prraneeth, Vuppala",2417,"Niemann, Hans Moke",2645,36,C84,Cattolica ITA,2022,1,0,0,2645,2417,228,0.78,-0.78
+89,Prraneeth Vuppala,2417,"Niemann, Hans Moke",2645,36,C84,Italy,2022,1,0,0,2645,2417,228,0.78,-0.78
+90,"Niemann, Hans Moke",2645,"Salimova, Nurgyul",2353,49,D11,Italy,2022,1,1,1,2645,2353,292,0.84,0.16
+91,"Ioannidis, Evgenios",2466,"Niemann, Hans Moke",2645,34,D45,Italy,2022,1,0,0,2645,2466,179,0.73,-0.73
+92,"Niemann, Hans Moke",2645,"Formento, Paolo",2382,33,C75,Italy,2022,1,1,1,2645,2382,263,0.81,0.19
+93,"Pulkkinen, Kari",2251,"Niemann, Hans Moke",2645,38,B69,Italy,2022,0,0,1,2645,2251,394,0.91,0.09
+94,"Santos Latasa, J.",2639,"Niemann, Hans Moke",2645,37,B67,Warsaw POL,2021,0,0,1,2645,2639,6,0.5,0.5
+95,"Niemann, Hans Moke",2645,"Harsha, B.",2489,107,A45,Warsaw POL,2021,0.5,1,0.5,2645,2489,156,0.7,-0.2
+96,"Gareev, T.",2573,"Niemann, Hans Moke",2645,58,E34,Warsaw POL,2021,0,0,1,2645,2573,72,0.59,0.41
+97,"Erigaisi, Arjun",2629,"Niemann, Hans Moke",2645,26,B62,Warsaw POL,2021,1,0,0,2645,2629,16,0.51,-0.51
+98,"Niemann, Hans Moke",2680,"Muradli, Mahammad",2571,53,A45,Warsaw,2021,0,1,0,2680,2571,109,0.64,-0.64
+99,"Santos Latasa, J.",2639,"Niemann, Hans Moke",2645,73,C50,Warsaw POL,2021,0,0,1,2645,2639,6,0.5,0.5
+100,"Niemann, Hans Moke",2645,"Sarana, A.",2666,56,B50,Warsaw POL,2021,1,1,1,2645,2666,-21,0.47,0.53
+101,"Niemann, Hans Moke",2645,"Pranesh, M.",2437,60,D30,Sitges ESP,2021,1,1,1,2645,2437,208,0.76,0.24
+102,"Kacharava, Nikolozi",2469,"Niemann, Hans Moke",2645,29,B62,Sitges ESP,2021,1,0,0,2645,2469,176,0.72,-0.72
+103,"Niemann, Hans Moke",2645,"Kurmann, O.",2466,48,E06,Sitges ESP,2021,1,1,1,2645,2466,179,0.73,0.27
+104,"Niemann, Hans Moke",2645,Pranesh M,2437,60,A15,Sitges,2021,1,1,1,2645,2437,208,0.76,0.24
+105,"Kacharava, Nikolozi",2469,"Niemann, Hans Moke",2645,29,B62,Sitges,2021,1,0,0,2645,2469,176,0.72,-0.72
+106,"Niemann, Hans Moke",2645,"Puranik, Abhimanyu",2604,38,D70,Sitges,2021,0,1,0,2645,2604,41,0.55,-0.55
+107,"Safarli, E.",2579,"Niemann, Hans Moke",2645,50,C88,Sitges ESP,2021,0.5,0,0.5,2645,2579,66,0.58,-0.08
+108,"Safarli, Eltaj",2579,"Niemann, Hans Moke",2645,47,C88,Sitges,2021,0.5,0,0.5,2645,2579,66,0.58,-0.08
+109,"Sankalp, Gupta",2504,"Niemann, Hans Moke",2645,75,B62,Sitges ESP,2021,0,0,1,2645,2504,141,0.68,0.32
+110,Sankalp Gupta,2504,"Niemann, Hans Moke",2645,75,B62,Sitges,2021,0,0,1,2645,2504,141,0.68,0.32
+111,"Niemann, Hans Moke",2645,"Van Foreest, Lucas",2530,47,A13,Sitges,2021,0.5,1,0.5,2645,2530,115,0.65,-0.15
+112,"Ayats Llobera, Gerard",2448,"Niemann, Hans Moke",2645,60,C72,Sitges,2021,0,0,1,2645,2448,197,0.75,0.25
+113,"Niemann, Hans Moke",2645,"Meister, Peter",2359,25,B06,Sitges,2021,1,1,1,2645,2359,286,0.83,0.17
+114,"Jumabayev, R.",2631,"Niemann, Hans Moke",2645,38,A50,Dubai UAE,2021,1,0,0,2645,2631,14,0.51,-0.51
+115,"Sjugirov, Sanan",2663,"Niemann, Hans Moke",2635,29,D43,Tashkent,2021,0.5,0,0.5,2635,2663,-28,0.46,0.04
+116,"Muradli, Mahammad",2501,"Niemann, Hans Moke",2635,79,D30,Tashkent UZB,2021,0,0,1,2635,2501,134,0.67,0.33
+117,"Muradli, Mahammad",2501,"Niemann, Hans Moke",2635,74,D43,Tashkent,2021,0,0,1,2635,2501,134,0.67,0.33
+118,"Niemann, Hans Moke",2635,"Dzhumaev, M.",2445,28,B07,Tashkent UZB,2021,1,1,1,2635,2445,190,0.74,0.26
+119,"Niemann, Hans Moke",2635,"Vakhidov, Jakhongir",2557,32,D96,Tashkent,2021,1,1,1,2635,2557,78,0.6,0.4
+120,"Bernadskiy, Vitaliy",2592,"Niemann, Hans Moke",2635,58,C28,Tashkent,2021,1,0,0,2635,2592,43,0.55,-0.55
+121,"Sindarov, Javokhir",2587,"Niemann, Hans Moke",2635,17,C55,Tashkent,2021,0.5,0,0.5,2635,2587,48,0.56,-0.06
+122,"Niemann, Hans Moke",2635,"Vokhidov, Shamsiddin",2521,55,E10,Tashkent,2021,1,1,1,2635,2521,114,0.65,0.35
+123,"Niemann, Hans Moke",2635,"Utegaliyev, Azamat",2488,30,A40,Tashkent,2021,0.5,1,0.5,2635,2488,147,0.69,-0.19
+124,"Koziak, Vitali",2407,"Niemann, Hans Moke",2635,48,B57,Tashkent,2021,0,0,1,2635,2407,228,0.78,0.22
+125,"Niemann, Hans Moke",2635,"Rakhmatullaev, Almas",2183,40,E10,Tashkent UZB,2021,1,1,1,2635,2183,452,0.93,0.07
+126,"Xiong, Jeffery",2687,"Niemann, Hans Moke",2635,78,A48,Riga LAT,2021,0.5,0,0.5,2635,2687,-52,0.43,0.07
+127,"Sadhwani, Raunak",2609,"Niemann, Hans Moke",2638,75,C92,Riga,2021,0.5,0,0.5,2638,2609,29,0.53,-0.03
+128,"Niemann, Hans Moke",2638,"Xiong, Jeffery",2700,25,A06,Riga,2021,0,1,0,2638,2700,-62,0.41,-0.41
+129,"Wojtaszek, Radoslaw",2691,"Niemann, Hans Moke",2638,31,D47,Riga,2021,0.5,0,0.5,2638,2691,-53,0.43,0.07
+130,"Artemiev, Vladislav",2699,"Niemann, Hans Moke",2638,51,D47,Riga,2021,0.5,0,0.5,2638,2699,-61,0.42,0.08
+131,"Niemann, Hans Moke",2638,"Sindarov, Javokhir",2587,40,A05,Riga,2021,1,1,1,2638,2587,51,0.56,0.44
+132,"Bjerre, Jonas Buhl",2569,"Niemann, Hans Moke",2638,57,C84,Riga,2021,0,0,1,2638,2569,69,0.59,0.41
+133,"Niemann, Hans Moke",2638,"Ter Sahakyan, S.",2607,48,E36,Riga LAT,2021,0.5,1,0.5,2638,2607,31,0.53,-0.03
+134,"Niemann, Hans Moke",2638,"Ter-Sahakyan, Samvel",2607,48,E36,Riga,2021,0.5,1,0.5,2638,2607,31,0.53,-0.03
+135,"Goryachkina, Aleksandra",2602,"Niemann, Hans Moke",2638,45,D45,Riga,2021,0.5,0,0.5,2638,2602,36,0.54,-0.04
+136,"Niemann, Hans Moke",2638,"Nguyen, Thai Dai Van",2577,76,A05,Riga LAT,2021,0.5,1,0.5,2638,2577,61,0.58,-0.08
+137,"Niemann, Hans Moke",2638,"Nguyen, Thai Dai Van",2577,76,A05,Riga,2021,0.5,1,0.5,2638,2577,61,0.58,-0.08
+138,"Aronian, Levon",2782,"Niemann, Hans Moke",2638,42,C55,Riga,2021,1,0,0,2638,2782,-144,0.31,-0.31
+139,"Niemann, Hans Moke",2638,"Vachier Lagrave, M.",2763,33,A04,Riga LAT,2021,0.5,1,0.5,2638,2763,-125,0.33,0.17
+140,"Niemann, Hans Moke",2638,"Vachier-Lagrave, Maxime",2763,33,A04,Riga,2021,0.5,1,0.5,2638,2763,-125,0.33,0.17
+141,"Petrov, Martin",2533,"Niemann, Hans Moke",2609,46,C55,Plovdiv,2021,0.5,0,0.5,2609,2533,76,0.6,-0.1
+142,"Niemann, Hans Moke",2609,"Sarana, Alexey",2635,69,A21,Plovdiv,2021,0.5,1,0.5,2609,2635,-26,0.46,0.04
+143,"Puranik, Abhimanyu",2568,"Niemann, Hans Moke",2609,43,A05,Plovdiv,2021,0.5,0,0.5,2609,2568,41,0.55,-0.05
+144,"Niemann, Hans Moke",2609,"Ochedzan, Tymon",2300,36,E91,Plovdiv,2021,1,1,1,2609,2300,309,0.85,0.15
+145,"Muradli, Mahammad",2487,"Niemann, Hans Moke",2609,44,A20,Plovdiv,2021,0.5,0,0.5,2609,2487,122,0.66,-0.16
+146,"Niemann, Hans Moke",2609,"Ioannidis, Evgenios",2445,56,E50,Plovdiv,2021,0.5,1,0.5,2609,2445,164,0.71,-0.21
+147,"Bashirli, Nail",2382,"Niemann, Hans Moke",2609,31,B30,Plovdiv,2021,0,0,1,2609,2382,227,0.78,0.22
+148,"Niemann, Hans Moke",2609,"Papadiamandis, Elliot",2404,64,A05,Plovdiv,2021,0.5,1,0.5,2609,2404,205,0.75,-0.25
+149,"Urh, Zala",2234,"Niemann, Hans Moke",2609,46,E17,Plovdiv,2021,0,0,1,2609,2234,375,0.9,0.1
+150,"Niemann, Hans Moke",2609,"Adhiban, Baskaran",2672,53,D85,Sharjah,2021,0.5,1,0.5,2609,2672,-63,0.41,0.09
+151,"Harutyunian, T.",2573,"Niemann, Hans Moke",2609,58,D45,Sharjah UAE,2021,0,0,1,2609,2573,36,0.54,0.46
+152,"Niemann, Hans Moke",2609,"Nikolov, Mo",2522,36,E11,Sharjah UAE,2021,1,1,1,2609,2522,87,0.61,0.39
+153,"Abdusattorov, Nodirbek",2648,"Niemann, Hans Moke",2609,45,A28,Sharjah,2021,1,0,0,2609,2648,-39,0.45,-0.45
+154,"Niemann, Hans Moke",2609,"Nisipeanu, Liviu-Dieter",2657,48,D20,Sharjah,2021,0.5,1,0.5,2609,2657,-48,0.43,0.07
+155,"Niemann, Hans Moke",2609,"Amin, Bassem",2704,34,E94,Sharjah,2021,1,1,1,2609,2704,-95,0.37,0.63
+156,"Salem, A.R. Saleh",2679,"Niemann, Hans Moke",2609,31,D43,Sharjah,2021,1,0,0,2609,2679,-70,0.4,-0.4
+157,"Niemann, Hans Moke",2609,"Rios, Cr",2466,45,B30,Sharjah UAE,2021,1,1,1,2609,2466,143,0.68,0.32
+158,"Naiditsch, A.",2663,"Niemann, Hans Moke",2609,14,C92,Sharjah UAE,2021,0.5,0,0.5,2609,2663,-54,0.42,0.08
+159,"Niemann, Hans Moke",2609,"Sanal, V.",2561,68,D11,Vrnjacka Banja SRB,2021,0.5,1,0.5,2609,2561,48,0.56,-0.06
+160,"Rakhmanov, Aleksandr",2661,"Niemann, Hans Moke",2609,35,A08,Vrnjachka Banya,2021,0.5,0,0.5,2609,2661,-52,0.43,0.07
+161,"Niemann, Hans Moke",2609,"Damjanovic, Vuk",2395,67,E10,Vrnjacka Banja SRB,2021,1,1,1,2609,2395,214,0.76,0.24
+162,"Draskovic, L.",2470,"Niemann, Hans Moke",2609,44,A28,Vrnjacka Banja SRB,2021,0.5,0,0.5,2609,2470,139,0.68,-0.18
+163,"Niemann, Hans Moke",2609,"Stojanovic, Da",2483,43,E94,Vrnjacka Banja SRB,2021,0.5,1,0.5,2609,2483,126,0.66,-0.16
+164,"Budisavljevic, Luka",2509,"Niemann, Hans Moke",2609,59,E46,Vrnjacka Banja SRB,2021,0,0,1,2609,2509,100,0.63,0.37
+165,"Niemann, Hans Moke",2609,"Ivic, Velimir",2603,28,E06,Vrnjacka Banja SRB,2021,0.5,1,0.5,2609,2603,6,0.5,0
+166,"Bernadskiy, V.",2611,"Niemann, Hans Moke",2609,35,D12,Vrnjacka Banja SRB,2021,1,0,0,2609,2611,-2,0.5,-0.5
+167,"Niemann, Hans Moke",2609,"Cabarkapa, N.",2474,37,D02,Vrnjacka Banja SRB,2021,1,1,1,2609,2474,135,0.67,0.33
+168,"Indjic, A.",2629,"Niemann, Hans Moke",2609,33,D11,Vrnjacka Banja SRB,2021,0,0,1,2609,2629,-20,0.47,0.53
+169,"Bicer, Atakan Mert",2440,"Niemann, Hans Moke",2609,46,B23,Vrnjacka Banja SRB,2021,0,0,1,2609,2440,169,0.71,0.29
+170,"Erigaisi, Arjun",2597,"Niemann, Hans Moke",2606,91,C88,Guimaraes POR,2021,0,0,1,2606,2597,9,0.5,0.5
+171,"Niemann, Hans Moke",2606,"Vlachos, Anatole",2443,45,E06,Guimaraes POR,2021,1,1,1,2606,2443,163,0.71,0.29
+172,"Warmerdam, Max",2562,"Niemann, Hans Moke",2606,76,C65,Guimaraes POR,2021,1,0,0,2606,2562,44,0.55,-0.55
+173,"Niemann, Hans Moke",2606,"Yankelevich, L.",2412,46,E97,Guimaraes POR,2021,1,1,1,2606,2412,194,0.74,0.26
+174,"Galperin, Platon",2498,"Niemann, Hans Moke",2606,35,E19,Guimaraes POR,2021,0.5,0,0.5,2606,2498,108,0.64,-0.14
+175,"Niemann, Hans Moke",2606,"Campora, D.",2401,45,A20,Guimaraes POR,2021,1,1,1,2606,2401,205,0.75,0.25
+176,"De Schampheleire, G.",2360,"Niemann, Hans Moke",2606,29,E04,Guimaraes POR,2021,0,0,1,2606,2360,246,0.8,0.2
+177,"Niemann, Hans Moke",2606,"Veiga, Jose Francisco R P N",2389,58,E91,Braganca POR,2021,1,1,1,2606,2389,217,0.77,0.23
+178,"Garcia Hernandez, Angel",1843,"Niemann, Hans Moke",2606,19,A45,Guimaraes POR,2021,0,0,1,2606,1843,763,0.99,0.01
+179,"Beerdsen, Thomas",2454,"Niemann, Hans Moke",2606,75,B11,Braganca POR,2021,0.5,0,0.5,2606,2454,152,0.69,-0.19
+180,"Niemann, Hans Moke",2606,"Storme, Isak",2398,38,A20,Braganca POR,2021,1,1,1,2606,2398,208,0.76,0.24
+181,"Eugene, Floryan",2368,"Niemann, Hans Moke",2606,51,C55,Braganca POR,2021,0.5,0,0.5,2606,2368,238,0.79,-0.29
+182,"Niemann, Hans Moke",2606,"Suarez Gomez, Julio",2449,75,C11,Braganca POR,2021,0.5,1,0.5,2606,2449,157,0.7,-0.2
+183,"Niemann, Hans Moke",2606,"Rey Malde, H.",2257,47,E97,Braganca POR,2021,0.5,1,0.5,2606,2257,349,0.88,-0.38
+184,"Monteiro, Paulo Alexandre G",1985,"Niemann, Hans Moke",2606,42,E43,Braganca POR,2021,0,0,1,2606,1985,621,0.98,0.02
+185,"Niemann, Hans Moke",2606,"Liang, Awonder",2587,38,B12,Cherry Hill USA,2021,1,1,1,2606,2587,19,0.52,0.48
+186,"Niemann, Hans Moke",2606,"Rosenthal, Nicholas",2137,30,D30,Cherry Hill USA,2021,1,1,1,2606,2137,469,0.94,0.06
+187,"Lenderman, A.",2607,"Niemann, Hans Moke",2606,29,A45,Cherry Hill USA,2021,1,0,0,2606,2607,-1,0.5,-0.5
+188,"Hungaski, R.",2514,"Niemann, Hans Moke",2606,41,C58,Cherry Hill USA,2021,0,0,1,2606,2514,92,0.62,0.38
+189,"Niemann, Hans Moke",2606,"Gorman, D.",2253,31,A13,Cherry Hill USA,2021,1,1,1,2606,2253,353,0.88,0.12
+190,"Dong, Andy",1954,"Niemann, Hans Moke",2606,31,E34,Cherry Hill USA,2021,0,0,1,2606,1954,652,0.98,0.02
+191,"Niemann, Hans Moke",2606,"Levin, Eric",,48,D37,Cherry Hill USA,2021,1,1,1,2606,0,2606,0.99,0.01
+192,"Ravid, Orren",,"Niemann, Hans Moke",2606,47,A22,Cherry Hill USA,2021,0,0,1,2606,0,2606,0.99,0.01
+193,"Niemann, Hans Moke",2571,"Jacobson, Brandon",2504,71,A20,Saint Louis USA,2021,0.5,1,0.5,2571,2504,67,0.58,-0.08
+194,"Yoo, Christopher Woojin",2479,"Niemann, Hans Moke",2571,54,D90,Saint Louis USA,2021,1,0,0,2571,2479,92,0.62,-0.62
+195,"Niemann, Hans Moke",2571,"Wang, Justin",2467,52,A13,Saint Louis USA,2021,0.5,1,0.5,2571,2467,104,0.63,-0.13
+196,"Li, Ben",2376,"Niemann, Hans Moke",2571,34,E12,Saint Louis USA,2021,0,0,1,2571,2376,195,0.74,0.26
+197,"Niemann, Hans Moke",2571,"Burke, John M",2538,32,A15,Saint Louis USA,2021,0.5,1,0.5,2571,2538,33,0.54,-0.04
+198,"Hong, Andrew",2474,"Niemann, Hans Moke",2571,44,B12,Saint Louis USA,2021,0,0,1,2571,2474,97,0.62,0.38
+199,"Niemann, Hans Moke",2571,"Checa, Nicolas",2552,30,C11,Saint Louis USA,2021,1,1,1,2571,2552,19,0.52,0.48
+200,"Balakrishnan, Praveen",2507,"Niemann, Hans Moke",2571,50,C85,Saint Louis USA,2021,0,0,1,2571,2507,64,0.58,0.42
+201,"Brodsky, David",2455,"Niemann, Hans Moke",2571,42,C55,Saint Louis USA,2021,0.5,0,0.5,2571,2455,116,0.65,-0.15
+202,"Niemann, Hans Moke",2571,Zhou Jianchao,2603,48,A80,Philadelphia USA,2021,0.5,1,0.5,2571,2603,-32,0.46,0.04
+203,"Nyzhnyk, I.",2683,"Niemann, Hans Moke",2571,66,C85,Philadelphia USA,2021,0.5,0,0.5,2571,2683,-112,0.35,0.15
+204,"Burke, John M",2538,"Niemann, Hans Moke",2571,48,C55,Philadelphia USA,2021,0,0,1,2571,2538,33,0.54,0.46
+205,"Niemann, Hans Moke",2571,"Gledura, B.",2629,21,D70,Philadelphia USA,2021,1,1,1,2571,2629,-58,0.42,0.58
+206,"Niemann, Hans Moke",2571,"Liang, Jason",2352,57,D52,Philadelphia USA,2021,1,1,1,2571,2352,219,0.77,0.23
+207,"Sinha, Sahil",2361,"Niemann, Hans Moke",2571,50,E35,Philadelphia USA,2021,0,0,1,2571,2361,210,0.76,0.24
+208,"Niemann, Hans Moke",2571,"Shlyakhtenko, Robert",2370,29,D32,Philadelphia USA,2021,0.5,1,0.5,2571,2370,201,0.75,-0.25
+209,"Morrison, W.",2278,"Niemann, Hans Moke",2571,43,B92,Philadelphia USA,2021,0,0,1,2571,2278,293,0.84,0.16
+210,"Niemann, Hans Moke",2571,"Mahajan, Rushaan",2151,20,E47,Philadelphia USA,2021,1,1,1,2571,2151,420,0.92,0.08
+211,"Niemann, Hans Moke",2567,"Cordova, E.",2590,58,E53,Philadelphia USA,2021,1,1,1,2567,2590,-23,0.47,0.53
+212,"Guo, Arthur",2359,"Niemann, Hans Moke",2567,48,C77,Philadelphia USA,2021,0,0,1,2567,2359,208,0.76,0.24
+213,"Niemann, Hans Moke",2567,"Andriasian, Z.",2581,56,D17,Philadelphia USA,2021,0.5,1,0.5,2567,2581,-14,0.48,0.02
+214,"Niemann, Hans Moke",2567,"Belous, V.",2520,64,B36,Philadelphia USA,2021,0,1,0,2567,2520,47,0.56,-0.56
+215,"Jacobson, Brandon",2491,"Niemann, Hans Moke",2567,33,A06,Philadelphia USA,2021,0,0,1,2567,2491,76,0.6,0.4
+216,"Niemann, Hans Moke",2567,"Asaria, Danial",2318,34,D30,Philadelphia USA,2021,1,1,1,2567,2318,249,0.8,0.2
+217,"Bartell, T.",2363,"Niemann, Hans Moke",2567,38,A23,Philadelphia USA,2021,0.5,0,0.5,2567,2363,204,0.75,-0.25
+218,"Niemann, Hans Moke",2567,"Tian, Eddy",2204,31,D30,Philadelphia USA,2021,1,1,1,2567,2204,363,0.89,0.11
+219,"Katz, Alexander",2398,"Niemann, Hans Moke",2567,34,C55,Las Vegas USA,2021,0,0,1,2567,2398,169,0.71,0.29
+220,"Niemann, Hans Moke",2567,"Nyzhnyk, Illya",2679,30,E73,Las Vegas,2021,0,1,0,2567,2679,-112,0.35,-0.35
+221,"Niemann, Hans Moke",2567,"Guo, Arthur",2359,30,E06,Las Vegas USA,2021,0,1,0,2567,2359,208,0.76,-0.76
+222,"Hakobyan, Aram",2598,"Niemann, Hans Moke",2567,43,D30,Las Vegas USA,2021,0.5,0,0.5,2567,2598,-31,0.46,0.04
+223,"Niemann, Hans Moke",2567,"Shetty, A.",2461,49,D43,Las Vegas USA,2021,1,1,1,2567,2461,106,0.64,0.36
+224,"Ostrovskiy, Al",2422,"Niemann, Hans Moke",2567,48,A13,Las Vegas USA,2021,0,0,1,2567,2422,145,0.69,0.31
+225,"Niemann, Hans Moke",2567,"Wang, Justin",2447,73,E52,Las Vegas USA,2021,0.5,1,0.5,2567,2447,120,0.65,-0.15
+226,"Colas, Joshua",2315,"Niemann, Hans Moke",2567,47,B14,Las Vegas USA,2021,0,0,1,2567,2315,252,0.8,0.2
+227,"Niemann, Hans Moke",2567,"Oberoi, Shelev",2198,34,E73,Las Vegas USA,2021,1,1,1,2567,2198,369,0.89,0.11
+228,"Sukovic, Andrej",2283,"Niemann, Hans Moke",2508,40,C60,Podgorica MNE,2021,0,0,1,2508,2283,225,0.78,0.22
+229,"Niemann, Hans Moke",2508,"Osmak, Iulija",2428,67,D20,Podgorica MNE,2021,1,1,1,2508,2428,80,0.6,0.4
+230,"Bogosavljevic, B.",2523,"Niemann, Hans Moke",2508,49,A15,Podgorica MNE,2021,1,0,0,2508,2523,-15,0.48,-0.48
+231,"Niemann, Hans Moke",2508,"Nikac, P.",2318,30,A80,Podgorica MNE,2021,1,1,1,2508,2318,190,0.74,0.26
+232,"Draskovic, L.",2472,"Niemann, Hans Moke",2508,59,A36,Podgorica MNE,2021,0,0,1,2508,2472,36,0.54,0.46
+233,"Niemann, Hans Moke",2508,"Suleymanli, Aydin",2520,44,B11,Podgorica MNE,2021,0.5,1,0.5,2508,2520,-12,0.48,0.02
+234,"Travadon, Loic",2414,"Niemann, Hans Moke",2508,63,E46,Podgorica MNE,2021,0,0,1,2508,2414,94,0.62,0.38
+235,"Niemann, Hans Moke",2508,"Sanal, V.",2572,39,E60,Podgorica MNE,2021,1,1,1,2508,2572,-64,0.41,0.59
+236,"Girel, Joseph",2310,"Niemann, Hans Moke",2508,53,C77,Podgorica MNE,2021,0,0,1,2508,2310,198,0.75,0.25
+237,"Djukic, Ni",2515,"Niemann, Hans Moke",2508,20,C67,Niksic MNE,2021,0.5,0,0.5,2508,2515,-7,0.49,0.01
+238,"Draskovic, L.",2472,"Niemann, Hans Moke",2508,40,A23,Niksic MNE,2021,0.5,0,0.5,2508,2472,36,0.54,-0.04
+239,"Niemann, Hans Moke",2508,"Kisic, B.",2263,56,D32,Niksic MNE,2021,1,1,1,2508,2263,245,0.8,0.2
+240,"Suleymanli, Aydin",2520,"Niemann, Hans Moke",2508,70,D31,Niksic MNE,2021,0.5,0,0.5,2508,2520,-12,0.48,0.02
+241,"Niemann, Hans Moke",2508,"Sanal, V.",2572,40,A40,Niksic MNE,2021,1,1,1,2508,2572,-64,0.41,0.59
+242,"Bogosavljevic, B.",2523,"Niemann, Hans Moke",2508,75,A08,Niksic MNE,2021,0.5,0,0.5,2508,2523,-15,0.48,0.02
+243,"Niemann, Hans Moke",2508,"Nikcevic, N.",2393,40,D30,Niksic MNE,2021,1,1,1,2508,2393,115,0.65,0.35
+244,"Niemann, Hans Moke",2508,"Potpara, N.",2370,59,E40,Niksic MNE,2021,0.5,1,0.5,2508,2370,138,0.68,-0.18
+245,"Nikac, P.",2318,"Niemann, Hans Moke",2508,51,C55,Niksic MNE,2021,0.5,0,0.5,2508,2318,190,0.74,-0.24
+246,"Gharibyan, Mamikon",2455,"Niemann, Hans Moke",2508,50,E17,Novi Sad SRB,2021,0,0,1,2508,2455,53,0.57,0.43
+247,"Niemann, Hans Moke",2508,"Cvitan, Ena",2263,31,C02,Novi Sad SRB,2021,1,1,1,2508,2263,245,0.8,0.2
+248,"Niemann, Hans Moke",2508,"Nikitenko, M.",2477,64,D17,Novi Sad SRB,2021,1,1,1,2508,2477,31,0.53,0.47
+249,"Dardha, Daniel",2516,"Niemann, Hans Moke",2508,26,A20,Novi Sad SRB,2021,0.5,0,0.5,2508,2516,-8,0.49,0.01
+250,"Niemann, Hans Moke",2508,"Davtyan, Artur",2457,36,E04,Novi Sad SRB,2021,1,1,1,2508,2457,51,0.56,0.44
+251,"Peycheva, Gergana",2229,"Niemann, Hans Moke",2508,39,E35,Novi Sad SRB,2021,0,0,1,2508,2229,279,0.83,0.17
+252,"Niemann, Hans Moke",2508,"Omorjan, Dejan",2329,34,A15,Novi Sad SRB,2021,1,1,1,2508,2329,179,0.73,0.27
+253,"Gharibyan, Mamikon",2455,"Niemann, Hans Moke",2508,85,D38,Novi Sad SRB,2021,0.5,0,0.5,2508,2455,53,0.57,-0.07
+254,"Niemann, Hans Moke",2508,"Fernandez, Dani",2465,40,E11,Novi Sad SRB,2021,0.5,1,0.5,2508,2465,43,0.55,-0.05
+255,"Drazic, S.",2366,"Niemann, Hans Moke",2508,36,B51,Novi Sad SRB,2021,0,0,1,2508,2366,142,0.68,0.32
+256,"Niemann, Hans Moke",2508,"Popchev, M.",2229,24,A80,Novi Sad SRB,2021,1,1,1,2508,2229,279,0.83,0.17
+257,"Shetty, A.",2453,"Niemann, Hans Moke",2508,40,A11,Bassano del Grappa ITA,2021,1,0,0,2508,2453,55,0.57,-0.57
+258,"Niemann, Hans Moke",2508,"Bjerre, Jonas Buhl",2550,58,E04,Bassano del Grappa ITA,2021,0.5,1,0.5,2508,2550,-42,0.44,0.06
+259,"Niemann, Hans Moke",2508,"Yu, Jennifer",2255,28,A21,Bassano del Grappa ITA,2021,1,1,1,2508,2255,253,0.8,0.2
+260,"Dragnev, Valentin",2559,"Niemann, Hans Moke",2508,51,C89,Bassano del Grappa ITA,2021,0.5,0,0.5,2508,2559,-51,0.43,0.07
+261,"Niemann, Hans Moke",2508,"Bernadskiy, V.",2603,62,E92,Bassano del Grappa ITA,2021,0.5,1,0.5,2508,2603,-95,0.37,0.13
+262,"Basso, Pier Luigi",2552,"Niemann, Hans Moke",2508,12,D14,Bassano del Grappa ITA,2021,0.5,0,0.5,2508,2552,-44,0.44,0.06
+263,"Checa, Nicolas",2562,"Niemann, Hans Moke",2508,29,D38,Bassano del Grappa ITA,2021,0,0,1,2508,2562,-54,0.42,0.58
+264,"Niemann, Hans Moke",2508,"Brinovec, David",2262,68,C65,Bassano del Grappa ITA,2021,1,1,1,2508,2262,246,0.8,0.2
+265,"Mameli, G.",2066,"Niemann, Hans Moke",2508,29,C28,Bassano del Grappa ITA,2021,0,0,1,2508,2066,442,0.93,0.07
+266,"Niemann, Hans Moke",2526,"Di Benedetto, Edoardo",2400,59,A45,Bassano del Grappa ITA,2021,0,1,0,2526,2400,126,0.66,-0.66
+267,"Moroni, L.",2552,"Niemann, Hans Moke",2526,37,D43,Bassano del Grappa ITA,2021,1,0,0,2526,2552,-26,0.46,-0.46
+268,"Niemann, Hans Moke",2526,"Sonis, Francesco",2477,66,E10,Bassano del Grappa ITA,2021,0.5,1,0.5,2526,2477,49,0.56,-0.06
+269,"Diermair, A.",2487,"Niemann, Hans Moke",2526,60,A46,Bassano del Grappa ITA,2021,0,0,1,2526,2487,39,0.55,0.45
+270,"Niemann, Hans Moke",2526,"Deuer, Marius",2231,28,C95,Bassano del Grappa ITA,2021,1,1,1,2526,2231,295,0.84,0.16
+271,"Schreiner, Pe",2445,"Niemann, Hans Moke",2526,53,E00,Bassano del Grappa ITA,2021,1,0,0,2526,2445,81,0.6,-0.6
+272,"Niemann, Hans Moke",2526,"Bernadskiy, V.",2599,40,A31,Bassano del Grappa ITA,2021,0,1,0,2526,2599,-73,0.4,-0.4
+273,"Martin Duque, J.",2454,"Niemann, Hans Moke",2526,34,A06,Bassano del Grappa ITA,2021,0,0,1,2526,2454,72,0.59,0.41
+274,"Niemann, Hans Moke",2526,"Pasini, Nicolo",2220,30,A56,Bassano del Grappa ITA,2021,1,1,1,2526,2220,306,0.85,0.15
+275,"Niemann, Hans Moke",2525,"Kotronias, V.",2522,12,E73,Belgrade SRB,2021,1,1,1,2525,2522,3,0.5,0.5
+276,"Rakotomaharo, Fy Antenaina",2422,"Niemann, Hans Moke",2525,16,E46,Belgrade SRB,2021,0,0,1,2525,2422,103,0.63,0.37
+277,"Niemann, Hans Moke",2525,"Travadon, Loic",2413,8,A15,Belgrade SRB,2021,0,1,0,2525,2413,112,0.64,-0.64
+278,"Utegaliyev, A.",2488,"Niemann, Hans Moke",2525,31,B24,Belgrade SRB,2021,0.5,0,0.5,2525,2488,37,0.54,-0.04
+279,"Thybo, Jesper Sondergaard",2569,"Niemann, Hans Moke",2525,18,E00,Belgrade SRB,2021,0.5,0,0.5,2525,2569,-44,0.44,0.06
+280,"Niemann, Hans Moke",2525,"Pranav, Anand",2381,66,D41,Belgrade SRB,2021,0.5,1,0.5,2525,2381,144,0.68,-0.18
+281,"Mohammad, Nubairshah Shaikh",2445,"Niemann, Hans Moke",2525,36,E46,Belgrade SRB,2021,0.5,0,0.5,2525,2445,80,0.6,-0.1
+282,"Niemann, Hans Moke",2525,"Yankelevich, L.",2416,57,E06,Belgrade SRB,2021,0.5,1,0.5,2525,2416,109,0.64,-0.14
+283,"Niemann, Hans Moke",2525,"Nikitenko, M.",2452,63,D17,Novi Sad SRB,2021,0,1,0,2525,2452,73,0.59,-0.59
+284,"Potpara, N.",2378,"Niemann, Hans Moke",2525,23,A20,Belgrade SRB,2021,0,0,1,2525,2378,147,0.69,0.31
+285,"Kaasen, Tor Fredrik",2381,"Niemann, Hans Moke",2525,25,B01,Novi Sad SRB,2021,1,0,0,2525,2381,144,0.68,-0.68
+286,"Niemann, Hans Moke",2525,"Petrov, N.",2570,35,E10,Novi Sad SRB,2021,0,1,0,2525,2570,-45,0.44,-0.44
+287,"Niemann, Hans Moke",2525,"Haldorsen, Benjamin",2458,62,B06,Novi Sad SRB,2021,0,1,0,2525,2458,67,0.58,-0.58
+288,"Sedlak, N.",2542,"Niemann, Hans Moke",2525,51,C44,Novi Sad SRB,2021,0,0,1,2525,2542,-17,0.48,0.52
+289,"Niemann, Hans Moke",2525,"Bryakin, M.",2434,87,E54,Novi Sad SRB,2021,0.5,1,0.5,2525,2434,91,0.62,-0.12
+290,"Czebe, A.",2367,"Niemann, Hans Moke",2525,37,A06,Novi Sad SRB,2021,0,0,1,2525,2367,158,0.7,0.3
+291,"Niemann, Hans Moke",2525,"Lajthajm, B.",2412,38,E33,Novi Sad SRB,2021,1,1,1,2525,2412,113,0.65,0.35
+292,"Milosevic, Milos",2322,"Niemann, Hans Moke",2525,37,C24,Novi Sad SRB,2021,0,0,1,2525,2322,203,0.75,0.25
+293,"Moksh, Amit Doshi",2332,"Niemann, Hans Moke",2525,48,D37,Paracin SRB,2021,0,0,1,2525,2332,193,0.74,0.26
+294,"Niemann, Hans Moke",2525,"Atalik, S.",2504,24,E60,Paracin SRB,2021,1,1,1,2525,2504,21,0.52,0.48
+295,"Kosic, D.",2443,"Niemann, Hans Moke",2525,41,D37,Paracin SRB,2021,0.5,0,0.5,2525,2443,82,0.6,-0.1
+296,"Niemann, Hans Moke",2525,"Dudin, Gleb",2380,64,A15,Paracin SRB,2021,0,1,0,2525,2380,145,0.69,-0.69
+297,"Ratkovic, Milov",2433,"Niemann, Hans Moke",2525,64,A45,Paracin SRB,2021,0.5,0,0.5,2525,2433,92,0.62,-0.12
+298,"Niemann, Hans Moke",2525,"Mijatovic, Dusan",2295,32,E42,Paracin SRB,2021,1,1,1,2525,2295,230,0.78,0.22
+299,"Injac, Teodora",2314,"Niemann, Hans Moke",2525,45,D38,Paracin SRB,2021,0,0,1,2525,2314,211,0.76,0.24
+300,"Niemann, Hans Moke",2525,"Shahil, Dey",2376,34,B52,Paracin SRB,2021,0,1,0,2525,2376,149,0.69,-0.69
+301,"Niemann, Hans Moke",2525,"Vetokhin, Savva",2309,30,E32,Paracin SRB,2021,1,1,1,2525,2309,216,0.77,0.23
+302,"Kosic, D.",2443,"Niemann, Hans Moke",2484,81,D37,Paracin SRB,2021,1,0,0,2484,2443,41,0.55,-0.55
+303,"Niemann, Hans Moke",2484,"Abramovic, B.",2335,16,D37,Paracin SRB,2021,1,1,1,2484,2335,149,0.69,0.31
+304,"Niemann, Hans Moke",2484,"Stankovic, Milo",2442,52,E06,Paracin SRB,2021,1,1,1,2484,2442,42,0.55,0.45
+305,"Potpara, N.",2378,"Niemann, Hans Moke",2484,59,A13,Paracin SRB,2021,1,0,0,2484,2378,106,0.64,-0.64
+306,"Niemann, Hans Moke",2484,"Durak, Can",2187,32,D37,Paracin SRB,2021,1,1,1,2484,2187,297,0.84,0.16
+307,"Ratkovic, Milov",2433,"Niemann, Hans Moke",2484,71,E30,Paracin SRB,2021,0,0,1,2484,2433,51,0.56,0.44
+308,"Niemann, Hans Moke",2484,"Dudin, Gleb",2380,32,E04,Paracin SRB,2021,1,1,1,2484,2380,104,0.63,0.37
+309,"Atalik, S.",2504,"Niemann, Hans Moke",2484,48,D30,Paracin SRB,2021,0,0,1,2484,2504,-20,0.47,0.53
+310,"Niemann, Hans Moke",2484,"Vetokhin, Savva",2309,27,E52,Paracin SRB,2021,1,1,1,2484,2309,175,0.72,0.28
+311,"Niemann, Hans Moke",2484,"Warmerdam, Max",2506,23,E75,Villorba ITA,2021,0.5,1,0.5,2484,2506,-22,0.47,0.03
+312,"Bjerre, Jonas Buhl",2552,"Niemann, Hans Moke",2484,26,E18,Villorba ITA,2021,0.5,0,0.5,2484,2552,-68,0.41,0.09
+313,"Niemann, Hans Moke",2484,"Bernadskiy, V.",2619,49,A40,Villorba ITA,2021,1,1,1,2484,2619,-135,0.32,0.68
+314,"Niemann, Hans Moke",2484,"Moroni, L.",2560,53,B06,Villorba ITA,2021,0.5,1,0.5,2484,2560,-76,0.4,0.1
+315,"Bellahcene, B.",2510,"Niemann, Hans Moke",2484,31,C67,Villorba ITA,2021,0.5,0,0.5,2484,2510,-26,0.46,0.04
+316,"Dardha, Daniel",2485,"Niemann, Hans Moke",2484,53,A46,Villorba ITA,2021,0.5,0,0.5,2484,2485,-1,0.5,0
+317,"Niemann, Hans Moke",2484,"Checa, Nicolas",2527,38,D15,Villorba ITA,2021,1,1,1,2484,2527,-43,0.44,0.56
