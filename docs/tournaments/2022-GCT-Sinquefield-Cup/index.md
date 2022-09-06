@@ -82,7 +82,7 @@ These predictions brought to you by:
 <br>
 
 **GCT Sinquefield Cup Predictions**
-*After Round 3*
+*After Round 4*
 {: .narrow .pad}
 
 | Name            | Win % |
