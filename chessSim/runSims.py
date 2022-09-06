@@ -24,7 +24,7 @@ def main():
 
 # ##python poolOdds.py 100 True <- terminal command to get results for 100 sims with new pool draws for GP2
 
-    nSims = 5000
+    nSims = 10000
     if len(terminalArgs) > 1:
         nSims = int(terminalArgs[1])
     
