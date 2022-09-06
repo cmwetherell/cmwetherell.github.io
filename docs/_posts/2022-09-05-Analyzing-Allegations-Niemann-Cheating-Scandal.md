@@ -47,7 +47,7 @@ categories: chess-drama
 }
 </style>
 
-### Megnus withdraws from Sinquefield Cup, igniting rumors
+### Magnus withdraws from Sinquefield Cup, igniting rumors
 
 Just as Round 4 was set to begin, Magnus Carlsen tweeted, "I've withdrawn from the tournament."
 
