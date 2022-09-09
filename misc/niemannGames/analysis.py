@@ -27,9 +27,9 @@ def simGames(gamesData):
         
         #change Hans Elo to his current live rating
         if game.HansWhite == 0:
-            game.blackElo = 2600
+            game.blackElo = 2700
         else:
-            game.whiteElo = 2600
+            game.whiteElo = 2700
         
         simulatedResult = chessMLPred(bst, game.whiteElo, game.blackElo)
 
@@ -47,7 +47,7 @@ def main():
 
     terminalArgs = sys.argv
 
-    nSims = 10000
+    nSims = 1000
     if len(terminalArgs) > 1:
         nSims = int(terminalArgs[1])
 
@@ -61,7 +61,7 @@ def main():
         results =  p.map(simGames, repeat(games,nSims))
     # print(results)
 
-    pickle.dump(results, open( "./misc/niemannGames/simulatedResults.p", "wb" ) ) #Save simulations
+    pickle.dump(results, open( "./misc/niemannGames/simulatedResultsT.p", "wb" ) ) #Save simulations
     
     # print(sum(games['simResult']))
     # print(sum(games['HansResult']))
