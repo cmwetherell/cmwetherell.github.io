@@ -28,7 +28,7 @@ class Player:
             return (result - expectedScore) * k #k = 10 for GMs for C
 
     def performance(self):
-        # source: https://handbook.fide.com/chapter/B012022
+        #source: https://handbook.fide.com/chapter/B012022
         score = sum([result for result, _, _, _ in self.games])
         numGames = len([result for result, _, _, _ in self.games])
         Ra = round(np.mean([oppElo for _, _, oppElo, _ in self.games]))
