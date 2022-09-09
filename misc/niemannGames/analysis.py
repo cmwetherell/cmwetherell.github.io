@@ -25,11 +25,11 @@ def simGames(gamesData):
 
     for idx, game in gamesDataLocal.iterrows():
         
-        # #change Hans Elo to his current live rating
-        # if game.HansWhite == 0:
-        #     game.blackElo = 2704
-        # else:
-        #     game.whiteElo = 2704
+        #change Hans Elo to his current live rating
+        if game.HansWhite == 0:
+            game.blackElo = 2600
+        else:
+            game.whiteElo = 2600
         
         simulatedResult = chessMLPred(bst, game.whiteElo, game.blackElo)
 
