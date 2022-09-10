@@ -125,6 +125,8 @@ class SCup:
             self.winner = self.remaining[0]
 
         self.second = list(self.tbrrSummary.name)[1] #Gets second entry of sorted names based on FIDE regulations TB criteria, overwritten later if there is TBs
+        self.third = list(self.tbrrSummary.name)[2]
+        self.fourth = list(self.tbrrSummary.name)[3]
 
     def tieS12(self):
 
@@ -298,6 +300,35 @@ class SCup:
             print('something is broken, there is no second after stage 3 is over')
             print(self.games)
             print(self.tbrrSummary)
+        
+        ##Calculate GCT results
+
+        gctPoints = {'Carlsen': 0
+        ,'Firouzja': 25.5
+        ,'So': 22.5
+        ,'Caruana': 20.5
+        ,'Nepomniachtchi': 16
+        ,'Mamedyarov': 10
+        ,'Dominguez Perez': 10.5
+        ,'Aronian':22.5
+        ,'Vachier-Lagrave': 26.5
+        ,'Niemann': 0
+        }
+
+        gctPoints[self.winner] += 12 + 1 * (1 - self.tie)
+        gctPoints[self.second] += 10
+        gctPoints[self.third] += 8
+        gctPoints[self.fourth] += 7
+
+        gctMax = [key for key, value in gctPoints.items() if value == max(gctPoints.values())]
+
+        if len(gctMax) > 1:
+            print(gctMax)
+
+        self.gctWinner = random.choice(gctMax)
+
+
+
 
 
 # current = pd.read_csv("./chessSim/data/sinquefieldCupGames.csv")
