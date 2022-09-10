@@ -2,7 +2,7 @@
 layout: post
 title:  "2022 GCT Sinquefield Cup"
 shortTitle: 'Sinquefield'
-date: 2022-09-06 15:00:00 -0700
+date: 2022-09-10 15:00:00 -0700
 postImage: /assets/img/niemann.jpeg
 imageCaption:  "photo: Lennart Ootes"
 ---
