@@ -90,7 +90,7 @@ def simSCup(games): #_ is because map has to pass an argument to the function
     players = getPlayers()
     tournament = SCup(players, games)
     tournament.simCup()
-    return tournament.winner
+    return tournament.winner, tournament.gctWinner
 
 def simNorway(_): #_ is because map has to pass an argument to the function
     players = getNorway()

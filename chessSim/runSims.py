@@ -24,7 +24,7 @@ def main():
 
 # ##python poolOdds.py 100 True <- terminal command to get results for 100 sims with new pool draws for GP2
 
-    nSims = 10000
+    nSims = 1000
     if len(terminalArgs) > 1:
         nSims = int(terminalArgs[1])
     
@@ -40,12 +40,18 @@ def main():
     print("--- %s seconds ---" % (time.time() - start_time))
     # print(results)
 
-    winners = [winner for winner in results]
+    winners = [winner for winner, _ in results]
+    gctWinners = [gctWinner for _, gctWinner in results]
 
     ct = Counter(winners)
     for key in ct:
         ct[key] /= (nSims / 100)
-    print('Round ', 3 , 'results', ct)
+    print('results', ct)
+
+    ct = Counter(gctWinners)
+    for key in ct:
+        ct[key] /= (nSims / 100)
+    print('results', ct)
 
         # start_time = time.time()
 
