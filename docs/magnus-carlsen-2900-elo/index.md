@@ -49,6 +49,8 @@ imageCaption:  "photo: Niki Riga, FIDE"
 
 ### An ambitious goal for Magnus
 
+**Planning to update this page before Tata Steel kicks off**
+
 After winning the World Championship match against Ian Nepomniachtchi, Magnus Carlsen commented that he sett a goal fort himself to achieve a 2900 rating, something never been done before. His current rating is 2864. Many would argue he is the greatest chess player to ever live, but there is significant doubt about his ability to achieve an Elo of 2900. This page is dedicated to tracking his progress towards that goal, and estimating the chances that he reaches 2900 in any given tournament.
 
 His next planned event is [Norway Chess][norway], where he and 9 other super Gransmasters will battle in "The World's Strongest Chess Tournamnet". The classical portion of the event begins on May 31. Unfortunately for Magnus, even if he wins every game he can only get close to his goal of 2900. So close in fact a [well publicized draw][draw] that cost him 4.1 rating points is the reason he can't reach 2900 in Norway! Granted, it was unlikely to happen anyways but now it is impossible.

@@ -14,6 +14,9 @@ from superbetClassic import getSuperbet
 from sinquefieldCup import SCup
 from sinquefieldCup import getPlayers
 
+from tataSteel import Tata
+from tataSteel import getPlayersTata
+
 import pandas as pd
 import plotly
 import plotly.express as px
@@ -91,6 +94,12 @@ def simSCup(games): #_ is because map has to pass an argument to the function
     tournament = SCup(players, games)
     tournament.simCup()
     return tournament.winner, tournament.gctWinner
+
+def simTata(games): #_ is because map has to pass an argument to the function
+    players = getPlayersTata()
+    tournament = Tata(players, games)
+    tournament.simCup()
+    return tournament.winner, tournament.tie
 
 def simNorway(_): #_ is because map has to pass an argument to the function
     players = getNorway()
