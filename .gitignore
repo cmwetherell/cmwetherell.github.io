@@ -1,6 +1,6 @@
 ##My stuff:
 scrap.ipynb
-scrapish.ipynb
+scrapy.ipynb
 chessSim/data/*
 chessSim/models/*
 !chessSim/data/gpEloData.csv
