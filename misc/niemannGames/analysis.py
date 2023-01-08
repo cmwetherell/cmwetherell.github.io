@@ -15,7 +15,7 @@ def chessMLPred(model, whiteElo, blackElo):
     dat = [[whiteElo - i, blackElo - i, whiteElo - blackElo,((whiteElo - i) + (blackElo - i)) / 2] for i in avgRange]
     preds = model.predict(dat,num_iteration=model.best_iteration).mean(axis = 0).tolist()
     result = np.random.choice([0,0.5,1], p=preds) 
-    # print(whiteElo, blackElo, preds)
+    print(whiteElo, blackElo, preds)
 
     return result
 

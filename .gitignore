@@ -7,6 +7,7 @@ chessSim/models/*
 !chessSim/data/sims/
 chessSim/data/sims/*
 !chessSim/data/sims/.gitkeep
+misc/actionEvaluations/*
 
 .DS_Store
 

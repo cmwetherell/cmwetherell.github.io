@@ -16,6 +16,10 @@ tabulate = "*"
 lxml = "*"
 pygame = "*"
 memoization = "*"
+tensorflow = "*"
+dill = "*"
+pydot = "*"
+graphviz = "*"
 
 [dev-packages]
 jupyterlab = "*"

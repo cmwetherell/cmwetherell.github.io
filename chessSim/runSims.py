@@ -15,12 +15,12 @@ from collections import Counter
 from multiprocessing import set_start_method
 
 # from sinquefieldCup import main as SCup
-from utils import simSCup
+from utils import simTata
 
 def main():
 
     terminalArgs = sys.argv
-    current = pd.read_csv("./chessSim/data/sinquefieldCupGames.csv")
+    current = pd.read_csv("./chessSim/data/tataSteelGames.csv")
 
 # ##python poolOdds.py 100 True <- terminal command to get results for 100 sims with new pool draws for GP2
 
@@ -28,36 +28,35 @@ def main():
     if len(terminalArgs) > 1:
         nSims = int(terminalArgs[1])
     
-    winsByRound = []
+    # winsByRound = []
 
     # print(i, time.time())
-
+    
     start_time = time.time()
 
     with Pool() as p:
-        results =  p.map(simSCup, repeat(current,nSims))
+        results =  p.map(simTata, repeat(current,nSims))
 
     print("--- %s seconds ---" % (time.time() - start_time))
     # print(results)
 
     winners = [winner for winner, _ in results]
-    gctWinners = [gctWinner for _, gctWinner in results]
+    ties = [ties for _, ties in results]
 
     ct = Counter(winners)
     for key in ct:
         ct[key] /= (nSims / 100)
     print('results', ct)
 
-    ct = Counter(gctWinners)
+    ct = Counter(ties)
     for key in ct:
         ct[key] /= (nSims / 100)
     print('results', ct)
-
         # start_time = time.time()
 
     print('dumping')
 
-    pickle.dump(winners, open( "./chessSim/data/sims/SCup.p", "wb" ) ) #Save simulations
+    pickle.dump(winners, open( "./chessSim/data/sims/tataSteelSims.p", "wb" ) ) #Save simulations
 
     print('done dumping')
     # print(winsByRound)
