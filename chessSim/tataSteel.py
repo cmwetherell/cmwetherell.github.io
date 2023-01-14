@@ -10,11 +10,15 @@ import random
 def getPlayersTata(): 
     gctPlayers = pickle.load(open( "./chessSim/data/playerData.p", "rb" ) )
     gctPlayers = gctPlayers[gctPlayers.Name.isin(['Carlsen', 'Ding Liren', 'Caruana', 'Giri', 'So', 'Rapport', 'Aronian', 'Gukesh D', 'Erigaisi Arjun', 'Maghsoodloo', 'Abdusattorov', 'Keymer', 'Praggnanandhaa', 'Van Foreest'])]
+    # print(gctPlayers) #diagnostic check to see the players in the event dataframe before creating player objects.
+
+    #TODO: Add players to DF instead of appending PLayer objects to list
+    
     gctPlayers = {x[0]: Player(x[0], x[1], x[2] , x[3]) for x in np.array(gctPlayers)}
     gctPlayers['Keymer'] = Player('Keymer', 2696, 2630, 2651)
     gctPlayers['Praggnanandhaa'] = Player('Praggnanandhaa', 2684, 2587, 2623)
     gctPlayers['Van Foreest'] = Player('Van Foreest', 2681, 2682, 2633)
-
+    
 
     return gctPlayers
 
@@ -36,6 +40,12 @@ def playChess(model, whitePlayer, blackPlayer, format):
     blackElo = getattr(blackPlayer, 'Elo' + format.upper())
 
     result = chessMLPred(model, whiteElo, blackElo) #points white player scored
+
+    # if whitePlayer.name == 'Carlsen':
+    #     result = 1
+    # if blackPlayer.name == 'Carlsen':
+    #     result = 0
+
     whitePlayer.addGame(result, whiteElo, blackElo, format)
     blackPlayer.addGame((1 - result), blackElo, whiteElo, format)
 
@@ -55,6 +65,8 @@ class Tata:
         self.loadGames = self.games != None
 
     def createGames(self):
+
+        ##This code is for creating the games for a double round robin, need to be modified for single round robin. For Tata Steel, the games are already paired by the organization so this function no longer used.
 
         rrGames = list(itertools.combinations(self.playerNames, 2))
         switchSides = [(x[1], x[0]) for x in rrGames]
@@ -146,17 +158,17 @@ class Tata:
 
                 if stage == 's1':
                     game1 = playChess(bst, player1, player2, format = 'b') #points white player scored
-                    self.games.loc[self.games.shape[0]] = [player1.name, player2.name, 'b', 's1', 1, game1, 1*(game1==0)]
+                    self.games.loc[self.games.shape[0]] = [player1.name, player2.name, 'b', 's1', 1, game1, 1*(game1==0), 0]
 
                     game2 = playChess(bst, player2, player1, format = 'b') #points white player scored
-                    self.games.loc[self.games.shape[0]] = [player2.name, player1.name, 'b', 's1', 1, game2, 1*(game1==0)]
+                    self.games.loc[self.games.shape[0]] = [player2.name, player1.name, 'b', 's1', 1, game2, 1*(game1==0), 0]
 
                 elif stage == 's2':
                     game1 = playChess(bst, player1, player2, format = 'b') #points white player scored
-                    self.games.loc[self.games.shape[0]] = [player1.name, player2.name, 'b', 's2', 1, game1, 1*(game1==0)]
+                    self.games.loc[self.games.shape[0]] = [player1.name, player2.name, 'b', 's2', 1, game1, 1*(game1==0), 0]
 
                     game2 = playChess(bst, player2, player1, format = 'b') #points white player scored
-                    self.games.loc[self.games.shape[0]] = [player2.name, player1.name, 'b', 's2', 1, game2, 1*(game1==0)]
+                    self.games.loc[self.games.shape[0]] = [player2.name, player1.name, 'b', 's2', 1, game2, 1*(game1==0), 0]
 
                 player1Score = game1 + (1 - game2)
 
@@ -252,6 +264,7 @@ class Tata:
                 games['stage'] = 's3'
                 games['played'] = 0
                 games['result'] = 0
+                games['round'] = 0
 
                 for idx, row in games.iterrows(): #loop is not necessary because we only have 1 row... easy to just leave as is for now
                     whitePlayer = self.players[row.whitePlayer]
@@ -302,6 +315,13 @@ class Tata:
             print('something is broken, there is no second after stage 3 is over')
             print(self.games)
             print(self.tbrrSummary)
+        
+        #update player Elos
+        self.newElo = {}
+        for _, player in self.players.items(): #(key, value)
+            player.updateRatings()
+            self.newElo[player.name] = player.EloC
+        self.magnus = self.players['Carlsen'].EloC
 
 
 

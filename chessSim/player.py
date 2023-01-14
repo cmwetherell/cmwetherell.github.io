@@ -23,6 +23,8 @@ class Player:
             absRD = abs(ratingDiff)
             favoriteInd = 1 if ratingDiff >= 0 else 0
             indexVal = self.fidePD[self.fidePD['diff'].gt(absRD)].index[0] #gets index from fide pd table with first value above rating difference
+            # if self.name == 'Carlsen':
+            #     print(ratingDiff, absRD, indexVal)
             expectedScore = self.fidePD.loc[indexVal, 'pd'] if favoriteInd == 1 else 1 - self.fidePD.loc[indexVal, 'pd']
 
             return (result - expectedScore) * k #k = 10 for GMs for C
@@ -47,7 +49,12 @@ class Player:
 
         for timeControl in ['c', 'r', 'b']:
             k = 10 if timeControl == 'c' else 20 #FIDE 'k' values for GMs in classical and rapid/blitz formats
-            gamesTC = [row for row in self.games if row[3] == timeControl]    
+            gamesTC = [row for row in self.games if row[3] == timeControl]
+
+            #print length of gamesTC
+            # if self.name == 'Carlsen':
+            #     print(len(gamesTC), 'games played in', timeControl, 'format')
+        
             ratingChanges = [self.calcChange(result, myElo, opponentElo, k) for result, myElo, opponentElo, _ in gamesTC]
             ratingChange = sum(ratingChanges)
             tmpElo = getattr(self, 'Elo' + timeControl.upper())
