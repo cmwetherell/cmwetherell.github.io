@@ -24,7 +24,7 @@ def main():
 
 # ##python poolOdds.py 100 True <- terminal command to get results for 100 sims with new pool draws for GP2
 
-    nSims = 10000
+    nSims = 1
     if len(terminalArgs) > 1:
         nSims = int(terminalArgs[1])
     
@@ -40,8 +40,9 @@ def main():
     print("--- %s seconds ---" % (time.time() - start_time))
     # print(results)
 
-    winners = [winner for winner, _ in results]
-    ties = [ties for _, ties in results]
+    winners = [winner for winner, _ , _ in results]
+    ties = [ties for _, ties, _ in results]
+    magnus = [magnus for _, _, magnus in results]
 
     ct = Counter(winners)
     for key in ct:
@@ -52,11 +53,33 @@ def main():
     for key in ct:
         ct[key] /= (nSims / 100)
     print('results', ct)
+
+    magnusElo = Counter(magnus)
+    for key in magnusElo:
+        magnusElo[key] /= (nSims / 100)
+    print('results', magnusElo)
+
+    ## Create Bar chart of magnusElo with plotly express
+
+    import plotly.express as px
+
+    df = pd.DataFrame.from_dict(magnusElo, orient='index').reset_index()
+    df.columns = ['elo', 'percent']
+    df = df.sort_values(by = 'elo')
+    fig = px.bar(df, x="elo", y="percent", title='Magnus Elo')
+
+    #change color of bars
+    fig.update_traces(marker_color='rgb(158,202,225)', marker_line_color='rgb(8,48,107)',
+                marker_line_width=1.5, opacity=0.6)
+
+
+    fig.show()
         # start_time = time.time()
 
     print('dumping')
 
-    pickle.dump(winners, open( "./chessSim/data/sims/tataSteelSims.p", "wb" ) ) #Save simulations
+    # pickle.dump(winners, open( "./chessSim/data/sims/tataSteelSims.p", "wb" ) ) #Save simulations
+    # pickle.dump(magnus, open( "./chessSim/data/sims/tataSteelSimsMagnusElo.p", "wb" ) ) #Save simulations
 
     print('done dumping')
     # print(winsByRound)

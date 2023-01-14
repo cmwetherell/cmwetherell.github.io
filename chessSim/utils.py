@@ -99,7 +99,7 @@ def simTata(games): #_ is because map has to pass an argument to the function
     players = getPlayersTata()
     tournament = Tata(players, games)
     tournament.simCup()
-    return tournament.winner, tournament.tie
+    return tournament.winner, tournament.tie, tournament.magnus
 
 def simNorway(_): #_ is because map has to pass an argument to the function
     players = getNorway()
