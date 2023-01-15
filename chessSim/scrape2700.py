@@ -2,6 +2,8 @@ import requests
 import pandas as pd
 import pickle
 
+
+
 #To surpress a warning I don't care about...
 import urllib3
 from urllib3.exceptions import InsecureRequestWarning
@@ -42,5 +44,8 @@ def main():
     playerData.loc[playerData.Name == 'Ding', 'Name'] = 'Ding Liren'
 
     pickle.dump(playerData, open( "./chessSim/data/playerData.p", "wb" ) )
-if __name__=="__main__":
+
+    print("updated ratings")
+
+if __name__=="__main__" or __name__=="scrape2700": #scrape2700 is the name of the script, importing it into another file will run the main function automatically.
     main()
