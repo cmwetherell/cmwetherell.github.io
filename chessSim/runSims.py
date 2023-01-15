@@ -14,6 +14,8 @@ import time
 from collections import Counter
 from multiprocessing import set_start_method
 
+from scrape2700 import * #Used to refresh live ratings after a round, so I don't gorget to do it manually.
+
 # from sinquefieldCup import main as SCup
 from utils import simTata
 
