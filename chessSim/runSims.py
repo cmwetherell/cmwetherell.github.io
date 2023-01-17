@@ -20,6 +20,7 @@ from scrape2700 import * #Used to refresh live ratings after a round, so I don't
 from utils import simTata
 
 def main():
+    start_time = time.time()
 
     terminalArgs = sys.argv
     current = pd.read_csv("./chessSim/data/tataSteelGames.csv")
@@ -32,14 +33,12 @@ def main():
     
     # winsByRound = []
 
-    # print(i, time.time())
-    
-    start_time = time.time()
+    # print(i, time.time())    
 
     with Pool() as p:
         results =  p.map(simTata, repeat(current,nSims))
 
-    print("--- %s seconds ---" % (time.time() - start_time))
+    # print("--- %s seconds ---" % (time.time() - start_time))
     # print(results)
 
     winners = [winner for winner, _ , _ in results]
@@ -63,19 +62,19 @@ def main():
 
     ## Create Bar chart of magnusElo with plotly express
 
-    import plotly.express as px
+    # import plotly.express as px
 
-    df = pd.DataFrame.from_dict(magnusElo, orient='index').reset_index()
-    df.columns = ['elo', 'percent']
-    df = df.sort_values(by = 'elo')
-    fig = px.bar(df, x="elo", y="percent", title='Magnus Elo')
+    # df = pd.DataFrame.from_dict(magnusElo, orient='index').reset_index()
+    # df.columns = ['elo', 'percent']
+    # df = df.sort_values(by = 'elo')
+    # fig = px.bar(df, x="elo", y="percent", title='Magnus Elo')
 
-    #change color of bars
-    fig.update_traces(marker_color='rgb(158,202,225)', marker_line_color='rgb(8,48,107)',
-                marker_line_width=1.5, opacity=0.6)
+    # #change color of bars
+    # fig.update_traces(marker_color='rgb(158,202,225)', marker_line_color='rgb(8,48,107)',
+    #             marker_line_width=1.5, opacity=0.6)
 
 
-    fig.show()
+    # fig.show()
         # start_time = time.time()
 
     print('dumping')
@@ -86,9 +85,8 @@ def main():
     print('done dumping')
     # print(winsByRound)
 
-
         
-        # print("--- %s seconds ---" % (time.time() - start_time))
+    print("--- %s seconds ---" % (time.time() - start_time))
 
     
 if __name__=="__main__":
