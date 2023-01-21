@@ -16,7 +16,7 @@ def getPlayersTata():
     
     gctPlayers = {x[0]: Player(x[0], x[1], x[2] , x[3]) for x in np.array(gctPlayers)}
     gctPlayers['Keymer'] = Player('Keymer', 2696, 2630, 2651)
-    gctPlayers['Praggnanandhaa'] = Player('Praggnanandhaa', 2684, 2587, 2623)
+    gctPlayers['Praggnanandhaa'] = Player('Praggnanandhaa', 2700, 2587, 2623)
     gctPlayers['Van Foreest'] = Player('Van Foreest', 2681, 2682, 2633)
     
 
@@ -85,6 +85,8 @@ class Tata:
     def simRR(self):
 
         self.games['blackWin'] = 0
+
+        # print(self.players['Abdusattorov'].performance()) #Need to add games that have already been played to the players.
 
         for idx, row in self.games.iterrows():
             if row.played == 0:
@@ -322,6 +324,11 @@ class Tata:
             player.updateRatings()
             self.newElo[player.name] = player.EloC
         self.magnus = self.players['Carlsen'].EloC
+
+        self.performance = {}
+        for _, player in self.players.items(): #(key, value)
+            self.performance[player.name] = player.performance()
+        # self.abdu = self.players['Abdusattorov'].performance()
 
 
 
