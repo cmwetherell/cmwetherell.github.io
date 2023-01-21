@@ -67,7 +67,7 @@ Heading into the back half of the event, Abdusattorov is a full point ahead of h
 
 But, Giri, Caruana, and Praggnanandhaa are all just one point back and will be fighting to catch the leader. And, don't write off Magnus Carlsen who won his game today and is just two points back on an even score.
 
-Speaking of Praggnanandhaa, 4.5 out of 7 for the young GM and he just reached 2700 for the first time in his young career. It would be easy to lose sight of his stellar performance in the shadow of Abdusattorov's dominance, but he has been playing very well and is a threat to win the tournament.
+Speaking of Praggnanandhaa, 4.5 out of 7 for the young GM and he almost reached 2700 for the first time in his young career. It would be easy to lose sight of his stellar performance in the shadow of Abdusattorov's dominance, but he has been playing very well and is a threat to win the tournament.
 
 Round 8 action tomorrow!
 
