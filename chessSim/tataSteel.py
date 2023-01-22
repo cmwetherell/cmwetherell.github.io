@@ -16,7 +16,7 @@ def getPlayersTata():
     
     gctPlayers = {x[0]: Player(x[0], x[1], x[2] , x[3]) for x in np.array(gctPlayers)}
     gctPlayers['Keymer'] = Player('Keymer', 2696, 2630, 2651)
-    gctPlayers['Praggnanandhaa'] = Player('Praggnanandhaa', 2700, 2587, 2623)
+    gctPlayers['Praggnanandhaa'] = Player('Praggnanandhaa', 2694, 2587, 2623)
     gctPlayers['Van Foreest'] = Player('Van Foreest', 2681, 2682, 2633)
     
 
