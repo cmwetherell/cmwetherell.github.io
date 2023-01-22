@@ -63,9 +63,9 @@ justify-content: center;
 
 ### Carlsen claws back
 
-Magnus Carlsen, in a return to form, has now won two games in a row. He is 1.5 point behing leader Abdusattorov who drew today vs Levon Aronian. Wesley So and Anish Giri maintain pace, but are still a full point behind.
+Magnus Carlsen, in a return to form, has now won two games in a row. He is 1.5 points behind leader Abdusattorov who drew today vs Levon Aronian. Wesley So and Anish Giri maintain pace, but are still a full point behind.
 
-Tomorrow is a rest day, then we hit the home stretch for the final 5 rounds. Several players are still fighting to win the tournament, so it should be an exciting last five rounds.
+Tomorrow is a rest day, then we hit the home stretch for the final 5 rounds. Several players are still fighting to win the tournament so it should be an exciting last five rounds.
 
 Follow me on [Twitter][twit] and be the first to know when I update this page after every round.
 
