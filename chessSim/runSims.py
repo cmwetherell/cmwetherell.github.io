@@ -13,6 +13,7 @@ from tqdm import tqdm
 import time
 from collections import Counter
 from multiprocessing import set_start_method
+import lightgbm as lgb
 
 # from scrape2700 import * #Used to refresh live ratings after a round, so I don't gorget to do it manually.
 
@@ -24,6 +25,7 @@ def main():
 
     terminalArgs = sys.argv
     current = pd.read_csv("./chessSim/data/tataSteelGames.csv")
+    # gameModel = lgb.Booster(model_file = './chessSim/models/model.txt')
 
 # ##python poolOdds.py 100 True <- terminal command to get results for 100 sims with new pool draws for GP2
 
