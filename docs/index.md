@@ -11,8 +11,8 @@ layout: home
 
 **Past Tournaments:**
 
-[GCT Sinquefield Cup][2022-sinquefield]
-[44th Chess Olympiad][2022-olympiad]
+[GCT Sinquefield Cup][2022-sinquefield]<br>
+[44th Chess Olympiad][2022-olympiad]<br>
 [2022 FIDE Candidates Predictions][2022-candidates] <br>
 [2022 Superbet Chess Classic Predictions][2022-superbet-classic] <br>
 [2022 FIDE Grand Prix Berlin Leg 3][2022-gp-berlin] <br>
