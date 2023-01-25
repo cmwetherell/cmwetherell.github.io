@@ -325,10 +325,10 @@ class Tata:
             self.newElo[player.name] = player.EloC
         self.magnus = self.players['Carlsen'].EloC
 
-        self.performance = {}
-        for _, player in self.players.items(): #(key, value)
-            self.performance[player.name] = player.performance()
-        # self.abdu = self.players['Abdusattorov'].performance()
+        # self.performance = {}
+        # for _, player in self.players.items(): #(key, value)
+        #     self.performance[player.name] = player.performance()
+        # # self.abdu = self.players['Abdusattorov'].performance()
 
 
 

@@ -25,11 +25,12 @@ def main():
 
     terminalArgs = sys.argv
     current = pd.read_csv("./chessSim/data/tataSteelGames.csv")
+    # print(current)
     # gameModel = lgb.Booster(model_file = './chessSim/models/model.txt')
 
 # ##python poolOdds.py 100 True <- terminal command to get results for 100 sims with new pool draws for GP2
 
-    nSims = 10000
+    nSims = 600
     if len(terminalArgs) > 1:
         nSims = int(terminalArgs[1])
     
