@@ -69,7 +69,7 @@ Tomorrow is a rest day, but the top four in the cross table will face off in Rou
 
 Magnus will has white against Wesley So - typically, I would look for these two to head into a drawish line, but that won't be happening with the tournament on the line. Magnus needs a win to get himself into position to win. If Magnus draws with So and wins his two remaining games against the Indian youngsters, he has a 41% chance of winning the event. If he wins all three, he has an 80% chance of winning the event.
 
-Can Abdusattorov hold onto his lead? We'll find out, as the last three rounds unfold starting on Friday.
+Can Abdusattorov hold onto his lead? We'll find out as the last three rounds unfold starting on Friday.
 
 Follow me on [Twitter][twit] and be the first to know when I update this page after every round.
 
