@@ -25,6 +25,7 @@ def main():
 
     terminalArgs = sys.argv
     current = pd.read_csv("./chessSim/data/tataSteelGames.csv")
+    # print(current)
 
     currentResults = summarizeCurrent(current)
     pickle.dump(currentResults, open( "./chessSim/data/sims/tataSteelSummary.p", "wb" ) ) #Save simulations
@@ -34,7 +35,7 @@ def main():
 
 # ##python poolOdds.py 100 True <- terminal command to get results for 100 sims with new pool draws for GP2
 
-    nSims = 10000
+    nSims = 10
     if len(terminalArgs) > 1:
         nSims = int(terminalArgs[1])
     
