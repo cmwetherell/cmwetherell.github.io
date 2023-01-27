@@ -80,6 +80,42 @@ class Tata:
         self.games['result'] = 0
         
 
+
+        ############ Create single round robin games ##############
+
+        s1Games = list(itertools.combinations(self.playerNames, 2))
+        random.shuffle(s1Games)
+        white = {name: 0 for name in self.playerNames} #to track how many white games each player has
+        rrGames = []
+        for i, j in s1Games:
+            if white[i] > white[j]:
+                white[j] += 1
+                rrGames.append((j, i))
+            elif white[i] < white[j]:
+                white[i] += 1
+                rrGames.append((i, j))
+            elif white[i] == white[j]:
+                k = random.randint(0, 1)
+                if k == 0:
+                    white[i] += 1
+                    rrGames.append((i, j))
+                if k == 1:
+                    white[j] += 1
+                    rrGames.append((j, i))
+        
+        games = pd.DataFrame([[game[0], game[1]] for game in rrGames], columns = ['whitePlayer', 'blackPlayer'])
+
+        self.games = games
+
+        self.games['format'] = 'c'
+        self.games['stage'] = 'rr'
+        self.games['played'] = 0
+        self.games['result'] = 0
+        self.games['round'] = 0
+
+        # print(self.games)
+        
+
         # self.games.to_csv("./chessSim/data/tataSteelGames.csv", index=False)
 
     def simRR(self):
@@ -298,6 +334,7 @@ class Tata:
     def simCup(self):
         if self.games is None:
             self.createGames()
+        # self.createGames()
         self.simRR()
         self.tie = 0
         if not hasattr(self, 'winner'):
