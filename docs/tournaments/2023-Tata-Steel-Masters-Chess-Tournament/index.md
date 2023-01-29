@@ -79,7 +79,7 @@ And for the Giri (white) vs Rapport (black) game:
   - Draw: 54%
   - Rapport wins: 14%
 
-The predictions don't account for any game theory pursued by the players. For example, Abudsattorov is probably going to head into a drawish line, securing at least a tie break and also forcing Giri to play for a winning position. Being forced to go for a winning postition can backfire. At the same time, Giri will bring out his best preperation and any saved up ideas are worth bringing out tomorrow.
+The predictions don't account for any game theory pursued by the players. For example, Abdusattorov is probably going to head into a drawish line, securing at least a tie break and also forcing Giri to play for a winning position. Being forced to go for a winning postition can backfire. At the same time, Giri will bring out his best preperation and any saved up ideas are worth bringing out tomorrow.
 
 All that considered, Abdusattorov has a 76% chance of winning the event and Giri has a 21% chance. There is a 24% chance the event ends with a Blitz tiebreak.
 
@@ -121,7 +121,7 @@ These predictions brought to you by:
 {: .field .narrow}
 <br>
 
-*Note: an earlier version of this article pegged Carlsen's initial winning chances at 52.2%. I found a bug in my code that turned the torunament into a double round robin. A longer torunament would favor Carlsen, so his chances dropped to 40%.*
+*Note: an earlier version of this article pegged Carlsen's initial winning chances at 52.2%. I found a bug in my code that turned the torunament into a double round robin. A longer tournament would favor Carlsen, so his chances dropped to 40%.*
 
 
 [wiki]: https://en.wikipedia.org/wiki/Candidates_Tournament_2022
