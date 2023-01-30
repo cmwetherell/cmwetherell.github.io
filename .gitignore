@@ -1,6 +1,7 @@
 ##My stuff:
 scrap.ipynb
 scrapy.ipynb
+lichessExplore.ipynb
 chessSim/data/*
 chessSim/models/*
 !chessSim/data/gpEloData.csv
@@ -9,6 +10,7 @@ chessSim/models/*
 chessSim/data/sims/*
 !chessSim/data/sims/.gitkeep
 misc/actionEvaluations/*
+misc/research/*
 
 .DS_Store
 
