@@ -6,11 +6,12 @@ layout: home
 ---
 **Active Tournaments:**
 
-[2023 Tata Steel Masters][2023-tata]
-
+[2023 FIDE World Chess Championship][2023-wcc]
 
 **Past Tournaments:**
 
+
+[2023 Tata Steel Masters][2023-tata]
 [GCT Sinquefield Cup][2022-sinquefield]<br>
 [44th Chess Olympiad][2022-olympiad]<br>
 [2022 FIDE Candidates Predictions][2022-candidates] <br>
@@ -18,6 +19,7 @@ layout: home
 [2022 FIDE Grand Prix Berlin Leg 3][2022-gp-berlin] <br>
 [2022 FIDE Grand Prix Belgrade Leg 2][2022-gp-belgrade] <br>
 
+[2023-wcc]: tournaments/2023-FIDE-World-Chess-Championship/index.md
 [2023-tata]: /tournaments/2023-Tata-Steel-Masters-Chess-Tournament/index.md
 [2022-sinquefield]: tournaments/2022-GCT-Sinquefield-Cup//index.md
 [2022-candidates]: tournaments/2022-candidates-tournament/index.md
