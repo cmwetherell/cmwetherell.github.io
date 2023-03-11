@@ -21,6 +21,7 @@ dill = "*"
 pydot = "*"
 graphviz = "*"
 python-lichess = "*"
+retry = "*"
 
 [dev-packages]
 jupyterlab = "*"
