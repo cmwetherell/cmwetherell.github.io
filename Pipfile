@@ -22,6 +22,8 @@ pydot = "*"
 graphviz = "*"
 python-lichess = "*"
 retry = "*"
+flask = "*"
+matplotlib = "*"
 
 [dev-packages]
 jupyterlab = "*"
