@@ -61,7 +61,7 @@ justify-content: center;
 </style>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script> 
 
-### Ding Liren holds onto draw in Round 1
+### Nepo jumps out in front
 
 The 2023 FIDE World Chess Championship is underway in the city of Astana, Kazakhstan, where Ian Nepomniachtchi and Ding Liren began their battle for the title of World Chess Champion. 
 
