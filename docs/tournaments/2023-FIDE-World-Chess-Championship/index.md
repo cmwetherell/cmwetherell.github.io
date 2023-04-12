@@ -65,7 +65,7 @@ justify-content: center;
 
 The 2023 FIDE World Chess Championship is underway in the city of Astana, Kazakhstan, where Ian Nepomniachtchi and Ding Liren began their battle for the title of World Chess Champion. 
 
-Today's game ended in a draw, with Nepomniachtchi and Ding Liren both playing solidly. Since Nepo had the white pieces today and only managed a dar, Ding Liren slightly improved his chances of winning the event. Moving from 28.5% to 30.2%.
+Today's game ended in a draw, with Nepomniachtchi and Ding Liren both playing solidly. Since Nepo had the white pieces today and only managed a draw, Ding Liren slightly improved his chances of winning the event. Moving from 28.5% to 30.2%.
 
 Ding Liren seems to have sorted out some emotional difficulties and said his friends helped him get more comfortable being on the stage. Hopefully, we see both players at their best for the remainder of the event!
 
