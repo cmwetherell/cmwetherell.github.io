@@ -61,11 +61,11 @@ justify-content: center;
 </style>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script> 
 
-### All tied up... again
+### Congrats to Ding Liren!
 
-The 2023 FIDE World Chess Championship is underway in the city of Astana, Kazakhstan, where Ian Nepomniachtchi and Ding Liren continue their battle for the title of World Chess Champion. 
+The 2023 FIDE World Chess Championship is now complete. It took place in the city of Astana, Kazakhstan, where Ian Nepomniachtchi and Ding Liren fought in a back and forth battle to take over the reigns from Magnus Carlsen.
 
-Ding Liren securing victory in Game 6 means the players are now tied on 2 points each, with 8 rounds to go. Nepo currently has a 52.7% chance of winning, and Ding Liren a 47.3% chance. Nepo will have the white pieces for game 7, and the world be watching impatiently to see how he responds to his second defeat of the match.
+You can see the progress of my predictions below. Eventually, the match kept going back and forth and I was too engrossed in the games so I stopped making updates. The page below reflects the tournament after round 6.
 
 ### Predictions and Probabilities
 
