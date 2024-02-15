@@ -4,13 +4,14 @@
 
 layout: home
 ---
-**Active Tournaments:**
+**Upcoming Tournaments:**
 
-[2023 FIDE World Chess Championship][2023-wcc]
+👀 2024 FIDE Candidates Tournament 👀
 
 **Past Tournaments:**
 
 
+[2023 FIDE World Chess Championship][2023-wcc]
 [2023 Tata Steel Masters][2023-tata]
 [GCT Sinquefield Cup][2022-sinquefield]<br>
 [44th Chess Olympiad][2022-olympiad]<br>
