@@ -36,8 +36,8 @@ google_analytics: G-59WSL645R4
 header_pages:
   # - 2022-superbet-chess-classic-romania/index.md
   # - tournaments/2023-Tata-Steel-Masters-Chess-Tournament/index.md
-  - tournaments/2023-FIDE-World-Chess-Championship/index.md
-  - magnus-carlsen-2900-elo/index.md
+  # - tournaments/2023-FIDE-World-Chess-Championship/index.md
+  # - magnus-carlsen-2900-elo/index.md
   # - archive.md
   - about.md
 
