@@ -49,6 +49,8 @@ imageCaption:  "photo: Niki Riga, FIDE"
 
 ### An ambitious goal for Magnus
 
+2024 Update: I haven't paid attention to this for a while, Magnus isn;t close, and hasn't talked about the goal for a while. It seems unlikely.
+
 After winning the World Championship match against Ian Nepomniachtchi, Magnus Carlsen commented that he set a goal for himself to achieve a 2900 rating, something never been done before. His rating at the time was 2865. Many would argue he is the greatest chess player to ever live, but there is significant doubt about his ability to achieve an Elo of 2900. This page is dedicated to tracking his progress towards that goal, and estimating the chances that he reaches 2900 in any given tournament.
 
 In the upcoming [Tata Steel][tata], he and 13 other super Gransmasters will battle in the 85th iteration of the "Wimbledon of Chess" held in Wijk aan Zee. The the event begins on January 14, 2023. In a miracle situation, Magnus can win all of his games and surpass 2900.  He'll need to score 9/13 to avoid losing points agaisnt the field with an average Elo 127 points worse than his (and would gain 3 Elo). It's difficult to maintain rating at his level, let alone increase his current rating of 2859. Last year, a [well publicized draw][draw] cost him 4.1 rating points. If he wants to reach 2900, the stakes of every game are high - any draw is a step back!
