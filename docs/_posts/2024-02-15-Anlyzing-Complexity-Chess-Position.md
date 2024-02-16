@@ -3,8 +3,8 @@ layout: post
 title:  "Analyzing The Complexity of a Chess Position"
 subtitle: "How hard is it to find a good move?"
 date:   2024-02-15 12:00:00 -0700
-# postImage: 
-# imageCaption:  "photo: Lennart Ootes"
+postImage: /assets/img/chess-complexity-ai.png
+imageCaption:  "photo: Midjourney"
 categories: interesting
 ---
 
@@ -85,7 +85,19 @@ You can see that the model is finding that the hardest 10% of moves in GM games 
 
 There are many! I bet you can find some positions and say, "Why does the complexity score say it's hard? It was easy for me to find the best move".
 
-THe model is certainlty not perfect. I'd claim it's a decent start. I have several ideas to make the model even better! I'd love some help pursuing that goal too. If you're interested please reach out. The two main things are creating a larger training dataset, and then creating a better structure for the neural network (e.g., mimic the Stockfish NN structure).
+The model is certainly not perfect. I'd claim it's a decent start. I have several ideas to make the model even better! I'd love some help pursuing that goal too. If you're interested please reach out. Two main things are creating a larger training dataset (e.g., using Lichess database instead of OTB games), and then creating a better structure for the neural network (e.g., mimic the Stockfish NN structure).
+
+There's also other ways to think about the idea of "complexity". Some examples could be the likelihood of a GM making the top engine move given the position, or the difference between the "material imbalance" and the engine evaluation. Maybe "complexity" could be best approximated by a combination of these three and more ideas.
+
+### Interesting: A Note on Cheating
+
+Today's OTB cheating degtection relies largely (though not entirely) on comparisons to engine evaluation over the course of a game. How often did a player pick the top engine move? How often was their move in the top 3 engine moves?
+
+Imagine this: "Hey, Mr. GM we noticed you played the top engine move 30 moves straight, that's pretty unusual." GM responds, "Wow, that's impressive! I've been studying a lot, and tried to find a line with lot's of obvious moves for me to play. I guess it worked!"
+
+Sometimes there will be "statistical anomalies" by pure chance alone. One in one million means that we expect it to happen, though rarely! Now if a player has many one in one million games in a row? That's odd. Or maybe they're just better than we thought they were. "Proof" is hard to find, aside from physical evidence.
+
+Today's cheating algorithms are sophisticated enough for OTB play that suspicion can reasonably be raised without physical evidence. But, let's go back to the "defense" from the suspicious GM above. What if we could demonstrate that, the 30 positions encountered were indeed quite **complex**. And that, for a random stretch of 30 moves, the chance is one in one million. But, what it the complexity of those 30 positions is higher than average, and it's actually one in one billion, or trillion, that someone could perform this well? **Understanding the complexity of a chess position can inform us how difficult it is to find the engine move over the board.**
 
 ### What's Next?
 
