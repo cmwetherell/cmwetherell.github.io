@@ -3,8 +3,8 @@ layout: post
 title:  "Analyzing The Complexity of a Chess Position"
 subtitle: "How hard is it to find a good move?"
 date:   2024-02-15 12:00:00 -0700
-postImage: /assets/img/niemann.jpeg 
-imageCaption:  "photo: Lennart Ootes"
+# postImage: 
+# imageCaption:  "photo: Lennart Ootes"
 categories: interesting
 ---
 
