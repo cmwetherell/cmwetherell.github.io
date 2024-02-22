@@ -3,7 +3,7 @@ scrap.ipynb
 scrapy.ipynb
 lichessExplore.ipynb
 chessSim/data/*
-chessSim/models/*
+# chessSim/models/*
 !chessSim/data/gpEloData.csv
 !chessSim/data/berlinPoolGames.csv
 !chessSim/data/sims/
