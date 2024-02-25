@@ -9,8 +9,18 @@ import random
 
 def getCandidates(): 
     candidates = pickle.load(open( "./chessSim/data/playerData.p", "rb" ) )
-    candidates = candidates[candidates.Name.isin(['Ding Liren','Firouzja', 'Caruana', 'Nepomniachtchi', 'Duda', 'Radjabov', 'Rapport', 'Nakamura' ])]
+    candidates = candidates[candidates.Name.isin(
+        ['Caruana, Fabiano',
+         'Nakamura, Hikaru',
+         'Firouzja, Alireza',
+         'Nepomniachtchi, Ian',
+         'Gukesh D',
+         'Praggnanandhaa R',
+         'Vidit, Santosh Gujrathi',
+         'Abasov, Nijat' ])]
     candidates = {x[0]: Player(x[0], x[1], x[2] , x[3]) for x in np.array(candidates)}
+    # add Abasov, Nijat
+    candidates['Abasov, Nijat'] = Player('Abasov, Nijat', 2641, 2566, 2555)
 
     return candidates
 
@@ -22,7 +32,7 @@ def chessMLPred(model, whiteElo, blackElo):
     dat = [[whiteElo - i, blackElo - i, whiteElo - blackElo,((whiteElo - i) + (blackElo - i)) / 2] for i in avgRange]
     preds = model.predict(dat,num_iteration=model.best_iteration).mean(axis = 0).tolist()
     result = np.random.choice([0,0.5,1], p=preds) 
-    print(whiteElo, blackElo, preds)
+    # print(whiteElo, blackElo, preds)
 
     return result
 
@@ -47,7 +57,10 @@ class Candidates:
     def __init__(self, players, games = None):
         self.players = players.copy()
         self.playerNames = players.keys()
-        self.games = games.copy()
+        if games is not None:
+            self.games = games.copy()
+        else:
+            self.games = None
         self.loadGames = self.games != None
         self.dingSecond = 0
 
@@ -62,13 +75,13 @@ class Candidates:
         self.games['format'] = 'c'
         self.games['stage'] = 'rr'
         self.games['played'] = 0
-        self.games['result'] = 0
+        self.games['result'] = 0.0
         
 
-        # self.games.to_csv("./chessSim/data/candidatesGames.csv", index=False)
+        # self.games.to_csv("./chessSim/data/candidatesGames2024.csv", index=False)
 
     def simRR(self):
-        #https://handbook.fide.com/files/handbook/Regulations_for_the_FIDE_Candidates_Tournament_2022.pdf
+        #https://handbook.fide.com/files/handbook/Regulations_for_the_FIDE_Candidates_Tournament_2024.pdf
         self.games['blackWin'] = 0
 
         for idx, row in self.games.iterrows():
@@ -76,16 +89,11 @@ class Candidates:
                 whitePlayer = self.players[row.whitePlayer]
                 blackPlayer = self.players[row.blackPlayer]
 
-                self.games.at[idx, 'played'] = 1
                 result = playChess(bst, whitePlayer, blackPlayer, format = 'c') #points white player scored
-
-                if (row.whitePlayer == 'Ding Liren') & (row.blackPlayer == 'Nakamura'):
-                    if result == 1:
-                        self.dingSecond = result
-
-                #TODO should I use the update ratings function or not?
+                
+                self.games.at[idx, 'played'] = 1
                 self.games.at[idx, 'result'] = result
-        # print(self.games)
+
         
         whiteResults = self.games[['whitePlayer', 'blackPlayer', 'result', 'blackWin']].values
         blackResults = self.games[['blackPlayer', 'whitePlayer', 'result', 'blackWin']].values
@@ -102,7 +110,7 @@ class Candidates:
             score = ('result','sum')).reset_index() # df[name, score]
 
         #add SB tiebreak, move sort values code to this df
-        self.tbrrSummary['sbPoints'] = 0
+        self.tbrrSummary['sbPoints'] = 0.0
         for idx, row in self.tbrrSummary.iterrows():
             self.tbrrSummary.at[idx, 'sbPoints'] = row.result * tmpScores.loc[tmpScores.name == row.oppName, 'score'].values[0]
 
@@ -114,10 +122,7 @@ class Candidates:
             blackWins = ('blackWin','sum'),
             ).reset_index()
             
-        self.tbrrSummary['dingSecond'] = 0
-        self.tbrrSummary.loc[self.tbrrSummary.name == 'Ding Liren', 'dingSecond'] = self.dingSecond
-
-        self.tbrrSummary = self.tbrrSummary.sort_values(by = ['score', 'sb', 'wins', 'dingSecond', 'blackWins'], ascending = False).reset_index()
+        self.tbrrSummary = self.tbrrSummary.sort_values(by = ['score', 'sb', 'wins', 'blackWins'], ascending = False).reset_index()
 
 
         self.tbrrSummary['first'] = 1 * (self.tbrrSummary.score == max(self.tbrrSummary.score))
@@ -129,9 +134,7 @@ class Candidates:
         if len(self.remaining) == 1:
             self.winner = self.remaining[0]
 
-        self.second = list(self.tbrrSummary.name)[1] #Gets second entry of sorted names based on FIDE regulations TB criteria, overwritten later if there is TBs
-        if self.dingSecond == 1:
-            self.second == 'Ding Liren'
+        self.second = list(self.tbrrSummary.name)[1] #Gets second entry of sorted names based on FIDE regulations TB criteria, overwritten later if there is TBs TODO Not perfect. At least SB is first TB.
 
     def tieS12(self):
 
@@ -199,7 +202,7 @@ class Candidates:
                 games['format'] = 'r'
                 games['stage'] = stage
                 games['played'] = 0
-                games['result'] = 0
+                games['result'] = 0.0
 
                 for idx, row in games.iterrows():
                     whitePlayer = self.players[row.whitePlayer]
@@ -254,7 +257,7 @@ class Candidates:
                 games['format'] = 'b'
                 games['stage'] = 's3'
                 games['played'] = 0
-                games['result'] = 0
+                games['result'] = 0.0
 
                 for idx, row in games.iterrows(): #loop is not necessary because we only have 1 row... easy to just leave as is for now
                     whitePlayer = self.players[row.whitePlayer]
@@ -282,6 +285,36 @@ class Candidates:
         elif not hasattr(self, 'winner'): 
             print(self.remaining)
             raise Exception("Something is broke. S3 ended without a winner")
+        
+    def generateGameId(self, whitePlayer, blackPlayer):
+        # Generates a game ID using the first 3 letters of the player names
+        return whitePlayer[:3] + '|' + blackPlayer[:3]
+
+    def convertSimToJSON(self):
+        # Initialize the games list for the JSON structure
+        games_list = []
+
+        # filter self.games to when time control = rr
+        self.games = self.games[self.games['stage'] == 'rr']
+        
+        # Iterate over each row in the DataFrame to process game information
+        for _, row in self.games.iterrows():
+            game_id = self.generateGameId(row['whitePlayer'], row['blackPlayer'])
+            game_info = {
+                "gameId": game_id,
+                "outcome": row['result'],
+                "whitePlayer": row['whitePlayer'],
+                "blackPlayer": row['blackPlayer']
+            }
+            games_list.append(game_info)
+        
+        # Construct the final JSON structure
+        self.result_json = {
+            "winner": self.winner,
+            "second": self.second,
+            "tie": self.tie,
+            "games": games_list
+        }
 
     def simCandidates(self):
         if self.games is None:
@@ -291,11 +324,14 @@ class Candidates:
         if not hasattr(self, 'winner'):
             self.tieS12()
             self.tie = 1
-            print("TIE")
+            # print("TIE")
             if not hasattr(self, 'winner'):
                 self.tieS12()
                 if not hasattr(self, 'winner'):
                     self.tieS3()
+        if hasattr(self, 'winner'):
+            self.convertSimToJSON()
+        # print(self.winner)
             # print(self.rrSummary)
         # if self.winner == 'Radjabov':
         #     print(self.tbrrSummary)
@@ -307,5 +343,5 @@ class Candidates:
             print(self.tbrrSummary)
 
 
-# tournament = Candidates(getCandidates())
-# tournament.simCandidates()
+tournament = Candidates(getCandidates())
+tournament.simCandidates()

@@ -1,6 +1,3 @@
-from sys import getallocatedblocks
-
-from prometheus_client import Summary
 # from grandPrix import GrandPrix
 from candidatesTorunament import Candidates
 from candidatesTorunament import getCandidates
@@ -18,8 +15,8 @@ from tataSteel import Tata
 from tataSteel import getPlayersTata
 
 import pandas as pd
-import plotly
-import plotly.express as px
+# import plotly
+# import plotly.express as px
 import pickle
 import numpy as np
 
@@ -86,7 +83,7 @@ def simCandidatesTournament(games): #_ is because map has to pass an argument to
     candidates = getCandidates()
     tournament = Candidates(candidates, games)
     tournament.simCandidates()
-    return tournament.winner, tournament.second, tournament.tie
+    return tournament.winner, tournament.second, tournament.tie, tournament.result_json
 
 
 def simSCup(games): #_ is because map has to pass an argument to the function
@@ -219,3 +216,7 @@ def toMD(current, standings, hash):
     export = export[export.Qualify > 0]
 
     return nSims, export.to_markdown(index = False, floatfmt = "#.1f")
+
+if __name__ == "__main__":
+    print("This is a module, not a script.")
+    exit(1)

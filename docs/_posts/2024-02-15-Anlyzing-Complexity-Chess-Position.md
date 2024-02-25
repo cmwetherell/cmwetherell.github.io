@@ -47,7 +47,7 @@ categories: interesting
 }
 </style>
 
-### What makes a position comnplex?
+### What makes a position complex?
 
 If you asked a Grandmaster what would they say? And is the position complex for humans, computers, or both? Do you know if a position is complex when you look at it?
 
