@@ -23,7 +23,7 @@ email: pawnalyze@gmail.com
 description: >- # this means to ignore newlines until "baseurl:"
   Simulations for current and upcoming chess tournaments with Super Grandmasters. Updated frequently.
 baseurl: "" # the subpath of your site, e.g. /blog
-url: "https://pawnalyze.com" # the base hostname & protocol for your site, e.g. http://example.com
+url: "https://blog.pawnalyze.com" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: pawnalyze
 github_username:  cmwetherell
 
