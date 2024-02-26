@@ -7,4 +7,3 @@ Go to www.pawnalyze.com to see the results of the code/simulations in action.
 
 #### TODO:
 - Make visualization code more automated (right not I have it in a notebook that I don't push to the GH repo)
-- Cache model predictions in a dictionary to save time (this didn't dop anything useful)
