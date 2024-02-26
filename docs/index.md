@@ -6,7 +6,7 @@ layout: home
 ---
 **Upcoming Tournaments:**
 
-👀 2024 FIDE Candidates Tournament 👀
+[👀 2024 FIDE Candidates Tournament 👀](https://www.pawnalyze.com/simulations/)
 
 **Past Tournaments:**
 
