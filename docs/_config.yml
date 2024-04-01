@@ -21,7 +21,7 @@
 title: Pawnalyze
 email: pawnalyze@gmail.com
 description: >- # this means to ignore newlines until "baseurl:"
-  Simulations for current and upcoming chess tournaments with Super Grandmasters. Updated frequently.
+  Advanced chess analytics with tournament predictions, interactive scenario explorer, and in-depth analysis. Discover, analyze, and predict with Pawnalyze.
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://blog.pawnalyze.com" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: pawnalyze
