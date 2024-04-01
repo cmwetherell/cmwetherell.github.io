@@ -104,9 +104,9 @@ One storyline that I am aware of: Praggnanandhaa and Vaishali are brother and si
 
 ### Prediction Updates
 
-After every round, check out my [simulations][sims] page for updated predictions. And, don't worry about waiting until the end of the round! You can filter my one million simulations for the outcme of each game and get an instant updated predictions. You can even use my crystal ball to see the future. Pick the outcome of unplayed games to see the imapct on everyone's winning chances.
+After every round, check out my [simulations][sims] page for updated predictions. And, don't worry about waiting until the end of the round! You can filter my one million simulations for the outcome of each game and get an instant updated predictions. You can even use my crystal ball to see the future. Pick the outcome of unplayed games to see the imapct on everyone's winning chances.
 
-In the example below, you can see Fabi's odds of winning go from 21% all the way to 35% if he beast Hikaru in round 1. A critical game!
+In the example below, you can see Fabi's odds of winning go from 21% all the way to 35% if he beats Hikaru in round 1. A critical game!
 
 [![Pawnalyze Simulation Example](/assets/img/example_cand_sim.png)](https://www.pawnalyze.com/simulations/candidates-2024)
 

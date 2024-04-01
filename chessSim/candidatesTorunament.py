@@ -21,6 +21,24 @@ def getCandidates():
     candidates = {x[0]: Player(x[0], x[1], x[2] , x[3]) for x in np.array(candidates)}
     # add Abasov, Nijat
     candidates['Abasov, Nijat'] = Player('Abasov, Nijat', 2641, 2566, 2555)
+    return candidates
+
+def getWomenCandidates():
+    candidates = pickle.load(open( "./chessSim/data/playerDataWomen.p", "rb" ) )
+    candidates = candidates[candidates.Name.isin(
+        ['Goryachkina, Aleksandra',
+          'Lagno, Kateryna', 
+          'Muzychuk, Anna', 
+          'Salimova, Nurgyul', 
+          'Lei, Tingjie', 
+          'Tan, Zhongyi', 
+          'Rameshbabu, Vaishali', 
+          'Koneru, Humpy'
+          ])]
+    candidates = {x[0]: Player(x[0], x[1], x[2] , x[3]) for x in np.array(candidates)}
+    # add <2500 players
+    candidates['Salimova, Nurgyul'] = Player('Salimova, Nurgyul', 2426, 2383, 2293)
+    candidates['Rameshbabu, Vaishali'] = Player('Rameshbabu, Vaishali', 2481, 2359, 2366)
 
     return candidates
 
@@ -79,6 +97,7 @@ class Candidates:
         
 
         # self.games.to_csv("./chessSim/data/candidatesGames2024.csv", index=False)
+        # self.games.to_csv("./chessSim/data/womensCandidatesGames2024.csv", index=False)
 
     def simRR(self):
         #https://handbook.fide.com/files/handbook/Regulations_for_the_FIDE_Candidates_Tournament_2024.pdf
@@ -123,7 +142,6 @@ class Candidates:
             ).reset_index()
             
         self.tbrrSummary = self.tbrrSummary.sort_values(by = ['score', 'sb', 'wins', 'blackWins'], ascending = False).reset_index()
-
 
         self.tbrrSummary['first'] = 1 * (self.tbrrSummary.score == max(self.tbrrSummary.score))
         self.winScore = max(self.tbrrSummary.score)
@@ -342,6 +360,6 @@ class Candidates:
             print(self.games)
             print(self.tbrrSummary)
 
-
-tournament = Candidates(getCandidates())
-tournament.simCandidates()
+if __name__ == "__main__":
+    tournament = Candidates(getWomenCandidates())
+    tournament.simCandidates()
