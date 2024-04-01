@@ -19,13 +19,15 @@ import gzip
 # from scrape2700 import * #Used to refresh live ratings after a round, so I don't forget to do it manually. Might not do this for 24 candidates.
 
 # from sinquefieldCup import main as SCup
-from utils import simCandidatesTournament as simCand
+# from utils import simCandidatesTournament as simCand
+from utils import simWomensCandidatesTournament as simCand
 
 def main():
     start_time = time.time()
 
     terminalArgs = sys.argv
-    current = pd.read_csv("./chessSim/data/candidatesGames2024.csv")
+    # current = pd.read_csv("./chessSim/data/candidatesGames2024.csv")
+    current = pd.read_csv("./chessSim/data/womensCandidatesGames2024.csv")
     # # print(current)
 
     # currentResults = summarizeCurrent(current)
@@ -36,7 +38,7 @@ def main():
 
 ### python poolOdds.py 100 True <- terminal command to get results for 100 sims with new pool draws for GP2
 
-    nSims = 1000
+    nSims = 100000
     if len(terminalArgs) > 1:
         nSims = int(terminalArgs[1])
     
@@ -89,15 +91,17 @@ def main():
 
     # print('dumping')
 
-    pickle.dump(winners, open( "./chessSim/data/sims/candidatesWinners_.p", "wb" ) ) #Save simulations
-    pickle.dump(seconds, open( "./chessSim/data/sims/candidatesSeconds_.p", "wb" ) ) #Save simulations
-    pickle.dump(ties, open( "./chessSim/data/sims/candidatesTies_.p", "wb" ) ) #Save simulations
+    # pickle.dump(winners, open( "./chessSim/data/sims/candidatesWinners_.p", "wb" ) ) #Save simulations
+    # pickle.dump(seconds, open( "./chessSim/data/sims/candidatesSeconds_.p", "wb" ) ) #Save simulations
+    # pickle.dump(ties, open( "./chessSim/data/sims/candidatesTies_.p", "wb" ) ) #Save simulations
 
-    # Compress and save to a gzip file
-    with gzip.open('./chessSim/data/sims/candidates_simulation_results_smol.json.gz', 'wt', encoding='UTF-8') as file:
+    # # Compress and save to a gzip file
+    with gzip.open('./chessSim/data/sims/candidates_womens_results.json.gz', 'wt', encoding='UTF-8') as file:
         json.dump(simulation_results, file)
-    # print('done dumping')
-    # print(winsByRound)
+
+
+    # # print('done dumping')
+    # # print(winsByRound)
 
         
     print("--- %s seconds ---" % (time.time() - start_time))

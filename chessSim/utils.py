@@ -1,6 +1,7 @@
 # from grandPrix import GrandPrix
 from candidatesTorunament import Candidates
 from candidatesTorunament import getCandidates
+from candidatesTorunament import getWomenCandidates
 
 from norwayChess import Norway
 from norwayChess import getNorway
@@ -19,6 +20,8 @@ import pandas as pd
 # import plotly.express as px
 import pickle
 import numpy as np
+
+from player import Player
 
 def summarizeCurrent(games):
 
@@ -81,6 +84,12 @@ def summarizeCurrent(games):
 
 def simCandidatesTournament(games): #_ is because map has to pass an argument to the function
     candidates = getCandidates()
+    tournament = Candidates(candidates, games)
+    tournament.simCandidates()
+    return tournament.winner, tournament.second, tournament.tie, tournament.result_json
+
+def simWomensCandidatesTournament(games): #_ is because map has to pass an argument to the function
+    candidates = getWomenCandidates()
     tournament = Candidates(candidates, games)
     tournament.simCandidates()
     return tournament.winner, tournament.second, tournament.tie, tournament.result_json
