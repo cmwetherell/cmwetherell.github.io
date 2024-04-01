@@ -2,7 +2,7 @@
 layout: post
 title:  "FIDE Candidates Tournament 2024"
 subtitle: "Open and Women's Predictions"
-date:   2024-04-01 00:01:00 -0700
+date:   2024-04-01 00:00:00 -0700
 postImage: /assets/img/fabi-nepo.jpg
 imageCaption:  "photo: FIDE"
 categories: Tournament
