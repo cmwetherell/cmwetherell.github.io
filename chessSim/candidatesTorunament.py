@@ -21,6 +21,19 @@ def getCandidates():
     candidates = {x[0]: Player(x[0], x[1], x[2] , x[3]) for x in np.array(candidates)}
     # add Abasov, Nijat
     candidates['Abasov, Nijat'] = Player('Abasov, Nijat', 2641, 2566, 2555)
+    # class Player(
+    # name: Any,
+    # EloC: Any,
+    # EloR: Any,
+    # EloB: Any
+    # )
+    # for player in candidates: print each elo
+
+    # for player in candidates:
+    #     print(player, candidates[player].EloC)
+    #     print(player, candidates[player].EloR)
+    #     print(player, candidates[player].EloB)
+
     return candidates
 
 def getWomenCandidates():
@@ -361,5 +374,5 @@ class Candidates:
             print(self.tbrrSummary)
 
 if __name__ == "__main__":
-    tournament = Candidates(getWomenCandidates())
+    tournament = Candidates(getCandidates())
     tournament.simCandidates()

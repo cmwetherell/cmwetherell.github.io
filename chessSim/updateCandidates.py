@@ -1,7 +1,7 @@
 import pandas as pd
 from multiprocessing import Pool
 from itertools import repeat
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 import time
 from tqdm import tqdm
 import time
@@ -53,8 +53,8 @@ def convert_to_df(data, rnd):
 
     return df
 
-def main(nsims: int, tourn: str, rnd: int | str, trim: bool = False):
-    print(trim, 'trim')
+def main(nsims: int, tourn: str, rnd: int | str):
+
     start_time = time.time()
 
     if tourn == "open":
@@ -95,14 +95,6 @@ def main(nsims: int, tourn: str, rnd: int | str, trim: bool = False):
 
     print(f"DataFrame uploaded successfully to {table_name} table.")
 
-    if trim: # havent tested this code yet, should try to run some test before deleting all my sims!
-        rounds_to_trim = ["Pre"] + list(range(1, rnd))
-        for i in rounds_to_trim:
-            with engine.connect() as connection:
-                print("Trimming round", i)
-                # need tp modify to keep sample of 10k records
-                # connection.execute(f"DELETE FROM {table_name} WHERE \"Round\" = {i}")
-
 if __name__=="__main__":
     set_start_method("spawn")
 
@@ -111,7 +103,14 @@ if __name__=="__main__":
     parser.add_argument("--round", required=True, help="Which round to simulate")
     parser.add_argument("--nsims", type=int, default=1000, help="Number of simulations to run")
     parser.add_argument("--tourn", type=str, default="open", help="Which tournament to run")
-    parser.add_argument("--trim", action='store_true', help="Whether to trim the results of old rounds")
     args = parser.parse_args()
 
-    main(nsims=args.nsims, tourn=args.tourn, rnd=args.round, trim=args.trim)
+    for i in range (0, args.nsims // 10000):
+        print(f"Running simulation {i}...")
+        nsims = min(args.nsims, 10000)
+
+        if args.tourn =="both":
+            main(nsims=nsims, tourn="open", rnd=args.round)
+            main(nsims=nsims, tourn="womens", rnd=args.round)
+        else:
+            main(nsims=nsims, tourn=args.tourn, rnd=args.round)
