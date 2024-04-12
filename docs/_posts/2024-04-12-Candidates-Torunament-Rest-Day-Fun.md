@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Candidates 2024 Halfway House"
+title:  "Candidates 2024 Halfway Complete, Rest Day Fun"
 subtitle: "What will it take to win?"
 date:   2024-04-12 00:00:00 -0700
 postImage: /assets/img/nak_nep_2024.jpeg
