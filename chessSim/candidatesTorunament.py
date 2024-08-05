@@ -17,7 +17,8 @@ def getCandidates():
          'Gukesh D',
          'Praggnanandhaa R',
          'Vidit, Santosh Gujrathi',
-         'Abasov, Nijat' ])]
+         'Abasov, Nijat' 
+         ])]
     candidates = {x[0]: Player(x[0], x[1], x[2] , x[3]) for x in np.array(candidates)}
     # add Abasov, Nijat
     candidates['Abasov, Nijat'] = Player('Abasov, Nijat', 2641, 2566, 2555)
@@ -109,7 +110,7 @@ class Candidates:
         self.games['result'] = 0.0
         
 
-        # self.games.to_csv("./chessSim/data/candidatesGames2024.csv", index=False)
+        self.games.to_csv("./chessSim/data/candidatesGames2024.csv", index=False)
         # self.games.to_csv("./chessSim/data/womensCandidatesGames2024.csv", index=False)
 
     def simRR(self):
