@@ -1,6 +1,6 @@
 from re import I
 import pandas as pd
-# from utils import summarizeCurrent
+from utils import summarizeCurrent
 # from utils import simNorway
 # from utils import simSuperbet
 from multiprocessing import Pool
@@ -19,26 +19,27 @@ import gzip
 # from scrape2700 import * #Used to refresh live ratings after a round, so I don't forget to do it manually. Might not do this for 24 candidates.
 
 # from sinquefieldCup import main as SCup
-# from utils import simCandidatesTournament as simCand
-from utils import simWomensCandidatesTournament as simCand
+from utils import simCandidatesTournament as simCand
+# from utils import simWomensCandidatesTournament as simCand
 
 def main():
     start_time = time.time()
 
     terminalArgs = sys.argv
-    # current = pd.read_csv("./chessSim/data/candidatesGames2024.csv")
-    current = pd.read_csv("./chessSim/data/womensCandidatesGames2024.csv")
+    current = pd.read_csv("./chessSim/data/candidatesGames2024.csv")
+    # current = pd.read_csv("./chessSim/data/womensCandidatesGames2024.csv")
     # # print(current)
 
-    # currentResults = summarizeCurrent(current)
+    currentResults = summarizeCurrent(current)
     # pickle.dump(currentResults, open( "./chessSim/data/sims/candidatesSummary.p", "wb" ) ) #Save simulations
 
-    # print(currentResults)
+    print(currentResults)
     # gameModel = lgb.Booster(model_file = './chessSim/models/model.txt')
 
-### python poolOdds.py 100 True <- terminal command to get results for 100 sims with new pool draws for GP2
+### python poolOdds.py 100 True <- termi
+# nal command to get results for 100 sims with new pool draws for GP2
 
-    nSims = 100000
+    nSims = 10
     if len(terminalArgs) > 1:
         nSims = int(terminalArgs[1])
     
@@ -67,10 +68,10 @@ def main():
         ct[key] /= (nSims / 100)
     print('seconds results', ct)
 
-    ct = Counter(ties)
-    for key in ct:
-        ct[key] /= (nSims / 100)
-    print('tie results', ct)
+    # ct = Counter(ties)
+    # for key in ct:
+    #     ct[key] /= (nSims / 100)
+    # print('tie results', ct)
 
     ## Create Bar chart of magnusElo with plotly express
 
@@ -95,9 +96,9 @@ def main():
     # pickle.dump(seconds, open( "./chessSim/data/sims/candidatesSeconds_.p", "wb" ) ) #Save simulations
     # pickle.dump(ties, open( "./chessSim/data/sims/candidatesTies_.p", "wb" ) ) #Save simulations
 
-    # # Compress and save to a gzip file
-    with gzip.open('./chessSim/data/sims/candidates_womens_results.json.gz', 'wt', encoding='UTF-8') as file:
-        json.dump(simulation_results, file)
+    # # # Compress and save to a gzip file
+    # with gzip.open('./chessSim/data/sims/candidates_womens_results.json.gz', 'wt', encoding='UTF-8') as file:
+    #     json.dump(simulation_results, file)
 
 
     # # print('done dumping')

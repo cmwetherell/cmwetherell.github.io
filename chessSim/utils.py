@@ -25,7 +25,7 @@ from player import Player
 
 def summarizeCurrent(games):
 
-    playersCopy = getPlayersTata()
+    playersCopy = getCandidates()
     # print(playersCopy[1])
     # print(playersCopy[1])
     gamesCopy = games.copy()
