@@ -23,6 +23,21 @@ import numpy as np
 
 from player import Player
 
+import pandas as pd
+from sqlalchemy import create_engine
+from typing import Optional
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# PostgreSQL connection details
+POSTGRES_USER = os.getenv('POSTGRES_USER')
+POSTGRES_PASSWORD = os.getenv('POSTGRES_PASSWORD')
+POSTGRES_HOST = os.getenv('POSTGRES_HOST')
+POSTGRES_PORT = os.getenv('POSTGRES_PORT')
+POSTGRES_DATABASE = os.getenv('POSTGRES_DATABASE')
+
 def summarizeCurrent(games):
 
     playersCopy = getCandidates()
@@ -225,6 +240,39 @@ def toMD(current, standings, hash):
     export = export[export.Qualify > 0]
 
     return nSims, export.to_markdown(index = False, floatfmt = "#.1f")
+
+
+
+
+def upload_dataframe_to_db(table_name: str, df: pd.DataFrame, if_exists: Optional[str] = 'append') -> None:
+    """
+    Uploads a DataFrame to a specified table in a PostgreSQL database.
+    
+    Args:
+        table_name (str): The name of the table to upload the DataFrame to.
+        df (pd.DataFrame): The DataFrame to upload.
+        if_exists (str, optional): How to behave if the table already exists. 
+                                   Options are 'fail', 'replace', or 'append'. 
+                                   Default is 'append'.
+    
+    Raises:
+        ValueError: If the DataFrame is empty.
+        Exception: If any error occurs during the database operation.
+    """
+    if df.empty:
+        raise ValueError("The provided DataFrame is empty. Cannot upload to the database.")
+
+    # Create the SQLAlchemy engine
+    try:
+        engine = create_engine(f'postgresql+psycopg2://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DATABASE}')
+        
+        # Upload the DataFrame to the database
+        df.to_sql(table_name, con=engine, if_exists=if_exists, index=False)
+        print(f"DataFrame uploaded successfully to the {table_name} table.")
+    
+    except Exception as e:
+        print(f"An error occurred while uploading the DataFrame to the database: {e}")
+
 
 if __name__ == "__main__":
     print("This is a module, not a script.")

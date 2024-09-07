@@ -15,58 +15,103 @@ from multiprocessing import set_start_method
 import lightgbm as lgb
 import json
 import gzip
+from utils import upload_dataframe_to_db 
+
+
+from simOlympiad import main as simOlympiad
 
 # from scrape2700 import * #Used to refresh live ratings after a round, so I don't forget to do it manually. Might not do this for 24 candidates.
 
 # from sinquefieldCup import main as SCup
-from utils import simCandidatesTournament as simCand
+# from utils import simCandidatesTournament as simCand
 # from utils import simWomensCandidatesTournament as simCand
 
 def main():
     start_time = time.time()
 
     terminalArgs = sys.argv
-    current = pd.read_csv("./chessSim/data/candidatesGames2024.csv")
-    # current = pd.read_csv("./chessSim/data/womensCandidatesGames2024.csv")
-    # # print(current)
+    # current = pd.read_csv("./chessSim/data/candidatesGames2024.csv")
+    # # current = pd.read_csv("./chessSim/data/womensCandidatesGames2024.csv")
+    # # # print(current)
 
-    currentResults = summarizeCurrent(current)
-    # pickle.dump(currentResults, open( "./chessSim/data/sims/candidatesSummary.p", "wb" ) ) #Save simulations
+    # currentResults = summarizeCurrent(current)
+    # # pickle.dump(currentResults, open( "./chessSim/data/sims/candidatesSummary.p", "wb" ) ) #Save simulations
 
-    print(currentResults)
+    # print(currentResults)
     # gameModel = lgb.Booster(model_file = './chessSim/models/model.txt')
 
 ### python poolOdds.py 100 True <- termi
 # nal command to get results for 100 sims with new pool draws for GP2
 
-    nSims = 10
+    nSims = 16
     if len(terminalArgs) > 1:
         nSims = int(terminalArgs[1])
-    
-    # winsByRound = []
-
-    # print(i, time.time())    
 
     with Pool() as p:
+        try:
             # Use imap_unordered for potentially faster execution since the order of results may not matter
             # Wrap the repeat iterable with tqdm to show progress, specifying the total number of tasks
-            results = list(tqdm(p.imap_unordered(simCand, repeat(current, nSims)), total=nSims, desc="Simulating"))
+            results = list(tqdm(p.imap_unordered(simOlympiad, repeat(0, nSims)), total=nSims, desc="Simulating"))
+        except Exception as e:
+            print(f"An error occurred during simulation: {e}")
+        finally:
+            p.close()
+            p.join()
 
 
-    # print("--- %s seconds ---" % (time.time() - start_time))
+    print("--- %s seconds ---" % (time.time() - start_time))
     # print(results)
+    # print('\n\n\n\n\n')
 
-    winners, seconds, ties, simulation_results = zip(*results)
+    winsByRound = []
 
-    ct = Counter(winners)
+    winsByRound.append(results)
+
+    print('dumping')
+
+    pickle.dump(winsByRound, open( "./chessSim/data/sims/olympiad45.p", "wb" ) ) #Save simulations
+
+    print('done dumping')
+
+    # Convert the loaded data back into a DataFrame if necessary
+    # Assuming `wins_by_round` is a list of results, convert it to a DataFrame
+    df = pd.DataFrame(winsByRound[0])  # Adjust indexing if needed
+
+    # change column names to 'gold', 'silver', 'bronze'
+    df.columns = ['gold', 'silver', 'bronze']
+    print(df)
+
+    df['round'] = 'Pre'
+    df['future_results'] = "" # empty string for future results
+
+    # Define the table name for the upload
+    table_name = 'olympiad_2024'  # Replace with your desired table name
+
+    # Upload the DataFrame to the database
+    upload_dataframe_to_db(table_name, df)
+
+    print("DataFrame uploaded to the database successfully.")
+
+    # create a Counter with the first element of each element in results, expeess as a % of nSims and print it
+    ct = Counter([x[0] for x in results])
     for key in ct:
         ct[key] /= (nSims / 100)
     print('winners results', ct)
 
-    ct = Counter(seconds)
-    for key in ct:
-        ct[key] /= (nSims / 100)
-    print('seconds results', ct)
+
+    # print(winsByRound)
+
+    # winners, seconds, ties, simulation_results = zip(*results)
+
+    # ct = Counter(winners)
+    # for key in ct:
+    #     ct[key] /= (nSims / 100)
+    # print('winners results', ct)
+
+    # ct = Counter(seconds)
+    # for key in ct:
+    #     ct[key] /= (nSims / 100)
+    # print('seconds results', ct)
 
     # ct = Counter(ties)
     # for key in ct:

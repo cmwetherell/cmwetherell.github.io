@@ -2,6 +2,7 @@ import requests
 import pandas as pd
 import pickle
 import numpy as np
+import json
 import chess.pgn # I would normally do 'from chess import pgn', but the developer examples did it this way.
 
 #To surpress a warning I don't care about...
@@ -30,27 +31,52 @@ def main():
 
     # get Olympiad players
 
-    playersURL = 'http://chess-results.com/tnr653631.aspx?lan=1&art=16&flag=30&zeilen=99999'
+    playersURL = 'https://chess-results.com/tnr967173.aspx?lan=1&art=16&flag=30&zeilen=99999'
+    
     
     players = pd.read_html(requests.get(playersURL, verify = False,
                                     headers={'User-agent': 'Mozilla/5.0'}).text)
-
+    
     players = players[4]
-    players.columns = players.iloc[0]
-    players = players.drop(players.index[0])
-    # print(players)
+
+    if 'rtg+/-' not in players.columns:
+        players['rtg+/-'] = 0
+
     players.loc[players['rtg+/-'].isnull(), 'rtg+/-'] = 0
     players.Rtg = players.Rtg.astype(int)
     players['dR'] = players['rtg+/-'].astype(int) / 10
-    players.loc[players.Rtg==0, 'Rtg'] = players.Rp.astype(int)
+    # if rp exists
+    if 'Rp' in players.columns:
+        players.loc[players.Rtg==0, 'Rtg'] = players.Rp.astype(int)
     players.loc[players.Rtg==0, 'Rtg'] = 1200
     players.Rtg = round(players.Rtg + players['dR']).astype(int)
     # players.Rtg = players.Rp
-    players.to_csv('./chessSim/data/olympiad/players2022.csv', index = False)
-    # print(players)
-    
+
+    # change Hungary B to Hungary 2 and Hungary C to Hungary 3
+    # players.loc[players.Team == 'Hungary B', 'Team'] = 'Hungary 2'
+    # players.loc[players.Team == 'Hungary C', 'Team'] = 'Hungary 3'
+
+    # for each team, make sure they have at least 4 players. If they don't duplicate the lowest rated player so theyre is 4 players on the team
+    for team in players.Team.unique():
+        while players[players.Team == team].shape[0] < 4:
+            lowestRated = players[players.Team == team].sort_values(by = 'Rtg').head(1)
+            players = pd.concat([players, lowestRated])
+            print('Added player to team: ', team)
+    player_file = './chessSim/data/olympiad/players2024.csv'
+    players.to_csv(player_file, index = False)
+
+
+    # with DF I want to create a .json file saved to the same directory as the input file with a map between FED and Team, no duplicates
+
+    # create a dictionary with FED as key and Team as value
+    team_map = players[['FED', 'Team']].drop_duplicates().set_index('Team').to_dict()['FED']
+
+    # save dictionary to json file
+    with open('/Users/caleb/dev/pawnalyze-old-blog/chessSim/data/olympiad/team_map.json', 'w') as file:
+        json.dump(team_map, file)
+
     # make teams
-    teamURL = 'http://chess-results.com/tnr653631.aspx?lan=1&art=32&turdet=YES&flag=30&zeilen=99999'
+    teamURL = 'https://chess-results.com/tnr967173.aspx?lan=1&art=32&turdet=YES&flag=30&zeilen=99999&transfer=J'
 
     teams = pd.read_html(requests.get(teamURL, verify = False,
                                     headers={'User-agent': 'Mozilla/5.0'}).text)
@@ -58,11 +84,11 @@ def main():
 
     teams = teams[6]
 
-    teams.columns = teams.iloc[0]
-    teams = teams.drop(teams.index[0])
+    # teams.columns = teams.iloc[0]
+    # teams = teams.drop(teams.index[0])
     # teams = teams.drop(teams.index[0])
     teams = teams[['No.', 'Team']]
-    teams.columns = ['initRank', 'short', 'team']
+    teams.columns = ['initRank', 'team']
     teams = teams[['team', 'initRank']]
 
     # teams[['avgRating', 'fifthRating']] = teams.team.apply(getTeamRating, players = players)
@@ -71,131 +97,139 @@ def main():
     # teams['initRank'] = teams.index + 1
     teams['mp'], teams['IS10'], teams['gp'], teams['oppMP10'] = 0,0,0,0
 
-    invalidTeams = ['Pakistan', 'Cote d\'Ivoire', 'Rwanda', 'Lesotho']
-    teams = teams[~teams['team'].isin(invalidTeams)]
+    # invalidTeams = ['Pakistan', 'Cote d\'Ivoire', 'Rwanda', 'Lesotho']
+    # teams = teams[~teams['team'].isin(invalidTeams)]
+    # print info about teams df
 
-    teams.to_csv('./chessSim/data/olympiad/teams2022.csv', index = False)
+    # print all rows of teams
+    with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
+        print(teams)
+
+
+
+    teams.to_csv('./chessSim/data/olympiad/teams2024.csv', index = False)
 
     # print(teams)
 
-    #Process games from chess-results: http://chess-results.com/partieSuche.aspx?lan=1&art=4&tnr=368908&rd=1
-    pgn = open("./chessSim/data/olympiad/2022.pgn") # http://caissabase.co.uk/ download Scid files, export to pgn
+    # TODO: RUn this once games have been completed or posted.
+    # #Process games from chess-results: http://chess-results.com/partieSuche.aspx?lan=1&art=4&tnr=368908&rd=1
+    # pgn = open("./chessSim/data/olympiad/2022.pgn") # http://caissabase.co.uk/ download Scid files, export to pgn
 
-    gameData = []
-    while True:
-        headers = chess.pgn.read_headers(pgn)
-        if headers is None:
-            break
+    # gameData = []
+    # while True:
+    #     headers = chess.pgn.read_headers(pgn)
+    #     if headers is None:
+    #         break
         
-        headerElements = [header for header in headers] #create list of meta data for each game, could be dict instead
+    #     headerElements = [header for header in headers] #create list of meta data for each game, could be dict instead
 
-        # if this criteria is met, the game has all the criteria we need for our model training data.
-        if ('WhiteElo' in headerElements) & ('BlackElo' in headerElements) & ('Result' in headerElements) \
-           & ('White' in headerElements) & ('Black' in headerElements) & ('WhiteTeam' in headerElements) & ('BlackTeam' in headerElements):
+    #     # if this criteria is met, the game has all the criteria we need for our model training data.
+    #     if ('WhiteElo' in headerElements) & ('BlackElo' in headerElements) & ('Result' in headerElements) \
+    #        & ('White' in headerElements) & ('Black' in headerElements) & ('WhiteTeam' in headerElements) & ('BlackTeam' in headerElements):
 
-            # append relevant data to what will become our pandas df
-            dat = [headers['White'], headers['WhiteTeam'], headers['WhiteElo'], \
-                 headers['Black'], headers['BlackTeam'], headers['BlackElo'], headers['Result'] \
-                     ,headers['Round'], headers['Board']]
-            gameData.append(dat)
-    df = pd.DataFrame(gameData, columns = ['whiteName', 'whiteTeam', 'whiteElo', 'blackName', 'blackTeam', 'blackElo', 'result', 'round', 'board'])
+    #         # append relevant data to what will become our pandas df
+    #         dat = [headers['White'], headers['WhiteTeam'], headers['WhiteElo'], \
+    #              headers['Black'], headers['BlackTeam'], headers['BlackElo'], headers['Result'] \
+    #                  ,headers['Round'], headers['Board']]
+    #         gameData.append(dat)
+    # df = pd.DataFrame(gameData, columns = ['whiteName', 'whiteTeam', 'whiteElo', 'blackName', 'blackTeam', 'blackElo', 'result', 'round', 'board'])
 
-    ##Cleaning Data
-    df = df[df.result != '*'] # cleaning some games that didn't have a valid result recorded
-    df.whiteElo = df.whiteElo.astype(int) #changing type
-    df.blackElo = df.blackElo.astype(int)
-    # print(df['round'].unique())
-    df['round'] = df['round'].astype(float).apply(np.floor)
+    # ##Cleaning Data
+    # df = df[df.result != '*'] # cleaning some games that didn't have a valid result recorded
+    # df.whiteElo = df.whiteElo.astype(int) #changing type
+    # df.blackElo = df.blackElo.astype(int)
+    # # print(df['round'].unique())
+    # df['round'] = df['round'].astype(float).apply(np.floor)
 
-    df.loc[df.result=='1-0', 'result'] = 1 #use integers for multiclass indexes
-    df.loc[df.result=='1/2-1/2', 'result'] = 0.5
-    df.loc[df.result=='0-1', 'result'] = 0
+    # df.loc[df.result=='1-0', 'result'] = 1 #use integers for multiclass indexes
+    # df.loc[df.result=='1/2-1/2', 'result'] = 0.5
+    # df.loc[df.result=='0-1', 'result'] = 0
 
-    df.loc[df.whiteElo==0, 'whiteElo'] = 1700 ### using TPR of unranked players in 2018 Olympiad.
-    df.loc[df.blackElo==0, 'blackElo'] = 1700
+    # df.loc[df.whiteElo==0, 'whiteElo'] = 1700 ### using TPR of unranked players in 2018 Olympiad.
+    # df.loc[df.blackElo==0, 'blackElo'] = 1700
 
-        ##Feature Engineering (very simple!)
-    df['EloDiff'] = df.whiteElo - df.blackElo
-    df['EloAvg'] =((df.whiteElo + df.blackElo) / 2 ).astype(int)
+    #     ##Feature Engineering (very simple!)
+    # df['EloDiff'] = df.whiteElo - df.blackElo
+    # df['EloAvg'] =((df.whiteElo + df.blackElo) / 2 ).astype(int)
 
 
-    # print(df)
-    # write to csv for future use
-    df.to_csv('./chessSim/data/olympiad/games2022.csv', index = False)
+    # # print(df)
+    # # write to csv for future use
+    # df.to_csv('./chessSim/data/olympiad/games2022.csv', index = False)
     # print(df.columns)
 
-    rounds = ['https://chess-results.com/tnr653631.aspx?lan=1&art=2&rd=1&flag=30',
-            'http://chess-results.com/tnr653631.aspx?lan=1&art=2&rd=2&flag=30',
-            'https://chess-results.com/tnr653631.aspx?lan=1&art=2&rd=3&flag=30',
-            'http://chess-results.com/tnr653631.aspx?lan=1&art=2&rd=4&flag=30',
-            'http://chess-results.com/tnr653631.aspx?lan=1&art=2&rd=5&flag=30',
-            'http://chess-results.com/tnr653631.aspx?lan=1&art=2&rd=6&flag=30',
-            'http://chess-results.com/tnr653631.aspx?lan=1&art=2&rd=7&flag=30',
-            'http://chess-results.com/tnr653631.aspx?lan=1&art=2&rd=8&flag=30',
-            'http://chess-results.com/tnr653631.aspx?lan=1&art=2&rd=9&flag=30',
-            'http://chess-results.com/tnr653631.aspx?lan=1&art=2&rd=10&flag=30',
+    # rounds = ['https://chess-results.com/tnr653631.aspx?lan=1&art=2&rd=1&flag=30',
+    #         'http://chess-results.com/tnr653631.aspx?lan=1&art=2&rd=2&flag=30',
+    #         'https://chess-results.com/tnr653631.aspx?lan=1&art=2&rd=3&flag=30',
+    #         'http://chess-results.com/tnr653631.aspx?lan=1&art=2&rd=4&flag=30',
+    #         'http://chess-results.com/tnr653631.aspx?lan=1&art=2&rd=5&flag=30',
+    #         'http://chess-results.com/tnr653631.aspx?lan=1&art=2&rd=6&flag=30',
+    #         'http://chess-results.com/tnr653631.aspx?lan=1&art=2&rd=7&flag=30',
+    #         'http://chess-results.com/tnr653631.aspx?lan=1&art=2&rd=8&flag=30',
+    #         'http://chess-results.com/tnr653631.aspx?lan=1&art=2&rd=9&flag=30',
+    #         'http://chess-results.com/tnr653631.aspx?lan=1&art=2&rd=10&flag=30',
             
-    ]
+    # ]
 
-    i = 1
-    matchResults = []
-    for roundURL in rounds:
-
-
-        roundResults = pd.read_html(requests.get(roundURL, verify = False,
-                                        headers={'User-agent': 'Mozilla/5.0'}).text)
+    # i = 1
+    # matchResults = []
+    # for roundURL in rounds:
 
 
-        roundResults = roundResults[4]
-        roundResults.columns = roundResults.iloc[1]
-        roundResults = roundResults.drop(roundResults.index[0])
-        roundResults = roundResults.drop(roundResults.index[0])
+    #     roundResults = pd.read_html(requests.get(roundURL, verify = False,
+    #                                     headers={'User-agent': 'Mozilla/5.0'}).text)
 
-        whiteTeams = roundResults.iloc[:, [4, 7, 12]]
-        blackTeams = roundResults.iloc[:, [12, 9, 4]]
-        # print(whiteTeams)
 
-        whiteTeams.columns = ['playerTeam', 'gp', 'oppTeam']
-        blackTeams.columns = ['playerTeam', 'gp', 'oppTeam']
+    #     roundResults = roundResults[4]
+    #     roundResults.columns = roundResults.iloc[1]
+    #     roundResults = roundResults.drop(roundResults.index[0])
+    #     roundResults = roundResults.drop(roundResults.index[0])
 
-        results = pd.concat([whiteTeams, blackTeams]).reset_index(drop=True)
-        results['round'] = i
-        i+=1
+    #     whiteTeams = roundResults.iloc[:, [4, 7, 12]]
+    #     blackTeams = roundResults.iloc[:, [12, 9, 4]]
+    #     # print(whiteTeams)
 
-        results.gp = results.gp.replace('3½', '3.5')
-        results.gp = results.gp.replace('2½', '2.5')
-        results.gp = results.gp.replace('1½', '1.5')
-        results.gp = results.gp.replace('½', '0.5')
-        # print(results.gp)
+    #     whiteTeams.columns = ['playerTeam', 'gp', 'oppTeam']
+    #     blackTeams.columns = ['playerTeam', 'gp', 'oppTeam']
 
-        results.gp = results.gp.astype(float)
+    #     results = pd.concat([whiteTeams, blackTeams]).reset_index(drop=True)
+    #     results['round'] = i
+    #     i+=1
 
-        # print(results)
+    #     results.gp = results.gp.replace('3½', '3.5')
+    #     results.gp = results.gp.replace('2½', '2.5')
+    #     results.gp = results.gp.replace('1½', '1.5')
+    #     results.gp = results.gp.replace('½', '0.5')
+    #     # print(results.gp)
 
-        mpConditions = [
-            (results.gp > 2),
-            (results.gp == 2),
-            (results.gp < 2),
-        ]
-        mpValues = [2,1,0]
+    #     results.gp = results.gp.astype(float)
 
-        results['mp'] = np.select(mpConditions, mpValues)
+    #     # print(results)
 
-        results.loc[results.playerTeam == 'India *)', 'playerTeam'] = 'India'
-        results.loc[results.oppTeam == 'India *)', 'oppTeam'] = 'India'
+    #     mpConditions = [
+    #         (results.gp > 2),
+    #         (results.gp == 2),
+    #         (results.gp < 2),
+    #     ]
+    #     mpValues = [2,1,0]
 
-        results.loc[results.playerTeam == 'India 2 *)', 'playerTeam'] = 'India 2'
-        results.loc[results.oppTeam == 'India 2 *)', 'oppTeam'] = 'India 2'
+    #     results['mp'] = np.select(mpConditions, mpValues)
 
-        results = results[['playerTeam', 'oppTeam', 'round', 'gp']]
+    #     results.loc[results.playerTeam == 'India *)', 'playerTeam'] = 'India'
+    #     results.loc[results.oppTeam == 'India *)', 'oppTeam'] = 'India'
 
-        invalidTeams = ['Pakistan',  'Rwanda', ]
-        results = results[~results['playerTeam'].isin(invalidTeams)]  
+    #     results.loc[results.playerTeam == 'India 2 *)', 'playerTeam'] = 'India 2'
+    #     results.loc[results.oppTeam == 'India 2 *)', 'oppTeam'] = 'India 2'
 
-        matchResults.append(results)
+    #     results = results[['playerTeam', 'oppTeam', 'round', 'gp']]
 
-    matchResults = pd.concat(matchResults)
-    matchResults.to_csv('./chessSim/data/olympiad/matches2022.csv', index = False)
+    #     invalidTeams = ['Pakistan',  'Rwanda', ]
+    #     results = results[~results['playerTeam'].isin(invalidTeams)]  
+
+    #     matchResults.append(results)
+
+    # matchResults = pd.concat(matchResults)
+    # matchResults.to_csv('./chessSim/data/olympiad/matches2022.csv', index = False)
 
 if __name__ == "__main__":
     main()
