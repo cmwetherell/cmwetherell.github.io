@@ -33,6 +33,7 @@ def getIS10(team, matchSummary):
     teamMatches = matchSummary[matchSummary.playerTeam == team].sort_values(by = ['mpTotalOpp', 'ISi'], ascending = [False, False])
 
     nOpp = teamMatches.shape[0]
+    #TODO: Check on this for new host country
     # if team == "India 2":
     #     print(teamMatches)
     #     print(teamMatches.ISi[0:(nOpp-1)])
@@ -252,8 +253,8 @@ def makeHappyPools(topPools, bottomPools, medianPool, prevMatches):
     if len(medianPool) > 0:
         if pairingFast(medianPool[0], prevMatches) is None:
             
-            print('tried to remove median teams')
-            print((medianPool[0][0], medianPool[0][1]))
+            # print('tried to remove median teams')
+            # print((medianPool[0][0], medianPool[0][1]))
             topPools[len(topPools)-1] = topPools[len(topPools)-1] + medianPool[0]
             medianPool = []
 
@@ -405,9 +406,6 @@ def makeHappyPools(topPools, bottomPools, medianPool, prevMatches):
                             elif oppIterator >= len(allPools[(poolNumber+poolIterator)]): # If he has, go to the next pool since this team has to be floated, bec they already played all teams in their own pool too
                                 poolIterator +=1
                                 oppIterator = 0
-                            
-
-
 
                     # raise Exception("No matches found, need to improve code to account for floaters in this situation. make max pairings, float least priritized teams")
 
@@ -437,10 +435,10 @@ def makeHappyPools(topPools, bottomPools, medianPool, prevMatches):
         while isNotHappy:
             # print('whileID: asdwq354234')
 
-            teamsPlayedALl = playedAllTeams(pool, prevMatches)
+            teamsPlayedAll = playedAllTeams(pool, prevMatches)
             # print(teamsPlayedALl)
             
-            for team in reversed(teamsPlayedALl):
+            for team in reversed(teamsPlayedAll):
 
                 pool.remove(team) # Once we float it to the next pool, its no longer in current pool
 
@@ -518,7 +516,7 @@ def makeHappyPools(topPools, bottomPools, medianPool, prevMatches):
                         
             ##Now that we got rid of the played all teams, and the odd team, we need to pair up this pool, and send the minimum number of teams down to the next pool for float pairing.
             if (len(pool) % 2 == 0) & (playedAllTeams(pool, prevMatches) == []): #after we remove the odd team, we need to verify thats no one has played everyone
-                # print("this should happen in every round")
+                
                 isNotHappy = False #break loop on next iteration
 
                 newGoodMatches = pairingFast(pool, prevMatches)
@@ -656,11 +654,11 @@ def makeHappyPools(topPools, bottomPools, medianPool, prevMatches):
 
 def whiteGamesCount(gamesWhite, teams): #TODO only used for initial setup, not sure why I need this
 
-    gamesWhite = gamesWhite[gamesWhite.board == 1].whiteTeam.value_counts().to_frame().reset_index()
-    gamesWhite.columns = ['team', 'whiteCount']
-
-    numRounds = 0
     if gamesWhite.shape[0] > 0:
+        gamesWhite = gamesWhite[gamesWhite.board == 1].whiteTeam.value_counts().to_frame().reset_index()
+        gamesWhite.columns = ['team', 'whiteCount']
+
+        numRounds = 0
         numRounds = 2 * (gamesWhite.whiteCount.sum() / gamesWhite.shape[0])
         gamesWhite['whiteDiff'] = 2 * gamesWhite.whiteCount - numRounds
 
@@ -689,7 +687,7 @@ def getWhiteTeam(matchTeams, teams):
     elif aCount < bCount:
         return a
     elif aCount == bCount:
-        return random.choice([a,b]) #TODO: This is supposed to be base don alteration
+        return random.choice([a,b]) #TODO: This is supposed to be based on alteration
     else:
         raise Exception("Color if-else didn't work")
 
@@ -702,12 +700,11 @@ def simulateGame(whiteElo, blackElo, model):
     return chessMLPred(model, whiteElo + supplement, blackElo + supplement)
 
 def playMatch(matchTeams, teams, players, model):
+
     a = matchTeams[0]
     b = matchTeams[1]
 
     whiteTeam = getWhiteTeam(matchTeams, teams)
-    # print(a, b, whiteTeam)
-    # print('white is played', whiteTeam)
     try:
         blackTeam = [team for team in [a,b] if team != whiteTeam][0]
     except IndexError:
@@ -716,13 +713,11 @@ def playMatch(matchTeams, teams, players, model):
         print(b)
         print(whiteTeam)
 
+    # im having trouble with the code below because its giving me empty data frames, but I think Germany and Ncaragua have players
+
     whiteRoster = players[players.Team == whiteTeam][["Name", "Team", "Rtg"]]
     blackRoster = players[players.Team == blackTeam][["Name", "Team", "Rtg"]]
 
-
-
-    # print(whiteRoster)
-    # print('black roster', blackRoster)
 
     newGame1 = [whiteRoster.iloc[0,0], whiteRoster.iloc[0,1], whiteRoster.iloc[0,2], blackRoster.iloc[0,0], blackRoster.iloc[0,1], blackRoster.iloc[0,2]]
     newGame2 = [blackRoster.iloc[1,0], blackRoster.iloc[1,1], blackRoster.iloc[1,2], whiteRoster.iloc[1,0], whiteRoster.iloc[1,1], whiteRoster.iloc[1,2]]
@@ -739,9 +734,6 @@ def playMatch(matchTeams, teams, players, model):
     # newGames.loc[newGames.blackName == 'Gukesh D.', 'result'] = 0
 
     return newGames
-
-
-
 
 '''
 evaluating a pool:
@@ -761,8 +753,8 @@ def summarizeResults(games, teams, players, current = None):
     whiteGames = games.copy()
     whiteGames['color'] = 'white'
 
-    blackGames = games[['blackName', 'blackTeam', 'blackElo', 'whiteName', 'whiteTeam', 'whiteElo', \
-                'result', 'round', 'board', 'EloDiff', 'EloAvg']].copy()
+    blackColSort = ['blackName', 'blackTeam', 'blackElo', 'whiteName', 'whiteTeam', 'whiteElo', 'result', 'round', 'board', 'EloDiff', 'EloAvg']
+    blackGames = games[blackColSort].copy()
     
     blackGames.loc[:,'result'] = 1 - blackGames.result
     blackGames.loc[:,'EloDiff'] = -1 * blackGames.EloDiff
@@ -809,7 +801,7 @@ def summarizeResults(games, teams, players, current = None):
     matchSummary = matchSummary.merge(right = teamSummary, how = 'inner', on = 'playerTeam')
     matchSummary = matchSummary.merge(right = teamSummary, how = 'inner', left_on = 'oppTeam', right_on = 'playerTeam', suffixes = ('', 'Opp'))
     # print(len(matchSummary.playerTeam.unique()))
-    matchSummary['ISi'] = matchSummary.gp * matchSummary.mpTotalOpp
+    matchSummary['ISi'] = matchSummary.gp * matchSummary.mpTotalOpp  
 
     teamSummary['IS(10)'] = teamSummary.playerTeam.apply(getIS10, matchSummary = matchSummary)
     teamSummary['GP'] = teamSummary.playerTeam.apply(getGP, matchSummary = matchSummary)
@@ -828,26 +820,29 @@ def summarizeResults(games, teams, players, current = None):
 
     return teamSummary, matchSummary
 
-def main(nSim):
-    print('Simulation: ', nSim)
+def main(_):
+    # print('Simulation: ', nSim)
     # get Olympiad players
-    players = pd.read_csv('./chessSim/data/olympiad/players2022.csv')
+    players = pd.read_csv('./chessSim/data/olympiad/players2024.csv')
     
     #  get teams
-    teams = pd.read_csv('./chessSim/data/olympiad/teams2022.csv')
+    teams = pd.read_csv('./chessSim/data/olympiad/teams2024.csv')
     # print(teams.shape[0], 'num temas')
 
-    # get games
-    games = pd.read_csv('./chessSim/data/olympiad/games2022.csv')
+    games = pd.read_csv('./chessSim/data/olympiad/games2024.csv')
 
-    # get current
-    current = pd.read_csv('./chessSim/data/olympiad/matches2022.csv')
-
+    current = pd.read_csv('./chessSim/data/olympiad/matches2024.csv')
+   
     # games = games.loc[games['round'] < olympiadRound] #TODO remove this, just using to test simulating future rounds. eventually want to loop through all rounds
-    
-    teams = whiteGamesCount(games, teams)
 
-    teamSummary, matchSummary = summarizeResults(games, teams, players, current)
+    teams = whiteGamesCount(games, teams) #TODO: Do I need this?
+    teamSummary, matchSummary = summarizeResults(games, teams, players, current) #TODO: add back after round 1
+    # if matchSummary is empty DF nextRound = 1
+    if matchSummary.shape[0] == 0:
+        nextRound = 1
+    else:
+        nextRound = max(matchSummary['round']) + 1
+
     # print(matchSummary)
     # print('beginning next round', max(matchSummary['round']))
     # print(teamSummary.shape[0],'number of teams in beginning')
@@ -860,13 +855,16 @@ def main(nSim):
     #     nextRound = 1
     # else: nextRound = max(matchSummary['round']) + 1
 
-    nextRound = max(matchSummary['round']) + 1
 
     for pairingRound in range(nextRound, 12): # 11 rounds total, start after last round
         # print('new round: ', pairingRound)
         
-
-        previousMatchups = set(zip(matchSummary.playerTeam, matchSummary.oppTeam))
+        if pairingRound == 1:
+            # print('first round')
+            previousMatchups = set()
+        elif pairingRound > 1:
+            previousMatchups = set(zip(matchSummary.playerTeam, matchSummary.oppTeam))
+        else: raise Exception("Pairing round number error (<1)")
 
         teamsMatching = teamSummary.sort_values(by = ['mpTotal', 'initRank'], ascending = [False, True]).reset_index(drop = True)
         # print(teamsMatching.to_string())
@@ -976,8 +974,11 @@ def main(nSim):
 
         # print(matchups)
         # print(newGamesList, 'new games')
-        
-        games = pd.concat([games] + newGamesList)
+
+        if games.shape[0] == 0:
+            games = pd.concat(newGamesList)
+        else:
+            games = pd.concat([games] + newGamesList)
         # print(games.shape[0], 'game rows')
 
         teamSummary, matchSummary = summarizeResults(games, teams, players, current)
@@ -993,11 +994,11 @@ def main(nSim):
 
     
     # print(a.mpTotal.sum())
+    # print((a.team.iloc[0], a.team.iloc[1], a.team.iloc[2]))
     return (a.team.iloc[0], a.team.iloc[1], a.team.iloc[2])
 
     # print(a)
     # print(b.sort_values(by = 'mpTotal', ascending = False))
 
 if __name__ == "__main__":
-    # while True:
     main(0)
