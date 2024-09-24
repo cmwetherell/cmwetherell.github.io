@@ -35,7 +35,7 @@ def main():
     start_time = time.time()
     terminalArgs = sys.argv
 
-    nSims = 320
+    nSims = 80
     if len(terminalArgs) > 1:
         nSims = int(terminalArgs[1])
 

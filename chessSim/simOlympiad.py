@@ -287,7 +287,6 @@ def makeHappyPools(topPools, bottomPools, medianPool, prevMatches):
             # print(teamsPlayedALl)
             
             for team in teamsPlayedALl:
-                # print(team)
 
                 pool.remove(team) # Once we float it to the next pool, its no longer in current pool
 
@@ -623,30 +622,34 @@ def makeHappyPools(topPools, bottomPools, medianPool, prevMatches):
 
     # print('these are unmatched teams', teamSet.difference(set([team for match in goodMatches.union(floatedMatches) for team in match])))
     if any([a==b for a,b in goodMatches.union(floatedMatches)]):
-        for a,b in goodMatches.union(floatedMatches):
-            if a==b:
-                print(a,b)
-        print('')
-        print('')
-        print('')
-        print('')
-        print('original pools',allPoolsCopy)
-        print('')
-        print('')
-        print('')
-        print('')
-        print('previous matchups',prevMatches)
-        print('')
-        print('')
-        print('')
-        print('')
-        print('good matches', goodMatches)
-        print('')
-        print('')
-        print('')
-        print('')
-        print('floated matches', floatedMatches)
-        raise Exception("Something went wrong, matched with itself?")
+        # for a,b in goodMatches.union(floatedMatches):
+        #     if a==b:
+        #         print(a,b)
+        # print('')
+        # print('')
+        # print('')
+        # print('')
+        # print('original pools',allPoolsCopy)
+        # print('')
+        # print('')
+        # print('')
+        # print('')
+        # print('previous matchups',prevMatches)
+        # print('')
+        # print('')
+        # print('')
+        # print('')
+        # print('good matches', goodMatches)
+        # print('')
+        # print('')
+        # print('')
+        # print('')
+        # print('floated matches', floatedMatches)
+
+        # TODO: This is a bug, need to fix this
+        # rmeove match with same team playing itself
+        goodMatches = set([match for match in goodMatches if match[0] != match[1]])
+        # raise Exception("Something went wrong, matched with itself?")
     return goodMatches.union(floatedMatches)
     # print(medianPool)
     # print(len(medianPool[0]))
@@ -776,8 +779,13 @@ def summarizeResults(games, teams, players, current = None):
     # print(len(matchSummary.playerTeam.unique()))
     # print(matchSummary, 'new game match summary')
 
-    if current is not None:
-        matchSummary = pd.concat([current, matchSummary])
+    # im trying to figure out why current and matchSummary have dupliactes in them, please do some diagnostics below
+
+    # print(current)
+    # print(matchSummary)
+
+    # if current is not None:
+    #     matchSummary = pd.concat([current, matchSummary])
 
     # print(matchSummary, 'this is the match summary')
     
@@ -841,7 +849,8 @@ def main(_):
     if matchSummary.shape[0] == 0:
         nextRound = 1
     else:
-        nextRound = max(matchSummary['round']) + 1
+        nextRound = int(max(matchSummary['round']) + 1)
+        # print('next round:', nextRound)
 
     # print(matchSummary)
     # print('beginning next round', max(matchSummary['round']))
@@ -953,6 +962,9 @@ def main(_):
 
             matchups = makeHappyPools(topPools, bottomPools, medianPool, previousMatchups)
 
+            # print('round', pairingRound, 'matchups:', matchups)
+            # print('-------------')
+
             # if pairingRound == 6:
             #     # print(bottomPools, ' this is the bottom')
             #     print(matchups)
@@ -988,9 +1000,18 @@ def main(_):
 
     a, b = summarizeResults(games, teams, players, current)
 
-    # print(b[b.playerTeam=='Russia'])
+    # # # print(b[b.playerTeam=='Russia'])
+    # a_tenrows = a.head(10)
+    # print(a_tenrows.to_string())
 
-    # print(a.to_string())
+    # # b tenrows
+    # b_tenrows = b.head(10)
+    # print(b_tenrows.to_string())
+
+    # print all rows of b where playerTeam = lookupTeam
+
+    # lookupTeam = 'Vietnam'
+    # print(b[b.playerTeam == lookupTeam].to_string())
 
     
     # print(a.mpTotal.sum())

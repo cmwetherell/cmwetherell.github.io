@@ -43,7 +43,7 @@ def main():
 ### python poolOdds.py 100 True <- termi
 # nal command to get results for 100 sims with new pool draws for GP2
 
-    nSims = 16
+    nSims = 160
     if len(terminalArgs) > 1:
         nSims = int(terminalArgs[1])
 
@@ -51,7 +51,9 @@ def main():
         try:
             # Use imap_unordered for potentially faster execution since the order of results may not matter
             # Wrap the repeat iterable with tqdm to show progress, specifying the total number of tasks
-            results = list(tqdm(p.imap_unordered(simOlympiad, repeat(0, nSims)), total=nSims, desc="Simulating"))
+            results = list(tqdm(p.imap_unordered(simOlympiad, range(nSims)), total=nSims, desc="Simulating"))
+            # without tqdm
+            # results = list(p.imap_unordered(simOlympiad, range(nSims)))
         except Exception as e:
             print(f"An error occurred during simulation: {e}")
         finally:
