@@ -33,8 +33,10 @@ def main():
         url = 'https://www.2700chess.com/'
         tables = pd.read_html(StringIO(requests.get(url, verify = False,
                                         headers={'User-agent': 'Mozilla/5.0'}).text))
+        playerData = tables[0].loc[:,["Name", "Classical", "Rapid", "Blitz"]]
 
-        playerData = tables[0].loc[:,["Name", "Classic", "Rapid", "Blitz"]]
+        # ranme classical to classic
+        playerData.columns = ["Name", "Classic", "Rapid", "Blitz"]
 
         playerData.Classic = playerData.Classic.apply(splitRating)
         playerData.Rapid = playerData.Rapid.apply(splitRating)

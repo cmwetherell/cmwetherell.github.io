@@ -6,41 +6,56 @@ from tqdm import tqdm
 from collections import Counter
 import lightgbm as lgb
 from utils import upload_dataframe_to_db
-from simOlympiad import main as simOlympiad
+from utils import simWCC
 
 def main():
     start_time = time.time()
     terminalArgs = sys.argv
 
-    nSims = 100
+    nSims = 10000
     if len(terminalArgs) > 1:
         nSims = int(terminalArgs[1])
 
     results = []
     for i in tqdm(range(nSims), desc="Simulating"):
         try:
-            result = simOlympiad(i)
+            result = simWCC(None)
             results.append(result)
         except Exception as e:
             print(f"An error occurred during simulation {i}: {e}")
 
     print(f"--- {time.time() - start_time} seconds ---")
 
-    winsByRound = [results]
-    print('dumping')
-    pickle.dump(winsByRound, open("./chessSim/data/sims/olympiad45.p", "wb"))
-    print('done dumping')
+    # Process results into a DataFrame
+    all_rows = []
+    for result in results:
+        base_row = {
+            'winner': result['winner'],
+            'tie': result['tie']
+        }
+        game_outcomes = {f"{game['gameId']}|{str(int(game['round']))}": game['outcome'] for game in result['games']}
+        all_rows.append({**base_row, **game_outcomes})
 
-    df = pd.DataFrame(winsByRound[0])
-    df.columns = ['gold', 'silver', 'bronze']
-    df['round'] = '9'
-    df['future_results'] = ""
+    # Create DataFrame
+    df = pd.DataFrame(all_rows)
 
-    table_name = 'olympiad_2024'
-    upload_dataframe_to_db(table_name, df)
+    # winsByRound = [results]
+    # print('dumping')
+    # pickle.dump(winsByRound, open("./chessSim/data/sims/olympiad45.p", "wb"))
+    # print('done dumping')
+
+    # df = pd.DataFrame(winsByRound[0])
+    # df.columns = ['gold', 'silver', 'bronze']
+    # df['round'] = '9'
+    # df['future_results'] = ""
+
+    df['round'] = 0
+
+    table_name = 'wcc24'
+    upload_dataframe_to_db(table_name, df, if_exists='replace')
     print("DataFrame uploaded to the database successfully.")
 
-    ct = Counter([x[0] for x in results])
+    ct = Counter([x['winner'] for x in results])
     for key in ct:
         ct[key] /= (nSims / 100)
     print('winners results', ct)

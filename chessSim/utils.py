@@ -9,11 +9,14 @@ from norwayChess import getNorway
 from superbetClassic import Superbet
 from superbetClassic import getSuperbet
 
-from sinquefieldCup import SCup
-from sinquefieldCup import getPlayers
+# from sinquefieldCup import SCup
+# from sinquefieldCup import getPlayers
 
 from tataSteel import Tata
 from tataSteel import getPlayersTata
+
+from wcc import WCC
+from wcc import getPlayers
 
 import pandas as pd
 # import plotly
@@ -109,12 +112,18 @@ def simWomensCandidatesTournament(games): #_ is because map has to pass an argum
     tournament.simCandidates()
     return tournament.winner, tournament.second, tournament.tie, tournament.result_json
 
-
-def simSCup(games): #_ is because map has to pass an argument to the function
+def simWCC(games): #_ is because map has to pass an argument
     players = getPlayers()
-    tournament = SCup(players, games)
-    tournament.simCup()
-    return tournament.winner, tournament.gctWinner
+    tournament = WCC(players, games)
+    tournament.simWCC()
+    return tournament.result_json
+
+
+# def simSCup(games): #_ is because map has to pass an argument to the function
+#     players = getPlayers()
+#     tournament = SCup(players, games)
+#     tournament.simCup()
+#     return tournament.winner, tournament.gctWinner
 
 def simTata(games): #_ is because map has to pass an argument to the function
     players = getPlayersTata()

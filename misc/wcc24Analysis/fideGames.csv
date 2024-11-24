@@ -1,0 +1,222 @@
+Player,mmyy,color,opp,title,blank,opp_rating,opp_fed,w,n,chg,k,kchg
+Gukesh D,0523,w,"Mannion, Stephen R",m,,2330,SCO,1,1,0.08,10,0.8
+Gukesh D,0523,b,"Dhulipalla, Bala Chandra Prasad",m,,2441,IND,0.5,1,-0.34,10,-3.4
+Gukesh D,0523,w,"De Groote, Ewoud",,,2207,NED,1,1,0.03,10,0.3
+Gukesh D,0523,b,"Koustav, Chatterjee",m,,2520,IND,1,1,0.23,10,2.3
+Gukesh D,0523,w,"Kobo, Ori",g,,2549,ISR,1,1,0.26,10,2.6
+Gukesh D,0523,b,"Pranav, V",g,,2545,IND,0.5,1,-0.24,10,-2.4
+Gukesh D,0523,w,"Aryan, Chopra",g,,2607,IND,1,1,0.33,10,3.3
+Gukesh D,0523,b,"Van Foreest, Jorden",g,,2680,NED,0.5,1,-0.07,10,-0.7
+Gukesh D,0523,w,"Fedoseev, Vladimir",g,,2674,FID,0.5,1,-0.08,10,-0.8
+Gukesh D,0623,b,"Van Foreest, Jorden",g,,2689,NED,1,1,0.44,10,4.4
+Gukesh D,0623,w,"Keymer, Vincent",g,,2700,GER,1,1,0.46,10,4.6
+Gukesh D,0623,b,"Grandelius, Nils",g,,2664,SWE,0.5,1,-0.09,10,-0.9
+Gukesh D,0623,b,"Erigaisi, Arjun",g,,2701,IND,0,1,-0.54,10,-5.4
+Gukesh D,0623,w,"Mishra, Abhimanyu",g,,2550,USA,0.5,1,-0.24,10,-2.4
+Gukesh D,0623,b,"Gelfand, Boris",g,,2678,ISR,0.5,1,-0.08,10,-0.8
+Gukesh D,0623,w,"Svidler, Peter",g,,2683,FID,0.5,1,-0.07,10,-0.7
+Gukesh D,0623,w,"Vescovi, Giovanni",g,,2606,BRA,1,1,0.33,10,3.3
+Gukesh D,0623,b,"Cheparinov, Ivan",g,,2660,BUL,0.5,1,-0.1,10,-1
+Gukesh D,0623,w,Narayanan.s.l,g,,2660,IND,0.5,1,-0.1,10,-1
+Gukesh D,0623,b,"Yilmaz, Mustafa",g,,2641,TUR,0.5,1,-0.12,10,-1.2
+Gukesh D,0623,w,"Aravindh, Chithambaram Vr.",g,,2633,IND,1,1,0.36,10,3.6
+Gukesh D,0623,w,"Martirosyan, Haik M.",g,,2675,ARM,1,1,0.42,10,4.2
+Gukesh D,0623,b,"Sevian, Samuel",g,,2684,USA,0.5,1,-0.07,10,-0.7
+Gukesh D,0623,b,"Oparin, Grigoriy",g,,2667,USA,0.5,1,-0.09,10,-0.9
+Gukesh D,0623,w,"Tabatabaei, M. Amin",g,,2677,IRI,0.5,1,-0.08,10,-0.8
+Gukesh D,0723,b,"Firouzja, Alireza",g,,2785,FRA,1,1,0.57,10,5.7
+Gukesh D,0723,w,"Nakamura, Hikaru",g,,2775,USA,0,1,-0.44,10,-4.4
+Gukesh D,0723,b,"Mamedyarov, Shakhriyar",g,,2738,AZE,0.5,1,0.01,10,0.1
+Gukesh D,0723,w,"Carlsen, Magnus",g,,2853,NOR,0.5,1,0.16,10,1.6
+Gukesh D,0723,b,"Abdusattorov, Nodirbek",g,,2731,UZB,0.5,1,0,10,0
+Gukesh D,0723,w,"Giri, Anish",g,,2768,NED,0.5,1,0.05,10,0.5
+Gukesh D,0723,b,"Caruana, Fabiano",g,,2764,USA,0.5,1,0.04,10,0.4
+Gukesh D,0723,w,"Tari, Aryan",g,,2642,NOR,1,1,0.38,10,3.8
+Gukesh D,0723,b,"So, Wesley",g,,2760,USA,0.5,1,0.04,10,0.4
+Gukesh D,0823,b,"Ivic, Velimir",g,,2590,SRB,0.5,1,-0.21,10,-2.1
+Gukesh D,0823,w,"Volokitin, Andrei",g,,2674,UKR,0.5,1,-0.1,10,-1
+Gukesh D,0823,b,"Mamedyarov, Shakhriyar",g,,2742,AZE,0.5,1,0,10,0
+Gukesh D,0823,w,"Demchenko, Anton",g,,2623,FID,1,1,0.34,10,3.4
+Gukesh D,0823,w,"Taspinar, Yanki",f,,2344,TUR,1,1,0.08,10,0.8
+Gukesh D,0823,w,"Yakubboev, Nodirbek",g,,2640,UZB,0.5,1,-0.14,10,-1.4
+Gukesh D,0823,b,"Abasov, Nijat",g,,2632,AZE,0.5,1,-0.15,10,-1.5
+Gukesh D,0823,w,"Mendonca, Leon Luke",g,,2627,IND,1,1,0.34,10,3.4
+Gukesh D,0823,b,"Sanal, Vahap",g,,2585,TUR,1,1,0.29,10,2.9
+Gukesh D,0823,w,"Sychev, Klementy",g,,2540,FID,1,1,0.24,10,2.4
+Gukesh D,0923,w,"Iskandarov, Misratdin",g,,2551,AZE,1,1,0.25,10,2.5
+Gukesh D,1023,b,"Iskandarov, Misratdin",g,,2551,AZE,1,1,0.25,10,2.5
+Gukesh D,1023,b,Narayanan.s.l,g,,2656,IND,0.5,1,-0.12,10,-1.2
+Gukesh D,1023,w,Narayanan.s.l,g,,2656,IND,1,1,0.38,10,3.8
+Gukesh D,1023,w,"Esipenko, Andrey",g,,2683,FID,0.5,1,-0.08,10,-0.8
+Gukesh D,1023,b,"Esipenko, Andrey",g,,2683,FID,0.5,1,-0.08,10,-0.8
+Gukesh D,1023,b,"Wang, Hao",g,,2709,CHN,1,1,0.45,10,4.5
+Gukesh D,1023,w,"Wang, Hao",g,,2709,CHN,0.5,1,-0.05,10,-0.5
+Gukesh D,1023,w,"Carlsen, Magnus",g,,2835,NOR,0,1,-0.38,10,-3.8
+Gukesh D,1023,b,"Carlsen, Magnus",g,,2835,NOR,0.5,1,0.12,10,1.2
+Gukesh D,1123,w,"Bilguun, Sumiya",g,,2456,MGL,0.5,1,-0.35,10,-3.5
+Gukesh D,1123,b,"Abdusattorov, Nodirbek",g,,2716,UZB,0.5,1,-0.06,10,-0.6
+Gukesh D,1123,w,"Jumabayev, Rinat",g,,2585,KAZ,1,1,0.27,10,2.7
+Gukesh D,1123,b,"Orozbaev, Eldiar",f,,2358,KGZ,1,1,0.08,10,0.8
+Gukesh D,1123,b,"Maghsoodloo, Parham",g,,2707,IRI,0,1,-0.57,10,-5.7
+Gukesh D,1123,w,"Wei, Yi",g,,2726,CHN,0.5,1,-0.04,10,-0.4
+Gukesh D,1123,w,"Le, Quang Liem",g,,2733,VIE,0.5,1,-0.03,10,-0.3
+Gukesh D,1123,b,"Lee, Jun Hyeok",m,,2379,KOR,1,1,0.09,10,0.9
+Gukesh D,1123,b,"Mohammad, Nubairshah Shaikh",m,,2432,IND,0.5,1,-0.37,10,-3.7
+Gukesh D,1123,w,"Avinash, Ramesh",m,,2358,IND,1,1,0.08,10,0.8
+Gukesh D,1123,b,"Chanda, Sandipan",g,,2496,IND,1,1,0.18,10,1.8
+Gukesh D,1123,w,"Yilmazyerli, Mert",g,,2533,TUR,1,1,0.22,10,2.2
+Gukesh D,1123,b,Narayanan.s.l,g,,2651,IND,0,1,-0.65,10,-6.5
+Gukesh D,1123,w,"Vaishali, Rameshbabu",m,wg,2448,IND,1,1,0.14,10,1.4
+Gukesh D,1123,b,"Paravyan, David",g,,2599,FID,0,1,-0.71,10,-7.1
+Gukesh D,1123,w,"Kevlishvili, Robby",g,,2521,NED,1,1,0.2,10,2
+Gukesh D,1123,b,"Gupta, Abhijeet",g,,2609,IND,1,1,0.3,10,3
+Gukesh D,1223,b,"Mamedov, Rauf",g,,2640,AZE,0.5,1,-0.16,10,-1.6
+Gukesh D,1223,w,"Ponomariov, Ruslan",g,,2641,UKR,0.5,1,-0.16,10,-1.6
+Gukesh D,1223,b,"Pichot, Alan",g,,2650,ESP,0.5,1,-0.15,10,-1.5
+Gukesh D,1223,w,"Saric, Ivan",g,,2647,CRO,0.5,1,-0.15,10,-1.5
+Gukesh D,1223,b,Narayanan.s.l,g,,2651,IND,0,1,-0.65,10,-6.5
+Gukesh D,1223,w,"Suleymanli, Aydin",g,,2588,AZE,0,1,-0.72,10,-7.2
+Gukesh D,1223,b,"Amar, Elham",m,,2568,NOR,1,1,0.25,10,2.5
+Gukesh D,1223,w,"Theodorou, Nikolas",g,,2619,GRE,0.5,1,-0.19,10,-1.9
+Gukesh D,1223,b,"Kuybokarov, Temur",g,,2584,AUS,0,1,-0.73,10,-7.3
+Gukesh D,1223,w,"Dardha, Daniel",g,,2580,BEL,0.5,1,-0.23,10,-2.3
+Gukesh D,1223,w,"Akobian, Varuzhan",g,,2582,USA,1,1,0.27,10,2.7
+Gukesh D,0124,w,"Bartel, Mateusz",g,,2659,POL,1,1,0.42,10,4.2
+Gukesh D,0124,b,"Vitiugov, Nikita",g,,2704,ENG,0.5,1,-0.02,10,-0.2
+Gukesh D,0124,w,"Volokitin, Andrei",g,,2659,UKR,1,1,0.42,10,4.2
+Gukesh D,0124,w,"Moussard, Jules",g,,2635,FRA,0,1,-0.62,10,-6.2
+Gukesh D,0124,b,"Adams, Michael",g,,2661,ENG,0.5,1,-0.08,10,-0.8
+Gukesh D,0124,w,"McShane, Luke J",g,,2631,ENG,1,1,0.38,10,3.8
+Gukesh D,0124,b,"Royal, Shreyas",m,,2438,ENG,0.5,1,-0.34,10,-3.4
+Gukesh D,0124,w,"Tabatabaei, M. Amin",g,,2692,IRI,0.5,1,-0.04,10,-0.4
+Gukesh D,0124,b,"Niemann, Hans Moke",g,,2667,USA,0,1,-0.57,10,-5.7
+Gukesh D,0124,b,"Aronian, Levon",g,,2723,USA,0.5,1,0,10,0
+Gukesh D,0124,w,"Erigaisi, Arjun",g,,2727,IND,0.5,1,0.01,10,0.1
+Gukesh D,0124,b,"Maghsoodloo, Parham",g,,2742,IRI,0.5,1,0.03,10,0.3
+Gukesh D,0124,w,"Predke, Alexandr",g,,2689,SRB,1,1,0.46,10,4.6
+Gukesh D,0124,b,"Sjugirov, Sanan",g,,2703,HUN,1,1,0.48,10,4.8
+Gukesh D,0124,w,"Eljanov, Pavel",g,,2691,UKR,0.5,1,-0.04,10,-0.4
+Gukesh D,0124,b,"Harikrishna, Pentala",g,,2696,IND,0.5,1,-0.03,10,-0.3
+Gukesh D,0224,w,"Abdusattorov, Nodirbek",g,,2727,UZB,0.5,1,0,10,0
+Gukesh D,0224,b,"Wei, Yi",g,,2740,CHN,1,1,0.52,10,5.2
+Gukesh D,0224,w,"Ding, Liren",g,,2780,CHN,0,1,-0.42,10,-4.2
+Gukesh D,0224,b,"Giri, Anish",g,,2749,NED,0,1,-0.47,10,-4.7
+Gukesh D,0224,w,"Nepomniachtchi, Ian",g,,2769,RUS,1,1,0.56,10,5.6
+Gukesh D,0224,b,"Van Foreest, Jorden",g,,2682,NED,1,1,0.44,10,4.4
+Gukesh D,0224,w,"Warmerdam, Max",g,,2625,NED,1,1,0.36,10,3.6
+Gukesh D,0224,b,"Ju, Wenjun",g,wg,2549,CHN,0.5,1,-0.23,10,-2.3
+Gukesh D,0224,w,"Vidit, Santosh Gujrathi",g,,2742,IND,0.5,1,0.02,10,0.2
+Gukesh D,0224,b,"Donchenko, Alexander",g,,2642,GER,1,1,0.39,10,3.9
+Gukesh D,0224,w,"Firouzja, Alireza",g,,2759,FRA,0.5,1,0.05,10,0.5
+Gukesh D,0224,w,"Praggnanandhaa, R",g,,2743,IND,0.5,1,0.03,10,0.3
+Gukesh D,0224,b,"Maghsoodloo, Parham",g,,2740,IRI,1,1,0.52,10,5.2
+Gukesh D,0324,w,"Seel, Christian, Dr.",m,,2480,GER,1,1,0.18,10,1.8
+Gukesh D,0324,b,"Colbow, Collin",f,,2376,GER,1,1,0.1,10,1
+Gukesh D,0324,w,"Niermann, Tristan",f,,2424,GER,1,1,0.13,10,1.3
+Gukesh D,0424,w,"Rapport, Richard",g,,2717,ROU,0.5,1,-0.04,10,-0.4
+Gukesh D,0424,b,"Nguyen, Thai Dai Van",g,,2630,CZE,1,1,0.35,10,3.5
+Gukesh D,0424,w,"Vidit, Santosh Gujrathi",g,,2747,IND,0.5,1,0.01,10,0.1
+Gukesh D,0424,b,"Abdusattorov, Nodirbek",g,,2744,UZB,0.5,1,0,10,0
+Gukesh D,0424,w,"Navara, David",g,,2667,CZE,0,1,-0.6,10,-6
+Gukesh D,0424,w,"Bartel, Mateusz",g,,2660,POL,0,1,-0.61,10,-6.1
+Gukesh D,0424,b,"Praggnanandhaa, R",g,,2747,IND,0.5,1,0.01,10,0.1
+Gukesh D,0424,w,"Keymer, Vincent",g,,2738,GER,1,1,0.49,10,4.9
+Gukesh D,0424,b,"Maghsoodloo, Parham",g,,2715,IRI,0.5,1,-0.04,10,-0.4
+Gukesh D,0524,w,"Vidit, Santosh Gujrathi",g,,2727,IND,0.5,1,-0.02,10,-0.2
+Gukesh D,0524,b,"Praggnanandhaa, R",g,,2747,IND,1,1,0.51,10,5.1
+Gukesh D,0524,w,"Nepomniachtchi, Ian",g,,2758,FID,0.5,1,0.02,10,0.2
+Gukesh D,0524,b,"Caruana, Fabiano",g,,2803,USA,0.5,1,0.08,10,0.8
+Gukesh D,0524,w,"Abasov, Nijat",g,,2632,AZE,1,1,0.35,10,3.5
+Gukesh D,0524,w,"Nakamura, Hikaru",g,,2789,USA,0.5,1,0.06,10,0.6
+Gukesh D,0524,b,"Firouzja, Alireza",g,,2760,FRA,0,1,-0.48,10,-4.8
+Gukesh D,0524,b,"Vidit, Santosh Gujrathi",g,,2727,IND,1,1,0.48,10,4.8
+Gukesh D,0524,w,"Praggnanandhaa, R",g,,2747,IND,0.5,1,0.01,10,0.1
+Gukesh D,0524,b,"Nepomniachtchi, Ian",g,,2758,FID,0.5,1,0.02,10,0.2
+Gukesh D,0524,w,"Caruana, Fabiano",g,,2803,USA,0.5,1,0.08,10,0.8
+Gukesh D,0524,b,"Abasov, Nijat",g,,2632,AZE,1,1,0.35,10,3.5
+Gukesh D,0524,w,"Firouzja, Alireza",g,,2760,FRA,1,1,0.52,10,5.2
+Gukesh D,0524,b,"Nakamura, Hikaru",g,,2789,USA,0.5,1,0.06,10,0.6
+Gukesh D,0824,w,"Deac, Bogdan-Daniel",g,,2680,ROU,1,1,0.39,10,3.9
+Gukesh D,0824,b,"Nepomniachtchi, Ian",g,,2770,FID,0.5,1,0.01,10,0.1
+Gukesh D,0824,w,"Praggnanandhaa, R",g,,2747,IND,0.5,1,-0.02,10,-0.2
+Gukesh D,0824,b,"Firouzja, Alireza",g,,2737,FRA,0.5,1,-0.04,10,-0.4
+Gukesh D,0824,w,"Abdusattorov, Nodirbek",g,,2766,UZB,0.5,1,0,10,0
+Gukesh D,0824,b,"Vachier-Lagrave, Maxime",g,,2732,FRA,0.5,1,-0.04,10,-0.4
+Gukesh D,0824,w,"Caruana, Fabiano",g,,2805,USA,0.5,1,0.06,10,0.6
+Gukesh D,0824,w,"Giri, Anish",g,,2745,NED,0.5,1,-0.03,10,-0.3
+Gukesh D,0824,b,"So, Wesley",g,,2757,USA,0.5,1,-0.01,10,-0.1
+Gukesh D,0924,b,"Ding, Liren",g,,2745,CHN,0.5,1,-0.03,10,-0.3
+Gukesh D,0924,w,"Nepomniachtchi, Ian",g,,2767,RUS,0.5,1,0,10,0
+Gukesh D,0924,b,"Rameshbabu, Praggnanandhaa",g,,2749,IND,0.5,1,-0.02,10,-0.2
+Gukesh D,0924,w,"Firouzja, Alireza",g,,2751,FRA,0.5,1,-0.02,10,-0.2
+Gukesh D,0924,b,"Abdusattorov, Nodirbek",g,,2762,UZB,0.5,1,-0.01,10,-0.1
+Gukesh D,0924,w,"Vachier-Lagrave, Maxime",g,,2721,FRA,0.5,1,-0.06,10,-0.6
+Gukesh D,0924,b,"Caruana, Fabiano",g,,2793,USA,0.5,1,0.04,10,0.4
+Gukesh D,0924,b,"Giri, Anish",g,,2746,NED,0.5,1,-0.03,10,-0.3
+Gukesh D,0924,w,"So, Wesley",g,,2751,USA,0.5,1,-0.02,10,-0.2
+Gukesh D,1024,b,"Stefansson, Vignir Vatnar",g,,2531,ISL,1,1,0.21,10,2.1
+Gukesh D,1024,w,"Kozak, Adam",g,,2609,HUN,1,1,0.29,10,2.9
+Gukesh D,1024,b,"Predke, Alexandr",g,,2671,SRB,1,1,0.37,10,3.7
+Gukesh D,1024,w,"Suleymanli, Aydin",g,,2632,AZE,1,1,0.32,10,3.2
+Gukesh D,1024,b,"Rapport, Richard",g,,2715,HUN,0.5,1,-0.07,10,-0.7
+Gukesh D,1024,w,"Wei, Yi",g,,2762,CHN,1,1,0.5,10,5
+Gukesh D,1024,b,"Maghsoodloo, Parham",g,,2723,IRI,1,1,0.44,10,4.4
+Gukesh D,1024,w,"Abdusattorov, Nodirbek",g,,2766,UZB,0.5,1,0,10,0
+Gukesh D,1024,w,"Caruana, Fabiano",g,,2798,USA,1,1,0.55,10,5.5
+Gukesh D,1024,b,"Fedoseev, Vladimir",g,,2692,SLO,1,1,0.4,10,4
+Gukesh D,1124,w,"Petursson, Margeir",g,,2405,ISL,1,1,0.09,10,0.9
+Gukesh D,1124,b,"Gorodetzky, David",m,,2497,ISR,1,1,0.15,10,1.5
+Gukesh D,1124,w,"Mamedov, Rauf",g,,2643,AZE,0.5,1,-0.2,10,-2
+Gukesh D,1124,b,"Andreikin, Dmitry",g,,2729,FID,0,1,-0.59,10,-5.9
+Gukesh D,1124,w,"Pechac, Jergus",g,,2582,SVK,0.5,1,-0.27,10,-2.7
+Gukesh D,1124,b,"Eljanov, Pavel",g,,2672,UKR,0.5,1,-0.17,10,-1.7
+Gukesh D,1124,w,"Vidit, Santosh Gujrathi",g,,2726,IND,0.5,1,-0.09,10,-0.9
+Ding Liren,0623,w,"Vachier-Lagrave, Maxime",g,,2742,FRA,0.5,1,-0.07,10,-0.7
+Ding Liren,0623,w,"Caruana, Fabiano",g,,2764,USA,0.5,1,-0.03,10,-0.3
+Ding Liren,0623,b,"Nepomniachtchi, Ian",g,,2794,FID,0.5,1,0.01,10,0.1
+Ding Liren,0623,w,"Duda, Jan-Krzysztof",g,,2724,POL,0.5,1,-0.09,10,-0.9
+Ding Liren,0623,b,"Firouzja, Alireza",g,,2785,FRA,0,1,-0.51,10,-5.1
+Ding Liren,0623,w,"So, Wesley",g,,2760,USA,0.5,1,-0.04,10,-0.4
+Ding Liren,0623,b,"Giri, Anish",g,,2768,NED,0,1,-0.53,10,-5.3
+Ding Liren,0623,w,"Rapport, Richard",g,,2745,ROU,0.5,1,-0.06,10,-0.6
+Ding Liren,0623,b,"Deac, Bogdan-Daniel",g,,2700,ROU,1,1,0.38,10,3.8
+Ding Liren,0224,b,"Vidit, Santosh Gujrathi",g,,2742,IND,0.5,1,-0.05,10,-0.5
+Ding Liren,0224,w,"Donchenko, Alexander",g,,2642,GER,0.5,1,-0.19,10,-1.9
+Ding Liren,0224,b,"Gukesh, D",g,,2725,IND,1,1,0.42,10,4.2
+Ding Liren,0224,w,"Praggnanandhaa, R",g,,2743,IND,0,1,-0.55,10,-5.5
+Ding Liren,0224,b,"Maghsoodloo, Parham",g,,2740,IRI,0.5,1,-0.06,10,-0.6
+Ding Liren,0224,w,"Abdusattorov, Nodirbek",g,,2727,UZB,0.5,1,-0.07,10,-0.7
+Ding Liren,0224,b,"Wei, Yi",g,,2740,CHN,0.5,1,-0.06,10,-0.6
+Ding Liren,0224,b,"Firouzja, Alireza",g,,2759,FRA,0,1,-0.53,10,-5.3
+Ding Liren,0224,w,"Giri, Anish",g,,2749,NED,0.5,1,-0.04,10,-0.4
+Ding Liren,0224,b,"Nepomniachtchi, Ian",g,,2769,RUS,0,1,-0.52,10,-5.2
+Ding Liren,0224,w,"Van Foreest, Jorden",g,,2682,NED,0.5,1,-0.13,10,-1.3
+Ding Liren,0224,b,"Warmerdam, Max",g,,2625,NED,1,1,0.29,10,2.9
+Ding Liren,0224,w,"Ju, Wenjun",g,wg,2549,CHN,0.5,1,-0.29,10,-2.9
+Ding Liren,0724,w,"Carlsen, Magnus",g,,2830,NOR,0.5,1,0.09,10,0.9
+Ding Liren,0724,w,"Praggnanandhaa, R",g,,2747,IND,0.5,1,-0.02,10,-0.2
+Ding Liren,0724,b,"Caruana, Fabiano",g,,2805,USA,0,1,-0.44,10,-4.4
+Ding Liren,0724,w,"Nakamura, Hikaru",g,,2794,USA,0,1,-0.46,10,-4.6
+Ding Liren,0724,b,"Firouzja, Alireza",g,,2737,FRA,0,1,-0.53,10,-5.3
+Ding Liren,0724,b,"Carlsen, Magnus",g,,2830,NOR,0,1,-0.41,10,-4.1
+Ding Liren,0724,b,"Praggnanandhaa, R",g,,2747,IND,0.5,1,-0.02,10,-0.2
+Ding Liren,0724,w,"Caruana, Fabiano",g,,2805,USA,0.5,1,0.06,10,0.6
+Ding Liren,0724,b,"Nakamura, Hikaru",g,,2794,USA,0.5,1,0.04,10,0.4
+Ding Liren,0724,w,"Firouzja, Alireza",g,,2737,FRA,0.5,1,-0.03,10,-0.3
+Ding Liren,0924,w,"Gukesh, D",g,,2766,IND,0.5,1,0.03,10,0.3
+Ding Liren,0924,b,"Giri, Anish",g,,2746,NED,0.5,1,0,10,0
+Ding Liren,0924,w,"So, Wesley",g,,2751,USA,0.5,1,0.01,10,0.1
+Ding Liren,0924,w,"Caruana, Fabiano",g,,2793,USA,0.5,1,0.07,10,0.7
+Ding Liren,0924,b,"Nepomniachtchi, Ian",g,,2767,RUS,0.5,1,0.03,10,0.3
+Ding Liren,0924,w,"Rameshbabu, Praggnanandhaa",g,,2749,IND,0.5,1,0.01,10,0.1
+Ding Liren,0924,b,"Firouzja, Alireza",g,,2751,FRA,0,1,-0.49,10,-4.9
+Ding Liren,0924,w,"Abdusattorov, Nodirbek",g,,2762,UZB,0.5,1,0.02,10,0.2
+Ding Liren,0924,b,"Vachier-Lagrave, Maxime",g,,2721,FRA,0,1,-0.53,10,-5.3
+Ding Liren,1024,w,"Henriquez Villagra, Cristobal",g,,2604,CHI,0.5,1,-0.18,10,-1.8
+Ding Liren,1024,b,"Fedoseev, Vladimir",g,,2692,SLO,0.5,1,-0.06,10,-0.6
+Ding Liren,1024,w,"Martirosyan, Haik M.",g,,2667,ARM,0.5,1,-0.1,10,-1
+Ding Liren,1024,b,"Shirov, Alexei",g,,2666,ESP,0.5,1,-0.1,10,-1
+Ding Liren,1024,w,"Le, Quang Liem",g,,2741,VIE,0,1,-0.49,10,-4.9
+Ding Liren,1024,w,"Maghsoodloo, Parham",g,,2723,IRI,0.5,1,-0.02,10,-0.2
+Ding Liren,1024,b,"Abdusattorov, Nodirbek",g,,2766,UZB,0.5,1,0.04,10,0.4
+Ding Liren,1024,w,"Caruana, Fabiano",g,,2798,USA,0.5,1,0.09,10,0.9
