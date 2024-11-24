@@ -13,7 +13,7 @@ from tqdm import tqdm
 import time
 from collections import Counter
 
-from simOlympiad import main as simOlympiad
+from utils import simWCC
 
 def main():
 
@@ -22,7 +22,7 @@ def main():
 
 # ##python poolOdds.py 100 True <- terminal command to get results for 100 sims with new pool draws for GP2
 
-    nSims = 50
+    nSims = 10
     if len(terminalArgs) > 1:
         nSims = int(terminalArgs[1])
     
@@ -33,7 +33,7 @@ def main():
     start_time = time.time()
     results = []
     for i in range(100):
-        result = simOlympiad(i)
+        result = simWCC(None)
         results.append(result)
         print(i, result)
 
@@ -42,25 +42,26 @@ def main():
 
     print("--- %s seconds ---" % (time.time() - start_time))
 
-    winsByRound.append(results)
+    print(results)
+    # winsByRound.append(results)
 
-    j=0
-    for winners in winsByRound:
+    # j=0
+    # for winners in winsByRound:
 
-        ct = Counter(winners)
-        for key in ct:
-            ct[key] /= (nSims / 100)
-        print('Round ', j , 'results', ct)
-        j+=1
+    #     ct = Counter(winners)
+    #     for key in ct:
+    #         ct[key] /= (nSims / 100)
+    #     print('Round ', j , 'results', ct)
+    #     j+=1
 
-        # start_time = time.time()
+    #     # start_time = time.time()
 
-    print('dumping')
+    # print('dumping')
 
-    pickle.dump(winsByRound, open( "./chessSim/data/sims/olympiad44Slow.p", "wb" ) ) #Save simulations
+    # pickle.dump(winsByRound, open( "./chessSim/data/sims/olympiad44Slow.p", "wb" ) ) #Save simulations
 
-    print('done dumping')
-    # print(winsByRound)
+    # print('done dumping')
+    # # print(winsByRound)
 
 
         

@@ -9,7 +9,7 @@ class Player:
         self.EloR = EloR
         self.EloB = EloB
         self.games = []
-        self.fidePD = pd.read_csv('./chessSim/data/fidePD.csv')
+        self.fidePD = pd.read_csv('./chessSim/data/chess_tpr_table.csv')
 
     
     def addGame(self, result, myElo, opponentElo, format):
@@ -40,7 +40,6 @@ class Player:
         elif p > 0.5:
             dp = self.fidePD[self.fidePD.pd == p]['diff'].values[0]
         elif p < 0.5:
-            # print(round(1-p),2)
             dp = -1 * self.fidePD[self.fidePD.pd == round(1-p,2)]['diff'].values[0]
         return Ra + dp
 
