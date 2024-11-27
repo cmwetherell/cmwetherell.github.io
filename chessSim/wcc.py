@@ -1,11 +1,4 @@
-'''
-TODO
-Why does wcc24 table have exstra cloumns with .0 at the end?
-Fix and finish API Route - maybe simplify greatly and then add more complexity from ther.
-Need to set up wcc webpage with simulated results and game pickers
-Write blog post
-
-'''
+# Description: This file contains the logic for simulating the World Chess Championship (WCC) tournament. The WCC tournament is a multi-stage tournament that consists of a round-robin (RR) stage, followed by a series of tiebreak stages. The simulation is based on the FIDE regulations for the WCC tournament. The simulation uses a machine learning model to predict the outcome of each game based on the Elo ratings of the players. The simulation outputs the winner and runner-up of the tournament, as well as the game results for each round.
 
 
 from math import remainder
@@ -25,7 +18,8 @@ def getPlayers():
          ])]
     players = {x[0]: Player(x[0], x[1], x[2] , x[3]) for x in np.array(players)}
 
-    # players['Ding, Liren'].EloC = 2675
+    players['Ding, Liren'].EloC = 2730
+    players['Gukesh D'].EloC = 2781
 
     return players
 
@@ -86,7 +80,7 @@ class WCC:
         self.games['round'] = range(1, len(self.games) + 1)
         
 
-        self.games.to_csv("./chessSim/data/wccGames2024.csv", index=False)
+        # self.games.to_csv("./chessSim/data/wccGames2024.csv", index=False)
 
     def simRR(self):
         #https://handbook.fide.com/files/handbook/Regulations_for_the_FIDE_Candidates_Tournament_2024.pdf
