@@ -51,7 +51,7 @@ def main():
     # df['round'] = '9'
     # df['future_results'] = ""
 
-    df['round'] = 3
+    df['round'] = 4
 
     table_name = 'wcc24'
     upload_dataframe_to_db(table_name, df, if_exists='append')

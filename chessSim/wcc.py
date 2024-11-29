@@ -18,8 +18,8 @@ def getPlayers():
          ])]
     players = {x[0]: Player(x[0], x[1], x[2] , x[3]) for x in np.array(players)}
 
-    players['Ding, Liren'].EloC = 2730
-    players['Gukesh D'].EloC = 2781
+    players['Ding, Liren'].EloC = 2731
+    players['Gukesh D'].EloC = 2780
 
     return players
 
