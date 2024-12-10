@@ -6,6 +6,7 @@ chessSim/data/*
 # chessSim/models/*
 !chessSim/data/gpEloData.csv
 !chessSim/data/berlinPoolGames.csv
+!chessSim/data/wccGames2024.csv
 !chessSim/data/sims/
 chessSim/data/sims/*
 !chessSim/data/sims/.gitkeep

@@ -8,11 +8,17 @@ import lightgbm as lgb
 from utils import upload_dataframe_to_db
 from utils import simWCC
 
+uploadRound = 12
+
 def main():
     start_time = time.time()
     terminalArgs = sys.argv
 
     currentGames = pd.read_csv("/Users/caleb/dev/pawnalyze-old-blog/chessSim/data/wccGames2024.csv")
+
+    maxGamePlayed = currentGames[currentGames['played'] == 1]['round'].max()
+
+    assert maxGamePlayed == uploadRound, f"Max game played is {maxGamePlayed} but trying to upload round {uploadRound}"
 
     nSims = 10000
     if len(terminalArgs) > 1:
@@ -50,8 +56,12 @@ def main():
     # df.columns = ['gold', 'silver', 'bronze']
     # df['round'] = '9'
     # df['future_results'] = ""
+    
+    
+    df['round'] = uploadRound
 
-    df['round'] = 4
+
+
 
     table_name = 'wcc24'
     upload_dataframe_to_db(table_name, df, if_exists='append')
