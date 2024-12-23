@@ -8,7 +8,7 @@ import lightgbm as lgb
 from utils import upload_dataframe_to_db
 from utils import simWCC
 
-uploadRound = 12
+uploadRound = 14
 
 def main():
     start_time = time.time()
@@ -20,7 +20,7 @@ def main():
 
     assert maxGamePlayed == uploadRound, f"Max game played is {maxGamePlayed} but trying to upload round {uploadRound}"
 
-    nSims = 10000
+    nSims = 100
     if len(terminalArgs) > 1:
         nSims = int(terminalArgs[1])
 
