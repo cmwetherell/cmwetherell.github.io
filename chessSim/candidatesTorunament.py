@@ -68,23 +68,47 @@ def getWomenCandidates():
     return candidates
 
 bst = lgb.Booster(model_file = './chessSim/models/model.txt')
+_bst_iteration = bst.best_iteration
 
 def chessMLPred(model, whiteElo, blackElo):
     avgRange = range(-10, 11, 5)
-    
+
     dat = [[whiteElo - i, blackElo - i, whiteElo - blackElo,((whiteElo - i) + (blackElo - i)) / 2] for i in avgRange]
-    preds = model.predict(dat,num_iteration=model.best_iteration).mean(axis = 0).tolist()
-    result = np.random.choice([0,0.5,1], p=preds) 
-    # print(whiteElo, blackElo, preds)
+    preds = model.predict(dat,num_iteration=_bst_iteration).mean(axis = 0).tolist()
+    result = np.random.choice([0,0.5,1], p=preds)
 
     return result
 
+def batchPredict(model, whiteElos, blackElos):
+    """Predict outcomes for multiple games at once. Returns array of results (0, 0.5, 1)."""
+    n = len(whiteElos)
+    avgRange = range(-10, 11, 5)
+    n_avg = len(avgRange)
+
+    # Build feature matrix for all games × all variations
+    rows = []
+    for j in range(n):
+        for i in avgRange:
+            rows.append([whiteElos[j] - i, blackElos[j] - i, whiteElos[j] - blackElos[j],
+                        ((whiteElos[j] - i) + (blackElos[j] - i)) / 2])
+
+    all_preds = model.predict(rows, num_iteration=_bst_iteration)  # single batch call
+    # Reshape to (n_games, n_avg, 3) and average across variations
+    all_preds = all_preds.reshape(n, n_avg, 3).mean(axis=1)
+
+    # Sample outcomes for all games at once
+    results = np.empty(n)
+    choices = np.array([0, 0.5, 1])
+    for j in range(n):
+        results[j] = np.random.choice(choices, p=all_preds[j])
+    return results
+
 def playChess(model, whitePlayer, blackPlayer, format):
 
-    whiteElo = getattr(whitePlayer, 'Elo' + format.upper()) #Get the Elo[C] attribute value from Player class
+    whiteElo = getattr(whitePlayer, 'Elo' + format.upper())
     blackElo = getattr(blackPlayer, 'Elo' + format.upper())
 
-    result = chessMLPred(model, whiteElo, blackElo) #points white player scored
+    result = chessMLPred(model, whiteElo, blackElo)
     whitePlayer.addGame(result, whiteElo, blackElo, format)
     blackPlayer.addGame((1 - result), blackElo, whiteElo, format)
 
@@ -128,22 +152,28 @@ class Candidates:
         #https://handbook.fide.com/files/handbook/Regulations_for_the_FIDE_Candidates_Tournament_2024.pdf
         self.games['blackWin'] = 0
 
-        for idx, row in self.games.iterrows():
-            if row.played == 0:
-                whitePlayer = self.players[row.whitePlayer]
-                blackPlayer = self.players[row.blackPlayer]
+        # Batch predict all unplayed games at once
+        unplayed = self.games[self.games.played == 0]
+        if len(unplayed) > 0:
+            whiteElos = np.array([self.players[wp].EloC for wp in unplayed.whitePlayer])
+            blackElos = np.array([self.players[bp].EloC for bp in unplayed.blackPlayer])
+            results = batchPredict(bst, whiteElos, blackElos)
 
-                result = playChess(bst, whitePlayer, blackPlayer, format = 'c') #points white player scored
-                
+            # Update games and player objects
+            for i, (idx, row) in enumerate(unplayed.iterrows()):
+                result = results[i]
                 self.games.at[idx, 'played'] = 1
                 self.games.at[idx, 'result'] = result
+                wp = self.players[row.whitePlayer]
+                bp = self.players[row.blackPlayer]
+                wp.addGame(result, wp.EloC, bp.EloC, 'c')
+                bp.addGame((1 - result), bp.EloC, wp.EloC, 'c')
 
-        
         whiteResults = self.games[['whitePlayer', 'blackPlayer', 'result', 'blackWin']].values
         blackResults = self.games[['blackPlayer', 'whitePlayer', 'result', 'blackWin']].values
         blackResults[:, 2] = 1 - blackResults[:, 2] # to change the game results to black player POV
         blackResults[:, 3] = 1 * (blackResults[:, 2] == 1) #checking for black wins, used for tb
-        
+
         self.tbrrSummary = pd.DataFrame(np.concatenate(
             (whiteResults, blackResults)
             , axis = 0))
@@ -153,19 +183,19 @@ class Candidates:
         tmpScores = self.tbrrSummary.groupby(['name']).agg(
             score = ('result','sum')).reset_index() # df[name, score]
 
-        #add SB tiebreak, move sort values code to this df
-        self.tbrrSummary['sbPoints'] = 0.0
-        for idx, row in self.tbrrSummary.iterrows():
-            self.tbrrSummary.at[idx, 'sbPoints'] = row.result * tmpScores.loc[tmpScores.name == row.oppName, 'score'].values[0]
+        # SB tiebreak: vectorized via merge instead of row-by-row apply
+        self.tbrrSummary = self.tbrrSummary.merge(
+            tmpScores.rename(columns={'name': 'oppName', 'score': 'oppScore'}), on='oppName')
+        self.tbrrSummary['sbPoints'] = self.tbrrSummary['result'] * self.tbrrSummary['oppScore']
+        self.tbrrSummary.drop(columns=['oppScore'], inplace=True)
 
-
-        self.tbrrSummary = self.tbrrSummary.groupby(['name']).agg( #using more sorting mechanisms than needed, but still advancing everyone with same score to TBs
+        self.tbrrSummary = self.tbrrSummary.groupby(['name']).agg(
             score = ('result','sum'),
             sb = ('sbPoints', 'sum'),
             wins = ('wins','sum'),
             blackWins = ('blackWin','sum'),
             ).reset_index()
-            
+
         self.tbrrSummary = self.tbrrSummary.sort_values(by = ['score', 'sb', 'wins', 'blackWins'], ascending = False).reset_index()
 
         self.tbrrSummary['first'] = 1 * (self.tbrrSummary.score == max(self.tbrrSummary.score))
@@ -334,24 +364,18 @@ class Candidates:
         return whitePlayer[:3] + '|' + blackPlayer[:3]
 
     def convertSimToJSON(self):
-        # Initialize the games list for the JSON structure
-        games_list = []
+        # Filter to round-robin games only
+        rr = self.games[self.games['stage'] == 'rr']
 
-        # filter self.games to when time control = rr
-        self.games = self.games[self.games['stage'] == 'rr']
-        
-        # Iterate over each row in the DataFrame to process game information
-        for _, row in self.games.iterrows():
-            game_id = self.generateGameId(row['whitePlayer'], row['blackPlayer'])
-            game_info = {
-                "gameId": game_id,
-                "outcome": row['result'],
-                "whitePlayer": row['whitePlayer'],
-                "blackPlayer": row['blackPlayer']
-            }
-            games_list.append(game_info)
-        
-        # Construct the final JSON structure
+        # Vectorized game ID generation + list comprehension (no iterrows)
+        wp = rr['whitePlayer'].values
+        bp = rr['blackPlayer'].values
+        results = rr['result'].values
+        games_list = [
+            {"gameId": w[:3] + '|' + b[:3], "outcome": r, "whitePlayer": w, "blackPlayer": b}
+            for w, b, r in zip(wp, bp, results)
+        ]
+
         self.result_json = {
             "winner": self.winner,
             "second": self.second,

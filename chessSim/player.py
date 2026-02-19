@@ -1,15 +1,20 @@
 import numpy as np
 import pandas as pd
 
+# Load FIDE expected score table once at module level (not per Player instance)
+_FIDE_PD = pd.read_csv('./chessSim/data/chess_tpr_table.csv')
+_FIDE_DIFFS = _FIDE_PD['diff'].values  # pre-extract for fast lookup
+_FIDE_PDS = _FIDE_PD['pd'].values
+
 class Player:
-    
+
     def __init__(self, name, EloC, EloR , EloB):
         self.name = name
         self.EloC = EloC
         self.EloR = EloR
         self.EloB = EloB
         self.games = []
-        self.fidePD = pd.read_csv('./chessSim/data/chess_tpr_table.csv')
+        self.fidePD = _FIDE_PD
 
     
     def addGame(self, result, myElo, opponentElo, format):
