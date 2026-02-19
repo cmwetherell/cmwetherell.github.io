@@ -32,7 +32,7 @@ def main():
         url = 'https://www.2700chess.com/women'
         tables = pd.read_html(requests.get(url, verify = False,
                                         headers={'User-agent': 'Mozilla/5.0'}).text)
-        
+
         playerData = tables[0].loc[:,["Name", "Classic", "Rapid", "Blitz"]]
 
         playerData.Classic = playerData.Classic.apply(splitRating)
@@ -42,7 +42,7 @@ def main():
 
         pickle.dump(playerData, open( "./chessSim/data/playerDataWomen.p", "wb" ) )
     except Exception as e:
-        print(e)
+        raise RuntimeError("2700chess.com women scrape failed. Run with --no-scrape to use cached ratings.") from e
 
 if __name__=="__main__" or __name__=="scrape2700": #scrape2700 is the name of the script, importing it into another file will run the main function automatically.
     main()

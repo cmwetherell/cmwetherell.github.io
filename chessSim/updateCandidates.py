@@ -10,8 +10,7 @@ from multiprocessing import set_start_method
 from dotenv import load_dotenv
 import os
 
-from scrape2700 import * #Used to refresh live ratings after a round
-from scrape2700women import * #Used to refresh live ratings after a round
+# Scraper imports are conditional on --no-scrape flag (see __main__ block)
 
 load_dotenv()
 
@@ -49,6 +48,11 @@ def convert_to_df(data, rnd):
     # If there are missing values (games not present in every simulation), fill them with a default value, e.g., NaN or 0
     df.fillna(value=0, inplace=True)
 
+    # Downcast game columns from float64 (8 bytes) to float32 (4 bytes) to halve storage.
+    # Values 0.0, 0.5, 1.0 are exactly representable in float32.
+    game_cols = [c for c in df.columns if '|' in c]
+    df[game_cols] = df[game_cols].astype('float32')
+
     df['Round'] = rnd
 
     return df
@@ -59,13 +63,13 @@ def main(nsims: int, tourn: str, rnd: int | str):
 
     if tourn == "open":
         from utils import simCandidatesTournament as simCand
-        current = pd.read_csv("./chessSim/data/candidatesGames2024.csv")
-        table_name = 'candidates_2024'
+        current = pd.read_csv("./chessSim/data/candidatesGames2026.csv")
+        table_name = 'candidates_2026'
     elif tourn == "womens":
         print("running womens")
         from utils import simWomensCandidatesTournament as simCand
-        current = pd.read_csv("./chessSim/data/womensCandidatesGames2024.csv")
-        table_name = 'womens_candidates_2024'
+        current = pd.read_csv("./chessSim/data/womensCandidatesGames2026.csv")
+        table_name = 'womens_candidates_2026'
     else:
         raise ValueError("Invalid tournament name")
 
@@ -90,8 +94,13 @@ def main(nsims: int, tourn: str, rnd: int | str):
     # # Create the SQLAlchemy engine
     engine = create_engine(f'postgresql+psycopg2://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DATABASE}')
 
-    # # Upload the DataFrame to the '(womens-)candidates-2024' table
     df.to_sql(table_name, con=engine, if_exists='append', index=False)
+
+    # Create index on Round for faster filtered queries (idempotent)
+    with engine.connect() as conn:
+        idx_name = f'idx_{table_name}_round'
+        conn.execute(text(f'CREATE INDEX IF NOT EXISTS {idx_name} ON {table_name} ("Round")'))
+        conn.commit()
 
     print(f"DataFrame uploaded successfully to {table_name} table.")
 
@@ -103,7 +112,17 @@ if __name__=="__main__":
     parser.add_argument("--round", required=True, help="Which round to simulate")
     parser.add_argument("--nsims", type=int, default=1000, help="Number of simulations to run")
     parser.add_argument("--tourn", type=str, default="open", help="Which tournament to run")
+    parser.add_argument("--ratings", type=str, default="fide", choices=["fide", "2700chess", "cached"],
+        help="Rating source: fide (official FIDE download, default), 2700chess (live scrape), cached (existing pickle files)")
     args = parser.parse_args()
+
+    if args.ratings == "fide":
+        import scrape_fide
+    elif args.ratings == "2700chess":
+        # FIDE first (baseline for all players), then 2700chess overlays live ratings
+        import scrape_fide
+        import scrape2700
+        import scrape2700women
 
     for i in range (0, args.nsims // 10000):
         print(f"Running simulation {i}...")

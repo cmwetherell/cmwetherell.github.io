@@ -7,52 +7,63 @@ import itertools
 import lightgbm as lgb
 import random
 
-def getCandidates(): 
+def getCandidates():
     candidates = pickle.load(open( "./chessSim/data/playerData.p", "rb" ) )
     candidates = candidates[candidates.Name.isin(
-        ['Caruana, Fabiano',
-         'Nakamura, Hikaru',
-         'Firouzja, Alireza',
-         'Nepomniachtchi, Ian',
-         'Gukesh D',
+        ['Nakamura, Hikaru',
+         'Caruana, Fabiano',
+         'Giri, Anish',
          'Praggnanandhaa R',
-         'Vidit, Santosh Gujrathi',
-         'Abasov, Nijat' 
+         'Wei, Yi',
+         'Sindarov, Javokhir',
+         'Esipenko, Andrey',
+         'Bluebaum, Matthias'
          ])]
     candidates = {x[0]: Player(x[0], x[1], x[2] , x[3]) for x in np.array(candidates)}
-    # add Abasov, Nijat
-    candidates['Abasov, Nijat'] = Player('Abasov, Nijat', 2641, 2566, 2555)
-    # class Player(
-    # name: Any,
-    # EloC: Any,
-    # EloR: Any,
-    # EloB: Any
-    # )
-    # for player in candidates: print each elo
-
-    # for player in candidates:
-    #     print(player, candidates[player].EloC)
-    #     print(player, candidates[player].EloR)
-    #     print(player, candidates[player].EloB)
+    # Fallback ratings (FIDE Feb 2026) for players not found in scraped data
+    fallbacks = {
+        'Nakamura, Hikaru': (2810, 2742, 2838),
+        'Caruana, Fabiano': (2795, 2727, 2769),
+        'Giri, Anish': (2760, 2689, 2666),
+        'Praggnanandhaa R': (2758, 2663, 2698),
+        'Wei, Yi': (2754, 2726, 2698),
+        'Sindarov, Javokhir': (2726, 2727, 2662),
+        'Esipenko, Andrey': (2698, 2657, 2652),
+        'Bluebaum, Matthias': (2684, 2587, 2634),
+    }
+    for name, (c, r, b) in fallbacks.items():
+        if name not in candidates:
+            candidates[name] = Player(name, c, r, b)
 
     return candidates
 
 def getWomenCandidates():
     candidates = pickle.load(open( "./chessSim/data/playerDataWomen.p", "rb" ) )
     candidates = candidates[candidates.Name.isin(
-        ['Goryachkina, Aleksandra',
-          'Lagno, Kateryna', 
-          'Muzychuk, Anna', 
-          'Salimova, Nurgyul', 
-          'Lei, Tingjie', 
-          'Tan, Zhongyi', 
-          'Rameshbabu, Vaishali', 
-          'Koneru, Humpy'
+        ['Zhu, Jiner',
+          'Koneru, Humpy',
+          'Goryachkina, Aleksandra',
+          'Tan, Zhongyi',
+          'Lagno, Kateryna',
+          'Deshmukh, Divya',
+          'Assaubayeva, Bibisara',
+          'Rameshbabu, Vaishali'
           ])]
     candidates = {x[0]: Player(x[0], x[1], x[2] , x[3]) for x in np.array(candidates)}
-    # add <2500 players
-    candidates['Salimova, Nurgyul'] = Player('Salimova, Nurgyul', 2426, 2383, 2293)
-    candidates['Rameshbabu, Vaishali'] = Player('Rameshbabu, Vaishali', 2481, 2359, 2366)
+    # Fallback ratings (FIDE Feb 2026) for players not found in scraped data
+    fallbacks = {
+        'Zhu, Jiner': (2578, 2479, 2411),
+        'Koneru, Humpy': (2535, 2445, 2412),
+        'Goryachkina, Aleksandra': (2534, 2499, 2424),
+        'Tan, Zhongyi': (2535, 2502, 2424),
+        'Lagno, Kateryna': (2508, 2435, 2414),
+        'Deshmukh, Divya': (2497, 2416, 2351),
+        'Assaubayeva, Bibisara': (2497, 2439, 2457),
+        'Rameshbabu, Vaishali': (2470, 2387, 2371),
+    }
+    for name, (c, r, b) in fallbacks.items():
+        if name not in candidates:
+            candidates[name] = Player(name, c, r, b)
 
     return candidates
 
@@ -110,8 +121,8 @@ class Candidates:
         self.games['result'] = 0.0
         
 
-        self.games.to_csv("./chessSim/data/candidatesGames2024.csv", index=False)
-        # self.games.to_csv("./chessSim/data/womensCandidatesGames2024.csv", index=False)
+        self.games.to_csv("./chessSim/data/candidatesGames2026.csv", index=False)
+        # self.games.to_csv("./chessSim/data/womensCandidatesGames2026.csv", index=False)
 
     def simRR(self):
         #https://handbook.fide.com/files/handbook/Regulations_for_the_FIDE_Candidates_Tournament_2024.pdf
