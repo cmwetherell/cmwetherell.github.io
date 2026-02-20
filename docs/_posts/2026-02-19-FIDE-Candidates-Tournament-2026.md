@@ -2,7 +2,7 @@
 layout: post
 title:  "FIDE Candidates Tournament 2026"
 subtitle: "100,000 Simulations, One World Championship Challenger"
-date:   2026-02-19 12:00:00 -0700
+date:   2026-02-19 00:00:00 -0700
 postImage: /assets/img/fabi_nak.jpg
 imageCaption: "photo: Michal Walusza, FIDE"
 categories: Tournament
