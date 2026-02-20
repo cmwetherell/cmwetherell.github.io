@@ -10,6 +10,7 @@ layout: home
 
 **Past Tournaments:**
 
+[2024 FIDE World Chess Championship](/tournament/2024/11/24/Singapore-World-Chess-Championship-Predictions-2024.html)<br>
 [2024 FIDE Candidates Tournament](/tournament/FIDE-Candidates-Tournament-2024)<br>
 [2023 FIDE World Chess Championship][2023-wcc]<br>
 [2023 Tata Steel Masters][2023-tata]<br>
