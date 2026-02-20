@@ -6,11 +6,11 @@ layout: home
 ---
 **Upcoming Tournaments:**
 
-[👀 2024 FIDE Candidates Tournament 👀](https://www.pawnalyze.com/simulations/)
+[👀 2026 FIDE Candidates Tournament 👀](https://www.pawnalyze.com/simulations/candidates-2026)
 
 **Past Tournaments:**
 
-
+[2024 FIDE Candidates Tournament](/tournament/FIDE-Candidates-Tournament-2024)<br>
 [2023 FIDE World Chess Championship][2023-wcc]<br>
 [2023 Tata Steel Masters][2023-tata]<br>
 [GCT Sinquefield Cup][2022-sinquefield]<br>
