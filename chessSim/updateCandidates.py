@@ -21,6 +21,20 @@ POSTGRES_HOST = os.getenv('POSTGRES_HOST')
 POSTGRES_PORT = os.getenv('POSTGRES_PORT')
 POSTGRES_DATABASE = os.getenv('POSTGRES_DATABASE')
 
+def detect_round(games_csv: pd.DataFrame) -> str:
+    """Detect the current round from the games CSV.
+
+    Counts round-robin games with played=1 and divides by 4
+    (4 games per round with 8 players). Returns 'Pre' if no
+    games have been played, otherwise the round number as a string.
+    """
+    rr_games = games_csv[games_csv['stage'] == 'rr']
+    played = int(rr_games['played'].sum())
+    if played == 0:
+        return "Pre"
+    return str(played // 4)
+
+
 def convert_to_df(data, rnd):
     # Initialize an empty list to hold each simulation's data
     all_simulations = []
@@ -92,9 +106,9 @@ def main(nsims: int, tourn: str, rnd: int | str):
     df = convert_to_df(simulation_results, rnd)
 
     # # Create the SQLAlchemy engine
-    engine = create_engine(f'postgresql+psycopg2://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DATABASE}')
+    engine = create_engine(f'postgresql+psycopg2://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DATABASE}?sslmode=require')
 
-    df.to_sql(table_name, con=engine, if_exists='append', index=False)
+    df.to_sql(table_name, con=engine, if_exists='append', index=False, chunksize=1000)
 
     # Create index on Round for faster filtered queries (idempotent)
     with engine.connect() as conn:
@@ -109,7 +123,8 @@ if __name__=="__main__":
 
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("--round", required=True, help="Which round to simulate")
+    parser.add_argument("--round", required=False, default=None,
+        help="Which round to simulate (auto-detected from CSV if omitted)")
     parser.add_argument("--nsims", type=int, default=1000, help="Number of simulations to run")
     parser.add_argument("--tourn", type=str, default="open", help="Which tournament to run")
     parser.add_argument("--ratings", type=str, default="fide", choices=["fide", "2700chess", "cached"],
@@ -124,12 +139,30 @@ if __name__=="__main__":
         import scrape2700
         import scrape2700women
 
+    # Auto-detect round from CSV if not explicitly provided
+    if args.round is not None:
+        rnd = args.round
+    else:
+        tourns = ["open", "womens"] if args.tourn == "both" else [args.tourn]
+        csv_paths = {
+            "open": "./chessSim/data/candidatesGames2026.csv",
+            "womens": "./chessSim/data/womensCandidatesGames2026.csv",
+        }
+        detected = {t: detect_round(pd.read_csv(csv_paths[t])) for t in tourns}
+        for t, r in detected.items():
+            print(f"Auto-detected round for {t}: {r}")
+        # Use detected round per tournament (they may differ)
+        rnd = detected
+
     for i in range (0, args.nsims // 10000):
         print(f"Running simulation {i}...")
         nsims = min(args.nsims, 10000)
 
         if args.tourn =="both":
-            main(nsims=nsims, tourn="open", rnd=args.round)
-            main(nsims=nsims, tourn="womens", rnd=args.round)
+            r_open = rnd if isinstance(rnd, str) else rnd["open"]
+            r_womens = rnd if isinstance(rnd, str) else rnd["womens"]
+            main(nsims=nsims, tourn="open", rnd=r_open)
+            main(nsims=nsims, tourn="womens", rnd=r_womens)
         else:
-            main(nsims=nsims, tourn=args.tourn, rnd=args.round)
+            r = rnd if isinstance(rnd, str) else rnd[args.tourn]
+            main(nsims=nsims, tourn=args.tourn, rnd=r)
