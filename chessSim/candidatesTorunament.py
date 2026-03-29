@@ -20,16 +20,16 @@ def getCandidates():
          'Bluebaum, Matthias'
          ])]
     candidates = {x[0]: Player(x[0], x[1], x[2] , x[3]) for x in np.array(candidates)}
-    # Fallback ratings (FIDE Feb 2026) for players not found in scraped data
+    # Fallback ratings (FIDE Mar 2026) for players not found in scraped data
     fallbacks = {
         'Nakamura, Hikaru': (2810, 2742, 2838),
         'Caruana, Fabiano': (2795, 2727, 2769),
-        'Giri, Anish': (2760, 2689, 2666),
-        'Praggnanandhaa R': (2758, 2663, 2698),
+        'Giri, Anish': (2753, 2689, 2666),
+        'Praggnanandhaa R': (2741, 2663, 2698),
         'Wei, Yi': (2754, 2726, 2698),
-        'Sindarov, Javokhir': (2726, 2727, 2662),
+        'Sindarov, Javokhir': (2745, 2727, 2662),
         'Esipenko, Andrey': (2698, 2657, 2652),
-        'Bluebaum, Matthias': (2684, 2587, 2634),
+        'Bluebaum, Matthias': (2698, 2587, 2634),
     }
     for name, (c, r, b) in fallbacks.items():
         if name not in candidates:
@@ -41,7 +41,7 @@ def getWomenCandidates():
     candidates = pickle.load(open( "./chessSim/data/playerDataWomen.p", "rb" ) )
     candidates = candidates[candidates.Name.isin(
         ['Zhu, Jiner',
-          'Koneru, Humpy',
+          'Muzychuk, Anna',
           'Goryachkina, Aleksandra',
           'Tan, Zhongyi',
           'Lagno, Kateryna',
@@ -50,15 +50,15 @@ def getWomenCandidates():
           'Rameshbabu, Vaishali'
           ])]
     candidates = {x[0]: Player(x[0], x[1], x[2] , x[3]) for x in np.array(candidates)}
-    # Fallback ratings (FIDE Feb 2026) for players not found in scraped data
+    # Fallback ratings (FIDE Mar 2026) for players not found in scraped data
     fallbacks = {
         'Zhu, Jiner': (2578, 2479, 2411),
-        'Koneru, Humpy': (2535, 2445, 2412),
+        'Muzychuk, Anna': (2522, 2398, 2400),
         'Goryachkina, Aleksandra': (2534, 2499, 2424),
         'Tan, Zhongyi': (2535, 2502, 2424),
         'Lagno, Kateryna': (2508, 2435, 2414),
         'Deshmukh, Divya': (2497, 2416, 2351),
-        'Assaubayeva, Bibisara': (2497, 2439, 2457),
+        'Assaubayeva, Bibisara': (2516, 2439, 2457),
         'Rameshbabu, Vaishali': (2470, 2387, 2371),
     }
     for name, (c, r, b) in fallbacks.items():

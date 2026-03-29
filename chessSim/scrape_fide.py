@@ -19,7 +19,7 @@ OPEN_CANDIDATES = {
 
 WOMEN_CANDIDATES = {
     '8608059': 'Zhu, Jiner',
-    '5008123': 'Koneru, Humpy',
+    '14111330': 'Muzychuk, Anna',
     '4147103': 'Goryachkina, Aleksandra',
     '8603642': 'Tan, Zhongyi',
     '14109336': 'Lagno, Kateryna',
