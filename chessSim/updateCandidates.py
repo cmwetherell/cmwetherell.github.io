@@ -118,6 +118,14 @@ def main(nsims: int, tourn: str, rnd: int | str):
 
     print(f"DataFrame uploaded successfully to {table_name} table.")
 
+    # Bust the Pawnalyze cache so new results show up immediately
+    try:
+        import requests
+        resp = requests.get('https://www.pawnalyze.com/revalidate', timeout=10)
+        print(f"Cache revalidated: {resp.json()}")
+    except Exception as e:
+        print(f"Cache revalidation failed (non-fatal): {e}")
+
 if __name__=="__main__":
     set_start_method("spawn")
 
