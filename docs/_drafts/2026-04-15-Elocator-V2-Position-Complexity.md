@@ -16,20 +16,32 @@ We recently overhauled the model behind Elocator, and the results are a meaningf
 
 ## What Does Complexity Look Like?
 
-Before diving into the technical details, let's look at what the model actually sees. Here are three positions at different complexity levels:
+Before diving into the technical details, let's look at what the model actually sees. Here are four positions from real games at different complexity levels — click any board to explore the position on Lichess:
 
-<div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin: 30px 0;">
-  <div style="text-align: center;">
-    <img src="/assets/img/elocator-v2/pos_easy.svg" alt="Easy position - starting position" style="width: 250px;" />
-    <p style="margin-top: 8px;"><strong style="color: #10b981;">Score: 1/100</strong><br/><small>Starting position. Every reasonable first move is fine.</small></p>
+<div style="display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; margin: 30px 0;">
+  <div style="text-align: center; flex: 1; min-width: 180px; max-width: 220px;">
+    <a href="https://lichess.org/analysis/standard/8/8/4k3/8/8/3K4/4P3/8_w_-_-_0_1" target="_blank" rel="noopener">
+      <img src="https://lichess1.org/export/fen.gif?fen=8/8/4k3/8/8/3K4/4P3/8+w+-+-+0+1&color=white&theme=brown&piece=cburnett" alt="Simple endgame - King and pawn vs King" style="width: 100%; border-radius: 4px;" />
+    </a>
+    <p style="margin-top: 8px;"><strong style="color: #10b981;">Score: 4/100</strong><br/><small>K+P vs K endgame. Only one idea — push the pawn.</small></p>
   </div>
-  <div style="text-align: center;">
-    <img src="/assets/img/elocator-v2/pos_medium.svg" alt="Medium position - sharp attack" style="width: 250px;" />
-    <p style="margin-top: 8px;"><strong style="color: #f59e0b;">Score: 48/100</strong><br/><small>Sharp attack with Nf6 and Qh6. Several plausible defenses.</small></p>
+  <div style="text-align: center; flex: 1; min-width: 180px; max-width: 220px;">
+    <a href="https://lichess.org/analysis/standard/r1bq1rk1/ppppnppp/4p3/8/1bBP4/2N1PN2/PP3PPP/R1BQ1RK1_w_-_-_0_8" target="_blank" rel="noopener">
+      <img src="https://lichess1.org/export/fen.gif?fen=r1bq1rk1/ppppnppp/4p3/8/1bBP4/2N1PN2/PP3PPP/R1BQ1RK1+w+-+-+0+8&color=white&theme=brown&piece=cburnett" alt="Quiet Italian middlegame" style="width: 100%; border-radius: 4px;" />
+    </a>
+    <p style="margin-top: 8px;"><strong style="color: #86efac;">Score: 25/100</strong><br/><small>Quiet Italian middlegame. Several reasonable plans, but low stakes.</small></p>
   </div>
-  <div style="text-align: center;">
-    <img src="/assets/img/elocator-v2/pos_hard.svg" alt="Hard position - complex middlegame" style="width: 250px;" />
-    <p style="margin-top: 8px;"><strong style="color: #ef4444;">Score: 100/100</strong><br/><small>Opposite-side castling, pawn storms, pieces everywhere. Even GMs lose win equity here.</small></p>
+  <div style="text-align: center; flex: 1; min-width: 180px; max-width: 220px;">
+    <a href="https://lichess.org/analysis/standard/r1b2rk1/2q1bppp/p2p1n2/np2p3/3PP3/2N1BN1P/PPBQ1PP1/R4RK1_w_-_-_0_13" target="_blank" rel="noopener">
+      <img src="https://lichess1.org/export/fen.gif?fen=r1b2rk1/2q1bppp/p2p1n2/np2p3/3PP3/2N1BN1P/PPBQ1PP1/R4RK1+w+-+-+0+13&color=white&theme=brown&piece=cburnett" alt="Tense Ruy Lopez middlegame" style="width: 100%; border-radius: 4px;" />
+    </a>
+    <p style="margin-top: 8px;"><strong style="color: #f59e0b;">Score: 62/100</strong><br/><small>Tense Ruy Lopez. Multiple pawn breaks, piece sacrifices in the air.</small></p>
+  </div>
+  <div style="text-align: center; flex: 1; min-width: 180px; max-width: 220px;">
+    <a href="https://lichess.org/analysis/standard/r1bq1r1k/1p2bppp/p1np4/4p2n/2B1P2N/1BNP2Q1/PPP2PPP/R3R1K1_w_-_-_0_14" target="_blank" rel="noopener">
+      <img src="https://lichess1.org/export/fen.gif?fen=r1bq1r1k/1p2bppp/p1np4/4p2n/2B1P2N/1BNP2Q1/PPP2PPP/R3R1K1+w+-+-+0+14&color=white&theme=brown&piece=cburnett" alt="Chaotic tactical middlegame" style="width: 100%; border-radius: 4px;" />
+    </a>
+    <p style="margin-top: 8px;"><strong style="color: #ef4444;">Score: 95/100</strong><br/><small>Pieces swarming the kingside. Sacrificial ideas on f7, g6, multiple defensive tries.</small></p>
   </div>
 </div>
 
@@ -85,13 +97,7 @@ We tested **12 different model architectures** across two families:
 
 ## Results
 
-We evaluated all models on a held-out test set of 35,740 positions.
-
-<img src="/assets/img/elocator-v2/lift_charts.png" alt="Lift charts comparing model performance" style="width: 100%; max-width: 900px; margin: 20px 0;" />
-
-<small><em>How well does each model rank positions by complexity? We sort all 35,740 holdout positions by the model's predicted score, split into 10 equal groups, and measure the actual average complexity in each group. A good model produces a clean staircase — the group it ranks as "most complex" should actually have the highest real-world complexity. The CNN and Ensemble show clear staircases; the old model is nearly flat.</em></small>
-
-The **ensemble of the CNN and MLP** — averaging their normalized predictions — emerged as the best approach:
+We evaluated all models on a held-out test set of 35,740 positions. The **ensemble of the CNN and MLP** — averaging their normalized predictions — emerged as the best approach:
 
 | Model | Pearson | Spearman | Lift Ratio |
 |-------|---------|----------|-----------|
@@ -102,17 +108,21 @@ The **ensemble of the CNN and MLP** — averaging their normalized predictions �
 
 The ensemble captures the best of both worlds: the CNN excels at separating the most extreme positions (highest lift ratio), while the MLP provides better fine-grained ranking in the middle. Together, they complement each other.
 
+<figure style="margin: 30px 0;">
+  <img src="/assets/img/elocator-v2/lift_charts.png" alt="Lift charts comparing model performance" style="width: 100%; max-width: 900px;" />
+  <figcaption style="margin-top: 8px; font-size: 0.85em; color: #666;"><em>How well does each model rank positions by complexity? We sort all 35,740 holdout positions by the model's predicted score, split into 10 equal groups, and measure the actual average complexity in each group. A good model produces a clean staircase — the group it ranks as "most complex" should actually have the highest real-world complexity. The CNN and Ensemble show clear staircases; the old model is nearly flat.</em></figcaption>
+</figure>
+
 ### Where the Models Disagree
 
-One of the most interesting analyses was looking at where the CNN and MLP **disagree**:
-
-<img src="/assets/img/elocator-v2/disagreement_chart.png" alt="Disagreement chart between CNN and MLP" style="width: 100%; max-width: 900px; margin: 20px 0;" />
-
-<small><em>Positions sorted by CNN/MLP prediction ratio. The CNN (blue) stays close to actual values across all bins, while the MLP (red) systematically underpredicts positions the CNN flags as complex.</em></small>
-
-The MLP essentially can't distinguish complexity levels in the upper range — it predicts roughly the same value for everything. The CNN, with its spatial awareness of piece configurations, catches the subtleties that the MLP misses. But in the lower and middle ranges, the MLP's heavier regularization gives it an edge.
+One of the most interesting analyses was looking at where the CNN and MLP **disagree**. The MLP essentially can't distinguish complexity levels in the upper range — it predicts roughly the same value for everything. The CNN, with its spatial awareness of piece configurations, catches the subtleties that the MLP misses. But in the lower and middle ranges, the MLP's heavier regularization gives it an edge.
 
 This is exactly why ensembling works — the models fail in different ways.
+
+<figure style="margin: 30px 0;">
+  <img src="/assets/img/elocator-v2/disagreement_chart.png" alt="Disagreement chart between CNN and MLP" style="width: 100%; max-width: 900px;" />
+  <figcaption style="margin-top: 8px; font-size: 0.85em; color: #666;"><em>Positions sorted by CNN/MLP prediction ratio. The CNN (blue) stays close to actual values across all bins, while the MLP (red) systematically underpredicts positions the CNN flags as complex.</em></figcaption>
+</figure>
 
 ## What Surprised Us
 
@@ -126,15 +136,17 @@ This is exactly why ensembling works — the models fail in different ways.
 
 The Elocator tool is live at [pawnalyze.com/elocator](https://pawnalyze.com/elocator). Paste any FEN string or PGN and get instant complexity scores.
 
-<img src="/assets/img/elocator-v2/screenshot_elocator_ui.png" alt="Elocator UI on Pawnalyze" style="width: 100%; max-width: 700px; margin: 20px 0; border-radius: 8px; border: 1px solid #333;" />
-
-<small><em>The Elocator interface on Pawnalyze. Paste a FEN string and get an instant complexity score on the 1-100 scale.</em></small>
+<figure style="margin: 30px 0;">
+  <img src="/assets/img/elocator-v2/screenshot_elocator_ui.png" alt="Elocator UI on Pawnalyze" style="width: 100%; max-width: 700px; border-radius: 8px; border: 1px solid #333;" />
+  <figcaption style="margin-top: 8px; font-size: 0.85em; color: #666;"><em>The Elocator interface on Pawnalyze. Paste a FEN string and get an instant complexity score on the 1-100 scale.</em></figcaption>
+</figure>
 
 You can also analyze complete games by pasting PGN:
 
-<img src="/assets/img/elocator-v2/screenshot_game_analysis.png" alt="Game analysis with complexity chart" style="width: 100%; max-width: 700px; margin: 20px 0; border-radius: 8px; border: 1px solid #333;" />
-
-<small><em>Game analysis view showing complexity over the course of a game, with per-move evaluation and complexity breakdown by color.</em></small>
+<figure style="margin: 30px 0;">
+  <img src="/assets/img/elocator-v2/screenshot_game_analysis.png" alt="Game analysis with complexity chart" style="width: 100%; max-width: 700px; border-radius: 8px; border: 1px solid #333;" />
+  <figcaption style="margin-top: 8px; font-size: 0.85em; color: #666;"><em>Game analysis view showing complexity over the course of a game, with per-move evaluation and complexity breakdown by color.</em></figcaption>
+</figure>
 
 ## The Production Model
 
