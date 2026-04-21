@@ -4,12 +4,10 @@
 
 layout: home
 ---
-**Upcoming Tournaments:**
-
-[👀 2026 FIDE Candidates Tournament 👀](https://www.pawnalyze.com/simulations/candidates-2026)
-
 **Past Tournaments:**
 
+[2026 FIDE Candidates Tournament](https://www.pawnalyze.com/simulations/candidates-2026) - Winner: Javokhir Sindarov<br>
+[2026 FIDE Women's Candidates Tournament](https://www.pawnalyze.com/simulations/womens-candidates-2026) - Winner: Vaishali Rameshbabu<br>
 [2024 FIDE World Chess Championship](/tournament/2024/11/24/Singapore-World-Chess-Championship-Predictions-2024.html)<br>
 [2024 FIDE Candidates Tournament](/tournament/FIDE-Candidates-Tournament-2024)<br>
 [2023 FIDE World Chess Championship][2023-wcc]<br>

@@ -51,6 +51,8 @@ categories: Tournament
 }
 </style>
 
+*Update: The tournament is over. **Javokhir Sindarov** won with an extraordinary 9.5/14 performance. Read the [Round 5 update](/tournament/2026/04/03/Candidates-2026-After-Round-5.html) for how his historic run unfolded.*
+
 ### The Race to Challenge Gukesh
 
 Eight players descend on Cyprus for the most prestigious qualifying event in chess: the FIDE Candidates Tournament. The prize? The right to challenge Gukesh Dommaraju, the youngest undisputed World Chess Champion in history, for his crown. I've simulated the tournament **100,000 times** using players' current Elo ratings and my [machine learning game prediction model][method] to see who has the best shot.
