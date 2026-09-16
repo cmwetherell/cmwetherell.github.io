@@ -35,10 +35,14 @@ _STATE = None
 # long time on a pathological late-round scoregroup. Abort such a sim and retry
 # it: fresh random draws change the scores, hence the scoregroups, so the retry
 # almost always avoids the bad state.
-WATCHDOG_SECONDS = 30      # above worst-case cold-start (~18s); only real hangs trip it
+WATCHDOG_SECONDS = 30       # above worst-case cold-start (~18s); only real hangs trip it
 _MAX_RETRIES = 8
-_POOL_STALL_SECONDS = 120  # no result for this long => a worker is wedged; rebuild pool
+_POOL_STALL_SECONDS = 120   # steady-state: no result this long => a worker is wedged
+_POOL_FIRST_RESULT_SECONDS = 360  # generous grace for cold start (8 workers spawn +
+                                  # load LightGBM + warm caches), esp. under CPU load
 _MAX_TASKS_PER_CHILD = 250
+_MAX_ZERO_ATTEMPTS = 3      # rebuild the pool this many times on a no-progress stall
+                            # before giving up (don't hard-fail on one slow cold start)
 
 
 class _SimTimeout(Exception):
@@ -102,6 +106,7 @@ def robust_results(state, n_sims, procs):
     terminate the pool and resubmit however many are still outstanding.
     """
     remaining = n_sims
+    zero_attempts = 0
     while remaining > 0:
         pool = Pool(procs, initializer=_init_worker, initargs=(state,),
                     maxtasksperchild=_MAX_TASKS_PER_CHILD)
@@ -109,20 +114,30 @@ def robust_results(state, n_sims, procs):
         produced = 0
         try:
             while produced < remaining:
+                # The first result must wait out cold start (workers spawn, load
+                # LightGBM, warm caches); later ones only tolerate a short stall.
+                timeout = _POOL_FIRST_RESULT_SECONDS if produced == 0 else _POOL_STALL_SECONDS
                 try:
-                    res = it.next(timeout=_POOL_STALL_SECONDS)
+                    res = it.next(timeout=timeout)
                 except MPTimeoutError:
-                    print(f"\nno sim result for {_POOL_STALL_SECONDS}s -- a worker "
-                          f"is wedged; rebuilding pool ({remaining - produced} left)")
+                    print(f"\nno sim result for {timeout}s -- rebuilding pool "
+                          f"({remaining - produced} left)")
                     break
                 produced += 1
                 yield res
         finally:
             pool.terminate()
             pool.join()
-        if produced == 0:
-            raise RuntimeError("pool produced zero results before stalling; aborting")
         remaining -= produced
+        if produced == 0:
+            zero_attempts += 1
+            if zero_attempts >= _MAX_ZERO_ATTEMPTS:
+                raise RuntimeError(
+                    f"pool produced zero results in {_MAX_ZERO_ATTEMPTS} attempts; aborting")
+            print(f"pool made no progress (attempt {zero_attempts}/{_MAX_ZERO_ATTEMPTS}); "
+                  f"retrying with a fresh pool")
+        else:
+            zero_attempts = 0
 
 
 def _r1_match_rows(state):
@@ -263,6 +278,11 @@ def run(event_key, n_sims, upload, procs, chunk=500, upsert_reference=True):
             db_retry(lambda c: _set_run_nsims(c, run_id, done), "update n_sims")
         db_retry(lambda c: db.insert_team_summary(c, run_id, cfg.key, summary),
                  "insert_team_summary")
+        # Validate round_opps before flipping current; AssertionError aborts the
+        # upload (run stays non-current) so the site never sees bad pairing data.
+        summary_v = db_retry(lambda c: db.validate_round_opps(c, run_id, cfg.key, N),
+                             "validate_round_opps")
+        print(f"round_opps validated: {summary_v}")
         db_retry(lambda c: db.set_current(c, cfg.key, run_id), "set_current")
         db_retry(lambda c: db.prune_runs(c, cfg.key), "prune_runs")
         conn.close()

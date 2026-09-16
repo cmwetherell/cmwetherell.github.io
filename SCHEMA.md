@@ -136,8 +136,16 @@ row per simulated tournament.
 | `match_points` | smallint[] | `match_points[team_id]`, 0..22 |
 | `game_points` | smallint[] | `game_points[team_id]` in **half-points**, 0..88 |
 | `round_scores` | smallint[] (2-D) | `round_scores[round][team_id]` in half-points, 0..8 |
+| `round_opps` | smallint[] (2-D) | `round_opps[round][team_id]` = that team's opponent team_id; 0 = bye, -1 = did not play; non-participants 0 everywhere |
 
-PK `(run_id, sim_id)`. `round_scores` is a rectangular `11 × n_teams` array.
+PK `(run_id, sim_id)`. `round_scores` and `round_opps` are rectangular
+`11 × n_teams` arrays (1-based, same indexing). `round_opps` lets the site show
+pairing odds for future rounds: completed rounds hold the real pairings, the next
+round holds the official published pairings (fixed across sims), and later rounds
+hold the simulated Swiss pairings (vary per sim). Symmetry holds
+(`round_opps[r][round_opps[r][t]] == t`), and for opp>0
+`round_scores[r][t] + round_scores[r][opp] == 8` **except** real completed rounds,
+which can total <8 when a board is forfeited/unplayed.
 
 **Scenario predicates are array subscripts.** "IND (team_id 2) beats USA (1) in
 round 5" ⇒ `round_scores[5][2] > 4`. "GEO (team_id 3) wins round 8" (unknown

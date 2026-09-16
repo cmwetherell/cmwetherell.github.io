@@ -833,6 +833,7 @@ def load_event(cfg):
     seed_mp = {t: 0 for t in participants}
     seed_matches = {t: [] for t in participants}
     seed_round_hp = {t: {} for t in participants}
+    seed_round_opp = {t: {} for t in participants}   # round -> opponent team_id
     seed_prev = set()
     next_round = 1
     if not matches.empty:
@@ -841,8 +842,24 @@ def load_event(cfg):
                 seed_mp[row.playerTeam] += _gp_to_mp(row.gp)
                 seed_matches[row.playerTeam].append((float(row.gp), row.oppTeam))
                 seed_round_hp[row.playerTeam][int(row.round)] = int(round(row.gp * 2))
+                seed_round_opp[row.playerTeam][int(row.round)] = team_id[row.oppTeam]
                 seed_prev.add((row.playerTeam, row.oppTeam))
         next_round = int(matches["round"].max()) + 1
+
+    # Official published-but-unplayed pairings (chess-results "scheduled" rows) for
+    # rounds we haven't simulated yet -- typically just the next round. We FIX these
+    # instead of generating our own, so round_opps for the next round equals the
+    # published pairing (only its result varies across sims). Pre-tournament this
+    # covers Round 1. Falls back to r1_pairs / simulated pairing if unavailable.
+    fixed_pairs = {}
+    try:
+        rr = pd.read_csv(cfg.round_results_csv)
+        sched = rr[(rr["status"] == "scheduled") & (rr["round"] >= next_round)]
+        for row in sched.itertuples(index=False):
+            if row.team1 in pset and row.team2 in pset:
+                fixed_pairs.setdefault(int(row.round), []).append((row.team1, row.team2))
+    except (FileNotFoundError, OSError, KeyError, ValueError):
+        pass
 
     return {
         "cfg": cfg,
@@ -855,7 +872,9 @@ def load_event(cfg):
         "seed_mp": seed_mp,
         "seed_matches": seed_matches,
         "seed_round_hp": seed_round_hp,
+        "seed_round_opp": seed_round_opp,
         "seed_prev": seed_prev,
+        "fixed_pairs": fixed_pairs,
         "next_round": next_round,
         "n_rounds": cfg.n_rounds,
     }
@@ -931,6 +950,7 @@ def simulate_once(state):
     mp = dict(state["seed_mp"])
     matches = {t: list(state["seed_matches"][t]) for t in participants}
     round_hp = {t: dict(state["seed_round_hp"][t]) for t in participants}
+    round_opp = {t: dict(state["seed_round_opp"][t]) for t in participants}
     prev = set(state["seed_prev"])
     wc = {t: 0 for t in participants}
 
@@ -942,13 +962,21 @@ def simulate_once(state):
         matches[black].append((bgp, white))
         round_hp[white][rnd] = int(round(wgp * 2))
         round_hp[black][rnd] = int(round(bgp * 2))
+        round_opp[white][rnd] = team_id[black]
+        round_opp[black][rnd] = team_id[white]
         prev.add((white, black))
         prev.add((black, white))
         wc[white] += 1
 
+    fixed_pairs = state.get("fixed_pairs", {})
     for rnd in range(state["next_round"], n_rounds + 1):
-        if rnd == 1:
-            for white, black in state["r1_pairs"]:
+        # Use official published pairings for this round if we have them (fixed
+        # across all sims); pre-tournament R1 falls back to r1_pairs.
+        fp = fixed_pairs.get(rnd)
+        if fp is None and rnd == 1 and state["r1_pairs"]:
+            fp = state["r1_pairs"]
+        if fp:
+            for white, black in fp:
                 play(white, black, rnd)
             continue
 
@@ -960,6 +988,7 @@ def simulate_once(state):
             mp[bye] += 1
             matches[bye].append((2.0, None))  # bye GP; opp None -> excluded from TB
             round_hp[bye][rnd] = 4
+            round_opp[bye][rnd] = 0            # 0 == bye
 
         for a, b in _pair_round(teams_by_rank, mp, prev):
             if a == b:
@@ -978,6 +1007,7 @@ def simulate_once(state):
     match_points = [0] * n_teams
     game_points = [0] * n_teams                            # half-points
     round_scores = [[0] * n_teams for _ in range(n_rounds)]
+    round_opps = [[0] * n_teams for _ in range(n_rounds)]  # opponent team_id (0=bye)
     for pos, t in enumerate(order):
         tid = team_id[t]
         final_rank[tid - 1] = pos + 1
@@ -985,6 +1015,8 @@ def simulate_once(state):
         game_points[tid - 1] = int(round(gp_total[t] * 2))
         for rnd, hp in round_hp[t].items():
             round_scores[rnd - 1][tid - 1] = hp
+        for rnd, opp in round_opp[t].items():
+            round_opps[rnd - 1][tid - 1] = opp
 
     return {
         "gold": team_id[order[0]],
@@ -995,6 +1027,7 @@ def simulate_once(state):
         "match_points": match_points,
         "game_points": game_points,
         "round_scores": round_scores,
+        "round_opps": round_opps,
     }
 
 

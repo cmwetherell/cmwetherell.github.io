@@ -117,8 +117,11 @@ CREATE TABLE IF NOT EXISTS {SIMS_TABLE} (
   match_points smallint[] NOT NULL,
   game_points smallint[] NOT NULL,
   round_scores smallint[] NOT NULL,
+  round_opps smallint[],
   PRIMARY KEY (run_id, sim_id)
 );
+-- round_opps added after initial deploy; idempotent for existing tables.
+ALTER TABLE {SIMS_TABLE} ADD COLUMN IF NOT EXISTS round_opps smallint[];
 
 CREATE TABLE IF NOT EXISTS {TEAM_SUMMARY_TABLE} (
   run_id integer NOT NULL REFERENCES {RUNS_TABLE} ON DELETE CASCADE,
@@ -316,13 +319,13 @@ def insert_sims(conn, run_id, sims, start_id=0, page_size=500):
     rows = [(run_id, start_id + i,
              s["gold"], s["silver"], s["bronze"],
              s["top10"], s["final_rank"], s["match_points"],
-             s["game_points"], s["round_scores"])
+             s["game_points"], s["round_scores"], s["round_opps"])
             for i, s in enumerate(sims)]
     with conn.cursor() as cur:
         execute_values(cur, f"""
             INSERT INTO {SIMS_TABLE}
               (run_id, sim_id, gold, silver, bronze, top10,
-               final_rank, match_points, game_points, round_scores)
+               final_rank, match_points, game_points, round_scores, round_opps)
             VALUES %s
             ON CONFLICT (run_id, sim_id) DO NOTHING
         """, rows, page_size=page_size)
@@ -342,6 +345,87 @@ def insert_team_summary(conn, run_id, event, summary_rows):
             VALUES %s
         """, rows)
     conn.commit()
+
+
+def validate_round_opps(conn, run_id, event, n_teams, n_rounds=11, sample=60):
+    """
+    Verify round_opps on a run before it is made current. Raises AssertionError
+    (with all failures) if any check fails; returns a short summary dict on pass.
+    Checks: no NULLs, correct 2-D dims on every row, and on a sample of sims --
+    symmetry, no repeated opponent within a sim, round_scores agree with pairings,
+    and round 1 (+ any completed round) matches olympiad_2026_matches.
+    """
+    errs = []
+    with conn.cursor() as cur:
+        cur.execute("SET statement_timeout='60000'")
+        # 1. no NULL, correct dims on EVERY row
+        cur.execute(f"""
+            SELECT count(*) FROM {SIMS_TABLE}
+            WHERE run_id = %s AND (round_opps IS NULL
+              OR array_length(round_opps,1) <> %s
+              OR array_length(round_opps,2) <> %s)
+        """, (run_id, n_rounds, n_teams))
+        bad = cur.fetchone()[0]
+        if bad:
+            errs.append(f"{bad} rows with NULL/wrong-shaped round_opps")
+
+        # official pairings per completed/published round (from matches)
+        cur.execute(f"""
+            SELECT round, team1_id, team2_id, team1_score FROM {MATCHES_TABLE}
+            WHERE event = %s
+        """, (event,))
+        official, final_rounds = {}, set()
+        for rnd, t1, t2, sc in cur.fetchall():
+            official.setdefault(rnd, {})[t1] = t2
+            official[rnd][t2] = t1
+            if sc is not None:
+                final_rounds.add(rnd)   # a real, played round (may have forfeits)
+
+        # sample of sims for content checks
+        cur.execute(f"""
+            SELECT sim_id, round_opps, round_scores FROM {SIMS_TABLE}
+            WHERE run_id = %s ORDER BY sim_id LIMIT %s
+        """, (run_id, sample))
+        rows = cur.fetchall()
+
+    for sim_id, opps, scores in rows:
+        for r in range(n_rounds):
+            seen = {}
+            for t0 in range(n_teams):
+                opp = opps[r][t0]
+                if opp == 0 or opp == -1:
+                    continue
+                tid = t0 + 1
+                # symmetry
+                if opps[r][opp - 1] != tid:
+                    errs.append(f"sim {sim_id} r{r+1}: opp asymmetry t{tid}->{opp}")
+                # score agreement: simulated rounds always play 4 boards (==8);
+                # real completed rounds can total <8 due to forfeited boards.
+                ssum = scores[r][t0] + scores[r][opp - 1]
+                if (r + 1) in final_rounds:
+                    if not (0 <= ssum <= 8):
+                        errs.append(f"sim {sim_id} r{r+1}: real scores out of range {ssum}")
+                elif ssum != 8:
+                    errs.append(f"sim {sim_id} r{r+1}: sim scores !=8 ({ssum}) for t{tid}/{opp}")
+                # official pairing match (rounds present in matches)
+                off = official.get(r + 1)
+                if off and off.get(tid) is not None and off[tid] != opp:
+                    errs.append(f"sim {sim_id} r{r+1}: t{tid} opp {opp} != official {off[tid]}")
+                seen[tid] = seen.get(tid, 0) + 1
+            # no team appears twice as a player in a round is implicit; check repeats below
+        # no repeated opponent across the whole sim, per team
+        for t0 in range(n_teams):
+            os_ = [opps[r][t0] for r in range(n_rounds) if opps[r][t0] > 0]
+            if len(os_) != len(set(os_)):
+                errs.append(f"sim {sim_id}: team {t0+1} has a repeat opponent")
+        if len(errs) > 20:
+            break
+
+    if errs:
+        raise AssertionError(f"round_opps validation failed ({len(errs)} issues): "
+                             + "; ".join(errs[:20]))
+    return {"rows_checked": len(rows), "dims": f"{n_rounds}x{n_teams}",
+            "official_rounds": sorted(official)}
 
 
 def set_current(conn, event, run_id):
