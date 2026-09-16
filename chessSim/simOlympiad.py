@@ -797,11 +797,15 @@ def _gp_to_mp(gp):
     return 2 if gp > 2 else (1 if gp == 2 else 0)
 
 
-def load_event(cfg):
+def load_event(cfg, pretournament=False):
     """
     Build the immutable per-event state needed to simulate: participating teams
     (those with a real Round-1 pairing), starting ranks, board Elos, the official
     Round-1 pairings, and any completed-round results to start from.
+
+    pretournament=True builds the R0 (pre-tournament) state: ignore all completed
+    results (simulate from Round 1), pin only the official Round-1 pairings, and
+    simulate rounds 2..11 -- i.e. what a forecast knew before any games.
     """
     players = pd.read_csv(cfg.players_csv)
     teams = pd.read_csv(cfg.teams_csv)
@@ -838,7 +842,7 @@ def load_event(cfg):
     seed_round_opp = {t: {} for t in participants}   # round -> opponent team_id
     seed_prev = set()
     next_round = 1
-    if not matches.empty:
+    if not pretournament and not matches.empty:
         for row in matches.itertuples(index=False):
             if row.playerTeam in pset and row.oppTeam in pset:
                 seed_mp[row.playerTeam] += _gp_to_mp(row.gp)
@@ -856,7 +860,10 @@ def load_event(cfg):
     fixed_pairs = {}
     try:
         rr = pd.read_csv(cfg.round_results_csv)
-        sched = rr[(rr["status"] == "scheduled") & (rr["round"] >= next_round)]
+        # Pre-tournament: pin nothing beyond R1 (handled via r1_pairs) -- rounds
+        # 2..11 are all forecast. Otherwise pin the published future pairings.
+        sched = (rr.iloc[0:0] if pretournament
+                 else rr[(rr["status"] == "scheduled") & (rr["round"] >= next_round)])
         for row in sched.itertuples(index=False):
             if row.team1 in pset and row.team2 in pset:
                 fixed_pairs.setdefault(int(row.round), []).append((row.team1, row.team2))

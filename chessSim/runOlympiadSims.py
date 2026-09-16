@@ -151,9 +151,10 @@ def _r1_match_rows(state):
     return rows
 
 
-def run(event_key, n_sims, upload, procs, chunk=500, upsert_reference=True):
+def run(event_key, n_sims, upload, procs, chunk=500, upsert_reference=True,
+        pretournament=False, make_current=True):
     cfg = get_event(event_key)
-    state = load_event(cfg)
+    state = load_event(cfg, pretournament=pretournament)
     N = state["n_teams"]
     rounds_completed = state["next_round"] - 1
     participants = state["participants"]
@@ -280,10 +281,14 @@ def run(event_key, n_sims, upload, procs, chunk=500, upsert_reference=True):
                  "insert_team_summary")
         # Validate round_opps before flipping current; AssertionError aborts the
         # upload (run stays non-current) so the site never sees bad pairing data.
-        summary_v = db_retry(lambda c: db.validate_round_opps(c, run_id, cfg.key, N),
-                             "validate_round_opps")
+        summary_v = db_retry(lambda c: db.validate_round_opps(
+            c, run_id, cfg.key, N, max_official_round=rounds_completed + 1),
+            "validate_round_opps")
         print(f"round_opps validated: {summary_v}")
-        db_retry(lambda c: db.set_current(c, cfg.key, run_id), "set_current")
+        if make_current:
+            db_retry(lambda c: db.set_current(c, cfg.key, run_id), "set_current")
+        else:
+            print(f"run {run_id} uploaded (not set current; rc={rounds_completed})")
         db_retry(lambda c: db.prune_runs(c, cfg.key), "prune_runs")
         conn.close()
         db.revalidate()

@@ -347,7 +347,8 @@ def insert_team_summary(conn, run_id, event, summary_rows):
     conn.commit()
 
 
-def validate_round_opps(conn, run_id, event, n_teams, n_rounds=11, sample=60):
+def validate_round_opps(conn, run_id, event, n_teams, n_rounds=11, sample=60,
+                        max_official_round=99):
     """
     Verify round_opps on a run before it is made current. Raises AssertionError
     (with all failures) if any check fails; returns a short summary dict on pass.
@@ -413,9 +414,10 @@ def validate_round_opps(conn, run_id, event, n_teams, n_rounds=11, sample=60):
                         errs.append(f"sim {sim_id} r{r+1}: real scores out of range {ssum}")
                 elif ssum != 8:
                     errs.append(f"sim {sim_id} r{r+1}: sim scores !=8 ({ssum}) for t{tid}/{opp}")
-                # official pairing match -- only when the official opponent is a
-                # participant (else its opponent joined/left and can't be reproduced).
-                off = official.get(r + 1)
+                # official pairing match -- only for rounds the sim actually pins
+                # to official (<= max_official_round; later rounds are forecast),
+                # and only when the official opponent is a participant.
+                off = official.get(r + 1) if (r + 1) <= max_official_round else None
                 if (off and off.get(tid) is not None and off[tid] in participants
                         and off[tid] != opp):
                     errs.append(f"sim {sim_id} r{r+1}: t{tid} opp {opp} != official {off[tid]}")
