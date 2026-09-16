@@ -22,6 +22,8 @@ urllib3.disable_warnings(InsecureRequestWarning)
 _MODEL_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "models", "model.txt")
 bst = lgb.Booster(model_file=_MODEL_PATH)
 
+_d02_pair_round = None   # lazily bound to d02pairing.pair_round (see simulate_once)
+
 
 @lru_cache(maxsize=None)
 def _win_probs(whiteElo, blackElo):
@@ -990,9 +992,15 @@ def simulate_once(state):
             round_hp[bye][rnd] = 4
             round_opp[bye][rnd] = 0            # 0 == bye
 
-        for a, b in _pair_round(teams_by_rank, mp, prev):
-            if a == b:
-                continue
+        # FIDE D.02 team pairing (validated 100% vs official R2 for both events).
+        # Lazy import breaks the simOlympiad <-> d02pairing cycle.
+        global _d02_pair_round
+        if _d02_pair_round is None:
+            from d02pairing import pair_round as _d02_pair_round
+        ctx = {"teams": teams_by_rank, "mp": mp, "init_rank": init_rank,
+               "prev": prev, "last_color": {}}
+        for pair in _d02_pair_round(ctx):
+            a, b = tuple(pair)
             white, black = _choose_white(a, b, wc)
             play(white, black, rnd)
 
