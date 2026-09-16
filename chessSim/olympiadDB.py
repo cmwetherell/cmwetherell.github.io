@@ -29,14 +29,29 @@ REVALIDATE_URL = os.getenv("REVALIDATE_URL", "https://www.pawnalyze.com/revalida
 
 
 def get_conn():
-    return psycopg2.connect(
+    # keepalives + statement_timeout are essential: without them a dropped Neon
+    # connection leaves psycopg2 blocked on a dead socket forever (observed as a
+    # 30+ min hang mid-upload). keepalives detect a dead peer in ~80s; the
+    # server-side statement_timeout caps any single statement at 3 min.
+    conn = psycopg2.connect(
         user=os.getenv("POSTGRES_USER"),
         password=os.getenv("POSTGRES_PASSWORD"),
         host=os.getenv("POSTGRES_HOST"),
         port=os.getenv("POSTGRES_PORT"),
         dbname=os.getenv("POSTGRES_DATABASE"),
         sslmode="require",
+        connect_timeout=30,
+        keepalives=1,
+        keepalives_idle=30,
+        keepalives_interval=10,
+        keepalives_count=5,
     )
+    # Server-side cap per statement (set via SET, not libpq options, so it works
+    # through Neon's connection pooler too).
+    with conn.cursor() as cur:
+        cur.execute("SET statement_timeout = 180000")
+    conn.commit()
+    return conn
 
 
 DDL = f"""
@@ -226,6 +241,7 @@ def insert_sims(conn, run_id, sims, start_id=0, page_size=500):
               (run_id, sim_id, gold, silver, bronze, top10,
                final_rank, match_points, game_points, round_scores)
             VALUES %s
+            ON CONFLICT (run_id, sim_id) DO NOTHING
         """, rows, page_size=page_size)
     conn.commit()
 

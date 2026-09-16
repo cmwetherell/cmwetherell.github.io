@@ -21,6 +21,7 @@ from multiprocessing import Pool, set_start_method
 
 import numpy as np
 import pandas as pd
+import psycopg2
 from tqdm import tqdm
 
 from olympiadConfig import get_event
@@ -72,6 +73,7 @@ def run(event_key, n_sims, upload, procs, chunk=500):
     played = np.zeros(N, dtype=np.int64)
 
     conn = run_id = None
+    db = None
     if upload:
         import olympiadDB as db
         conn = db.get_conn()
@@ -82,6 +84,23 @@ def run(event_key, n_sims, upload, procs, chunk=500):
         run_id = db.insert_run(conn, cfg.key, rounds_completed, n_sims, N,
                                source="pipeline")
         print(f"created run_id={run_id}")
+
+    def db_retry(fn, what, tries=4):
+        """Run a DB op, reconnecting on a dropped/stalled connection."""
+        nonlocal conn
+        for attempt in range(1, tries + 1):
+            try:
+                return fn(conn)
+            except (psycopg2.OperationalError, psycopg2.InterfaceError) as e:
+                print(f"\n{what}: connection error ({e}); reconnecting "
+                      f"(attempt {attempt}/{tries})")
+                try:
+                    conn.close()
+                except Exception:  # noqa: BLE001
+                    pass
+                time.sleep(min(5 * attempt, 20))
+                conn = db.get_conn()
+        raise RuntimeError(f"{what}: failed after {tries} attempts")
 
     buffer, inserted = [], 0
     start = time.time()
@@ -101,11 +120,15 @@ def run(event_key, n_sims, upload, procs, chunk=500):
             if upload:
                 buffer.append(res)
                 if len(buffer) >= chunk:
-                    db.insert_sims(conn, run_id, buffer, start_id=inserted)
+                    start_id, batch = inserted, buffer
+                    db_retry(lambda c: db.insert_sims(c, run_id, batch, start_id=start_id),
+                             f"insert_sims[{start_id}]")
                     inserted += len(buffer)
                     buffer = []
     if upload and buffer:
-        db.insert_sims(conn, run_id, buffer, start_id=inserted)
+        start_id, batch = inserted, buffer
+        db_retry(lambda c: db.insert_sims(c, run_id, batch, start_id=start_id),
+                 f"insert_sims[{start_id}]")
         inserted += len(buffer)
 
     elapsed = time.time() - start
@@ -139,9 +162,10 @@ def run(event_key, n_sims, upload, procs, chunk=500):
               f"{s['exp_rank']:8.1f} {s['exp_mp']:6.1f}")
 
     if upload:
-        db.insert_team_summary(conn, run_id, cfg.key, summary)
-        db.set_current(conn, cfg.key, run_id)
-        db.prune_runs(conn, cfg.key)
+        db_retry(lambda c: db.insert_team_summary(c, run_id, cfg.key, summary),
+                 "insert_team_summary")
+        db_retry(lambda c: db.set_current(c, cfg.key, run_id), "set_current")
+        db_retry(lambda c: db.prune_runs(c, cfg.key), "prune_runs")
         conn.close()
         db.revalidate()
         print(f"\nuploaded + set current: run_id={run_id}, {inserted} sims stored")
