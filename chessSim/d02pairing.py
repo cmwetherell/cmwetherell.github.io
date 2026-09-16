@@ -43,12 +43,17 @@ def _prevset(prev_frozensets):
     return s
 
 
-def _slide_match(teams, opp, last_color):
+_W_REMATCH = 1e6   # finite (>> colour, << _INF): used only by the completeness safety net
+
+
+def _slide_match(teams, opp, last_color, allow_rematch=False):
     """
     Min-cost bipartite assignment of S1 (top half) to S2 (bottom half) of a
     HOMOGENEOUS resident group: rematches forbidden, then minimise same-colour
     meetings ([C8], weight _W_COLOR), then hug the S1[i]-vs-S2[i] slide.
     `opp` maps team -> set of prior opponents (fast rematch lookup).
+    With allow_rematch=True, a rematch is heavily penalised but permitted, so a
+    complete pairing is always returned (used only as a last-resort safety net).
     """
     n = len(teams)
     if n % 2:
@@ -59,12 +64,13 @@ def _slide_match(teams, opp, last_color):
     S1, S2 = teams[:h], teams[h:]
     idx = np.arange(h)
     C = (np.abs(idx[:, None] - idx[None, :]) * _W_DEV).astype(float)  # slide-deviation
+    rematch_cost = _W_REMATCH if allow_rematch else _INF
     s2_pos = {b: j for j, b in enumerate(S2)}
     for i, a in enumerate(S1):
-        for o in opp.get(a, ()):                 # forbid rematches
+        for o in opp.get(a, ()):                 # rematch penalty
             j = s2_pos.get(o)
             if j is not None:
-                C[i, j] = _INF
+                C[i, j] += rematch_cost
         if _W_COLOR:
             ca = last_color.get(a, 0)
             if ca:
@@ -166,5 +172,18 @@ def pair_round(ctx):
             chosen_pairs = _bracket_pairs(even, len(carry), opp, last_color) or []
         result.extend(chosen_pairs)
         carry = chosen_floaters
+
+    # Completeness safety net: in late rounds the float logic can occasionally
+    # leave teams unpaired (a group that can't be paired rematch-free without a
+    # float chess-results would make). Never DROP them -- pair the leftovers,
+    # allowing a rematch only if truly forced. Keeps every sim a full field.
+    paired = set()
+    for a, b in result:
+        paired.add(a); paired.add(b)
+    leftover = [t for t in teams if t not in paired]
+    if leftover:
+        extra = _slide_match(leftover, opp, last_color, allow_rematch=True)
+        if extra:
+            result.extend(extra)
 
     return {frozenset(p) for p in result}

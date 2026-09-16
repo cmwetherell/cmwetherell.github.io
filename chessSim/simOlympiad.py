@@ -970,6 +970,16 @@ def simulate_once(state):
         prev.add((black, white))
         wc[white] += 1
 
+    # Lazy import breaks the simOlympiad <-> d02pairing cycle.
+    global _d02_pair_round
+    if _d02_pair_round is None:
+        from d02pairing import pair_round as _d02_pair_round
+
+    def _d02_pair(team_list):
+        ctx = {"teams": team_list, "mp": mp, "init_rank": init_rank,
+               "prev": prev, "last_color": {}}
+        return _d02_pair_round(ctx)
+
     fixed_pairs = state.get("fixed_pairs", {})
     for rnd in range(state["next_round"], n_rounds + 1):
         # Use official published pairings for this round if we have them (fixed
@@ -978,8 +988,18 @@ def simulate_once(state):
         if fp is None and rnd == 1 and state["r1_pairs"]:
             fp = state["r1_pairs"]
         if fp:
+            paired_now = set()
             for white, black in fp:
                 play(white, black, rnd)
+                paired_now.add(white); paired_now.add(black)
+            # Participants whose official opponent left the field (participant-set
+            # drift) aren't in fp -> pair them with the engine, don't leave unpaired.
+            leftover = [t for t in participants if t not in paired_now]
+            if leftover:
+                for pair in _d02_pair(leftover):
+                    a, b = tuple(pair)
+                    white, black = _choose_white(a, b, wc)
+                    play(white, black, rnd)
             continue
 
         teams_by_rank = sorted(participants, key=lambda t: (-mp[t], init_rank[t]))
@@ -993,13 +1013,7 @@ def simulate_once(state):
             round_opp[bye][rnd] = 0            # 0 == bye
 
         # FIDE D.02 team pairing (validated 100% vs official R2 for both events).
-        # Lazy import breaks the simOlympiad <-> d02pairing cycle.
-        global _d02_pair_round
-        if _d02_pair_round is None:
-            from d02pairing import pair_round as _d02_pair_round
-        ctx = {"teams": teams_by_rank, "mp": mp, "init_rank": init_rank,
-               "prev": prev, "last_color": {}}
-        for pair in _d02_pair_round(ctx):
+        for pair in _d02_pair(teams_by_rank):
             a, b = tuple(pair)
             white, black = _choose_white(a, b, wc)
             play(white, black, rnd)
