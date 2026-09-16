@@ -136,7 +136,7 @@ def _r1_match_rows(state):
     return rows
 
 
-def run(event_key, n_sims, upload, procs, chunk=500):
+def run(event_key, n_sims, upload, procs, chunk=500, upsert_reference=True):
     cfg = get_event(event_key)
     state = load_event(cfg)
     N = state["n_teams"]
@@ -164,9 +164,14 @@ def run(event_key, n_sims, upload, procs, chunk=500):
         import olympiadDB as db
         conn = db.get_conn()
         db.ensure_schema(conn)
-        db.upsert_teams(conn, cfg.key, pd.read_csv(cfg.teams_csv))
-        db.upsert_players(conn, cfg.key, pd.read_csv(cfg.players_csv), team_id)
-        db.upsert_matches(conn, cfg.key, _r1_match_rows(state))
+        # When called standalone (pre-tournament), populate the reference tables
+        # and the scheduled Round-1 pairings. The per-round orchestrator
+        # (updateOlympiadRound.py) owns the richer matches/standings/games upsert
+        # and passes upsert_reference=False so we don't clobber real results here.
+        if upsert_reference:
+            db.upsert_teams(conn, cfg.key, pd.read_csv(cfg.teams_csv))
+            db.upsert_players(conn, cfg.key, pd.read_csv(cfg.players_csv), team_id)
+            db.upsert_matches(conn, cfg.key, _r1_match_rows(state))
         run_id = db.insert_run(conn, cfg.key, rounds_completed, n_sims, N,
                                source="pipeline")
         print(f"created run_id={run_id}")

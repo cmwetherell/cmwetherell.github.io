@@ -41,6 +41,8 @@ MATCHES_TABLE = f"{TABLE_PREFIX}_matches"
 RUNS_TABLE = f"{TABLE_PREFIX}_runs"
 SIMS_TABLE = f"{TABLE_PREFIX}_sims"
 TEAM_SUMMARY_TABLE = f"{TABLE_PREFIX}_team_summary"
+GAMES_TABLE = f"{TABLE_PREFIX}_games"
+STANDINGS_TABLE = f"{TABLE_PREFIX}_standings"
 
 
 @dataclass(frozen=True)
@@ -51,6 +53,11 @@ class EventConfig:
     label: str              # human-readable, e.g. "Open"
     n_rounds: int = 11
     server: str = "s1"      # chess-results mirror (s1/s2/s3)
+    # Substring that identifies this event's Lichess broadcast tournaments. Lichess
+    # splits the ~400 games/round across several overlapping feeds ("... | I",
+    # "... | II", ...); we search by this substring and union all matching feeds.
+    lichess_broadcast_match: str = ""
+    chesscom_event_slug: str = ""   # best-effort chess.com backup (optional)
 
     @property
     def data_dir(self) -> str:
@@ -91,10 +98,30 @@ class EventConfig:
     def team_map_json(self) -> str:
         return self.path("team_map.json")
 
+    @property
+    def round_results_csv(self) -> str:
+        """Per-match team results with board_no + status, for the DB matches table."""
+        return self.path("round_results.csv")
+
+    @property
+    def standings_csv(self) -> str:
+        return self.path("standings.csv")
+
+    @property
+    def games_csv(self) -> str:
+        """Reconciled board-level games (from Lichess/chess.com)."""
+        return self.path("games.csv")
+
 
 EVENTS = {
-    "open": EventConfig(key="open", tnr=1469895, year=2026, label="Open"),
-    "women": EventConfig(key="women", tnr=1469896, year=2026, label="Women's"),
+    "open": EventConfig(
+        key="open", tnr=1469895, year=2026, label="Open",
+        lichess_broadcast_match="Samarkand 2026 | Open",
+    ),
+    "women": EventConfig(
+        key="women", tnr=1469896, year=2026, label="Women's",
+        lichess_broadcast_match="Samarkand 2026 | Women",
+    ),
 }
 
 

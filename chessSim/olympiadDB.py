@@ -20,6 +20,7 @@ from dotenv import load_dotenv
 from olympiadConfig import (
     TEAMS_TABLE, PLAYERS_TABLE, MATCHES_TABLE,
     RUNS_TABLE, SIMS_TABLE, TEAM_SUMMARY_TABLE,
+    GAMES_TABLE, STANDINGS_TABLE,
 )
 
 load_dotenv()
@@ -133,6 +134,40 @@ CREATE TABLE IF NOT EXISTS {TEAM_SUMMARY_TABLE} (
   exp_gp real NOT NULL,
   PRIMARY KEY (run_id, team_id)
 );
+
+CREATE TABLE IF NOT EXISTS {STANDINGS_TABLE} (
+  event text NOT NULL CHECK (event IN ('open','women')),
+  after_round smallint NOT NULL CHECK (after_round BETWEEN 0 AND 11),
+  team_id smallint NOT NULL,
+  rank smallint NOT NULL,
+  mp smallint NOT NULL,
+  gp_hp smallint NOT NULL,               -- game points in half-points
+  tb1 real, tb2 real, tb3 real,
+  updated_at timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY (event, after_round, team_id)
+);
+
+CREATE TABLE IF NOT EXISTS {GAMES_TABLE} (
+  event text NOT NULL CHECK (event IN ('open','women')),
+  round smallint NOT NULL CHECK (round BETWEEN 1 AND 11),
+  board_no smallint NOT NULL,            -- team-match number (FK to matches)
+  board smallint NOT NULL CHECK (board BETWEEN 1 AND 4),
+  white_team_id smallint,
+  black_team_id smallint,
+  white_player text,
+  black_player text,
+  white_fide_id integer,
+  black_fide_id integer,
+  white_elo smallint,
+  black_elo smallint,
+  result text CHECK (result IN ('1-0','1/2-1/2','0-1','*')),
+  pgn text,                              -- moves, for the game viewer
+  source text NOT NULL DEFAULT 'lichess' CHECK (source IN ('lichess','chesscom','chess-results')),
+  updated_at timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY (event, round, board_no, board),
+  FOREIGN KEY (event, round, board_no) REFERENCES {MATCHES_TABLE} (event, round, board_no) ON DELETE CASCADE
+);
+CREATE INDEX IF NOT EXISTS {GAMES_TABLE}_fide ON {GAMES_TABLE} (white_fide_id, black_fide_id);
 """
 
 
@@ -210,6 +245,54 @@ def upsert_matches(conn, event, match_rows):
               team1_score = EXCLUDED.team1_score, team2_score = EXCLUDED.team2_score,
               status = EXCLUDED.status, updated_at = now()
         """, rows)
+    conn.commit()
+
+
+def upsert_standings(conn, event, after_round, rows):
+    """rows: dicts with team_id, rank, mp, gp_hp, tb1, tb2, tb3."""
+    vals = [(event, after_round, r["team_id"], r["rank"], r["mp"], r["gp_hp"],
+             r.get("tb1"), r.get("tb2"), r.get("tb3")) for r in rows]
+    with conn.cursor() as cur:
+        execute_values(cur, f"""
+            INSERT INTO {STANDINGS_TABLE}
+              (event, after_round, team_id, rank, mp, gp_hp, tb1, tb2, tb3)
+            VALUES %s
+            ON CONFLICT (event, after_round, team_id) DO UPDATE SET
+              rank = EXCLUDED.rank, mp = EXCLUDED.mp, gp_hp = EXCLUDED.gp_hp,
+              tb1 = EXCLUDED.tb1, tb2 = EXCLUDED.tb2, tb3 = EXCLUDED.tb3,
+              updated_at = now()
+        """, vals)
+    conn.commit()
+
+
+def upsert_games(conn, event, rows):
+    """
+    rows: dicts with round, board_no, board, white_team_id, black_team_id,
+    white_player, black_player, white_fide_id, black_fide_id, white_elo,
+    black_elo, result, pgn, source.
+    """
+    vals = [(event, r["round"], r["board_no"], r["board"],
+             r.get("white_team_id"), r.get("black_team_id"),
+             r.get("white_player"), r.get("black_player"),
+             r.get("white_fide_id"), r.get("black_fide_id"),
+             r.get("white_elo"), r.get("black_elo"),
+             r.get("result"), r.get("pgn"), r.get("source", "lichess"))
+            for r in rows]
+    with conn.cursor() as cur:
+        execute_values(cur, f"""
+            INSERT INTO {GAMES_TABLE}
+              (event, round, board_no, board, white_team_id, black_team_id,
+               white_player, black_player, white_fide_id, black_fide_id,
+               white_elo, black_elo, result, pgn, source)
+            VALUES %s
+            ON CONFLICT (event, round, board_no, board) DO UPDATE SET
+              white_team_id = EXCLUDED.white_team_id, black_team_id = EXCLUDED.black_team_id,
+              white_player = EXCLUDED.white_player, black_player = EXCLUDED.black_player,
+              white_fide_id = EXCLUDED.white_fide_id, black_fide_id = EXCLUDED.black_fide_id,
+              white_elo = EXCLUDED.white_elo, black_elo = EXCLUDED.black_elo,
+              result = EXCLUDED.result, pgn = EXCLUDED.pgn, source = EXCLUDED.source,
+              updated_at = now()
+        """, vals, page_size=200)
     conn.commit()
 
 

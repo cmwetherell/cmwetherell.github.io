@@ -214,10 +214,59 @@ Scenario-filter grammar the API validates: tokens `round:team_id:{w|d|l}` →
    prune old raw sims (summaries kept for history) → ping `REVALIDATE_URL`.
 4. **Final** after round 11: `rounds_completed = 11`, every sim is the actual result.
 
-## Not yet produced by the pipeline (web-dev plan mentioned these)
-- `olympiad_2026_games` (individual board results) and `olympiad_2026_standings`
-  (official post-round ranking) are **not** written yet — the pipeline currently
-  stores team-level match scores only. If the UI needs per-board detail or the
-  official (chess-results) standings, flag it and the scraper can be extended to
-  the board-level pages. Until then, derive live team results from
-  `olympiad_2026_matches`.
+## Live-results tables (populated round-by-round)
+
+The per-round updater (`chessSim/updateOlympiadRound.py`, run by the auto-poller
+`pollOlympiad.py`) refreshes these after each round. `matches` now carries real
+scores + status (not just scheduled R1 pairings).
+
+### `olympiad_2026_matches` (now populated with results)
+As documented above, plus: after each round, completed matches have
+`status='final'` with `team1_score`/`team2_score` in half-points (0..8), and the
+next round's pairings appear with `status='scheduled'` and NULL scores.
+`board_no` is the chess-results table/pairing number.
+
+### `olympiad_2026_games` — individual board games (with moves)
+Board-level games, sourced from the **Lichess broadcast** (primary; chess.com
+backup), reconciled to a team match by FIDE id.
+
+| column | type | notes |
+|--------|------|-------|
+| `event` | text | |
+| `round` | smallint | 1..11 |
+| `board_no` | smallint | team-match number (FK → `matches`) |
+| `board` | smallint | 1..4 within the match |
+| `white_team_id` `black_team_id` | smallint | resolved via FIDE id (nullable if unresolved) |
+| `white_player` `black_player` | text | |
+| `white_fide_id` `black_fide_id` | integer | |
+| `white_elo` `black_elo` | smallint | |
+| `result` | text | `1-0` / `1/2-1/2` / `0-1` / `*` (in progress) |
+| `pgn` | text | moves for the game viewer (no clocks/evals) |
+| `source` | text | `lichess` / `chesscom` / `chess-results` |
+| `updated_at` | timestamptz | |
+
+PK `(event, round, board_no, board)`; FK `(event, round, board_no)` → `matches`
+(cascade); index on `(white_fide_id, black_fide_id)`. Live games appear with
+`result='*'` and update to a final result as they finish.
+
+### `olympiad_2026_standings` — live team standings
+Current standings after each completed round, computed from the authoritative
+chess-results match scores.
+
+| column | type | notes |
+|--------|------|-------|
+| `event` | text | |
+| `after_round` | smallint | 0..11 |
+| `team_id` | smallint | |
+| `rank` | smallint | 1 = leader |
+| `mp` | smallint | match points |
+| `gp_hp` | smallint | game points in half-points |
+| `tb1` `tb2` `tb3` | real | official Sonneborn-Berger tiebreaks — **currently NULL**; rank is by (MP, GP). The exact chess-results tiebreak ordering can be layered in from its ranking crosstable once published. |
+| `updated_at` | timestamptz | |
+
+PK `(event, after_round, team_id)`.
+
+> For the official champion/medal ranking use the **simulation's** final standings
+> once `rounds_completed=11` (it applies the full FIDE Appendix 2.I tiebreaks);
+> for mid-event live standings use this table (MP → GP), which matches the public
+> leaderboard closely.

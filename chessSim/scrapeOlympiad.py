@@ -214,8 +214,10 @@ def scrape_rounds(cfg: EventConfig):
       round1_pairings  : official R1 pairings (whiteTeam, blackTeam) -- team listed
                          first on chess-results has board-1 white.
     """
-    all_matches = []
-    r1_pairs = []
+    all_matches = []     # completed team matches (sim input): playerTeam, oppTeam, round, gp
+    r1_pairs = []        # official R1 pairings: whiteTeam, blackTeam
+    round_results = []   # every published match (DB): round, board_no, team1, team2,
+                         #   team1_score_hp, team2_score_hp, status
 
     for rd in range(1, cfg.n_rounds + 1):
         try:
@@ -227,7 +229,8 @@ def scrape_rounds(cfg: EventConfig):
 
         grid = _promote_header(grid, "Res.")
         # Positional layout of the results grid (verified against 2026 pages):
-        #   1=SNo1  4=Team1  7=Res1  9=Res2  12=Team2  15=SNo2
+        #   0=No.(board_no)  1=SNo1  4=Team1  7=Res1  9=Res2  12=Team2  15=SNo2
+        board_no = pd.to_numeric(grid.iloc[:, 0], errors="coerce")
         team1 = grid.iloc[:, 4].map(_strip_team)
         team2 = grid.iloc[:, 12].map(_strip_team)
         res1 = grid.iloc[:, 7].map(_clean_gp)
@@ -235,33 +238,96 @@ def scrape_rounds(cfg: EventConfig):
 
         played_any = res1.notna().any()
 
-        for t1, t2, g1, g2 in zip(team1, team2, res1, res2):
+        for bno, t1, t2, g1, g2 in zip(board_no, team1, team2, res1, res2):
             # Rows like "Angola vs not paired" are absent/withdrawn teams, not a
             # pairing-allocated bye -- skip them (those teams don't play).
             if not (_is_real_team(t1) and _is_real_team(t2)):
                 continue
+            final = g1 is not None and g2 is not None
+            round_results.append({
+                "round": rd,
+                "board_no": int(bno) if pd.notna(bno) else None,
+                "team1": t1, "team2": t2,
+                "team1_score_hp": int(round(g1 * 2)) if final else None,
+                "team2_score_hp": int(round(g2 * 2)) if final else None,
+                "status": "final" if final else "scheduled",
+            })
             if rd == 1:
                 r1_pairs.append({"whiteTeam": t1, "blackTeam": t2})
-            if g1 is not None and g2 is not None:
+            if final:
                 all_matches.append({"playerTeam": t1, "oppTeam": t2, "round": rd, "gp": g1})
                 all_matches.append({"playerTeam": t2, "oppTeam": t1, "round": rd, "gp": g2})
 
         if not played_any and rd > 1:
-            # Round rd has pairings but no results, and it's not R1 -> future round.
+            # Round rd has pairings but no results (future round). We already
+            # recorded its scheduled pairings above; stop walking further rounds.
             break
 
     matches_df = pd.DataFrame(all_matches, columns=["playerTeam", "oppTeam", "round", "gp"])
     r1_df = pd.DataFrame(r1_pairs, columns=["whiteTeam", "blackTeam"])
+    results_df = pd.DataFrame(round_results, columns=[
+        "round", "board_no", "team1", "team2",
+        "team1_score_hp", "team2_score_hp", "status"])
 
     os.makedirs(cfg.data_dir, exist_ok=True)
     matches_df.to_csv(cfg.matches_csv, index=False)
     r1_df.to_csv(cfg.round1_pairings_csv, index=False)
+    results_df.to_csv(cfg.round_results_csv, index=False)
 
     completed = int(matches_df["round"].max()) if not matches_df.empty else 0
     participants = sorted(set(r1_df.whiteTeam) | set(r1_df.blackTeam))
     print(f"rounds: {completed} completed round(s); {len(r1_df)} real R1 pairings; "
           f"{len(participants)} participating teams -> {cfg.matches_csv}")
-    return matches_df, r1_df
+    return matches_df, r1_df, results_df
+
+
+def _gp_to_mp(gp):
+    return 2 if gp > 2 else (1 if gp == 2 else 0)
+
+
+def scrape_standings(cfg: EventConfig) -> pd.DataFrame:
+    """
+    Current team standings after the last completed round, computed from the
+    scraped completed matches (authoritative match scores from chess-results):
+    match points and game points per team, ranked by (MP desc, GP desc).
+
+    Columns: after_round, team_id, rank, mp, gp_hp, tb1, tb2, tb3.
+    tb1..tb3 (official Sonneborn-Berger tiebreaks) are left null here; the exact
+    official ordering can be layered in from the chess-results ranking crosstable
+    once it is published (it does not exist until a round is final). Empty
+    pre-tournament.
+    """
+    matches = pd.read_csv(cfg.matches_csv)
+    teams = pd.read_csv(cfg.teams_csv)
+    team_id = {t: int(r) for t, r in zip(teams.team, teams.initRank)}
+
+    cols = ["after_round", "team_id", "rank", "mp", "gp_hp", "tb1", "tb2", "tb3"]
+    if matches.empty:
+        df = pd.DataFrame(columns=cols)
+        df.to_csv(cfg.standings_csv, index=False)
+        print("standings: 0 completed rounds -> empty")
+        return df
+
+    after_round = int(matches["round"].max())
+    agg = matches.groupby("playerTeam").agg(
+        mp=("gp", lambda s: int(sum(_gp_to_mp(g) for g in s))),
+        gp_hp=("gp", lambda s: int(round(s.sum() * 2))),
+    ).reset_index()
+    agg = agg.sort_values(["mp", "gp_hp"], ascending=False).reset_index(drop=True)
+    agg["rank"] = agg.index + 1
+
+    rows = []
+    for r in agg.itertuples(index=False):
+        tid = team_id.get(r.playerTeam)
+        if tid is None:
+            continue
+        rows.append({"after_round": after_round, "team_id": tid, "rank": int(r.rank),
+                     "mp": int(r.mp), "gp_hp": int(r.gp_hp),
+                     "tb1": None, "tb2": None, "tb3": None})
+    df = pd.DataFrame(rows, columns=cols)
+    df.to_csv(cfg.standings_csv, index=False)
+    print(f"standings: after round {after_round}, {len(df)} teams -> {cfg.standings_csv}")
+    return df
 
 
 def main():
@@ -272,6 +338,7 @@ def main():
     scrape_players(cfg)
     scrape_teams(cfg)
     scrape_rounds(cfg)
+    scrape_standings(cfg)
     print("done.")
 
 
