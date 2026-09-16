@@ -78,22 +78,49 @@ def db_rounds_completed(cfg) -> int:
         conn.close()
 
 
+def _max_published_round(cfg) -> int:
+    """Highest round with ANY published pairings (scheduled or final)."""
+    import pandas as pd
+    rr = pd.read_csv(cfg.round_results_csv)
+    return 0 if rr.empty else int(rr["round"].max())
+
+
+def _db_max_matches_round(cfg) -> int:
+    """Highest round present in the DB matches table (what the last run reflected)."""
+    conn = db.get_conn()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("SET statement_timeout='15000'")
+            cur.execute(f"SELECT coalesce(max(round),0) FROM {db.MATCHES_TABLE} "
+                        f"WHERE event = %s", (cfg.key,))
+            return int(cur.fetchone()[0])
+    finally:
+        conn.close()
+
+
 def poll_once(n_sims, procs):
     updated = []
     for key in EVENTS:
         cfg = get_event(key)
         try:
-            done = fully_completed_round(cfg)
+            done = fully_completed_round(cfg)          # also writes round_results.csv
             have = db_rounds_completed(cfg)
+            published = _max_published_round(cfg)
+            db_published = _db_max_matches_round(cfg)
         except Exception as e:  # noqa: BLE001 -- one event's hiccup shouldn't block the other
             print(f"{key}: check failed ({e}); skipping this tick")
             continue
-        if done > have:
-            print(f"{key}: round {done} complete (current run at {have}) -> UPDATING")
+        # Trigger on a newly-completed round OR newly-published pairings for the
+        # next round (so round_opps pins the next round to the official pairing).
+        if done > have or published > db_published:
+            reason = (f"round {done} complete" if done > have
+                      else f"round {published} pairings published")
+            print(f"{key}: {reason} (run@{have}, matches@{db_published}) -> UPDATING")
             update(key, n_sims, procs)
-            updated.append((key, done))
+            updated.append((key, done, published))
         else:
-            print(f"{key}: nothing new (complete={done}, current run={have})")
+            print(f"{key}: nothing new (complete={done}, run@{have}, "
+                  f"published={published}, matches@{db_published})")
     return updated
 
 
