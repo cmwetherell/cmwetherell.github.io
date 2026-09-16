@@ -1,33 +1,48 @@
+import os
 import pandas as pd
 import numpy as np
 import itertools
 from copy import deepcopy
 import random
 import lightgbm as lgb
+from functools import lru_cache
 
-# https://handbook.fide.com/files/handbook/Olympiad2022MainCompetition.pdf
-# https://handbook.fide.com/chapter/OlympiadPairingRules2022
-
-##SHould use teams starting rank from chess-results
+# 46th Chess Olympiad Samarkand 2026 regulations:
+#   https://handbook.fide.com/files/handbook/Olympiad2026MainCompetition.pdf
+#   https://handbook.fide.com/chapter/OlympiadPairingRules2022  (D.02, pairing)
+# Ranking: Match Points, then IS(10) Sonneborn-Berger Cut-1, Game Points,
+# then sum of opponents' match points Cut-1.
 
 #To surpress a warning I don't care about...
 import urllib3
 from urllib3.exceptions import InsecureRequestWarning
 
-# from chessSim.utils import summarizeCurrent
 urllib3.disable_warnings(InsecureRequestWarning)
 
-bst = lgb.Booster(model_file = './chessSim/models/model.txt')
+_MODEL_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "models", "model.txt")
+bst = lgb.Booster(model_file=_MODEL_PATH)
+
+
+@lru_cache(maxsize=None)
+def _win_probs(whiteElo, blackElo):
+    """
+    Cached [P(black), P(draw), P(white)] for a single board, averaged over a
+    small window of the average-rating feature (as the original model call did).
+
+    Elo is integer and bounded, so across a 10k-sim run the same (white, black)
+    pair recurs constantly -- caching turns ~4,000 model calls/sim into a handful
+    of unique lookups per worker process.
+    """
+    avg_range = range(-10, 11, 5)
+    dat = [[whiteElo - i, blackElo - i, whiteElo - blackElo,
+            ((whiteElo - i) + (blackElo - i)) / 2] for i in avg_range]
+    return tuple(bst.predict(dat, num_iteration=bst.best_iteration,
+                             num_threads=1).mean(axis=0).tolist())
+
 
 def chessMLPred(model, whiteElo, blackElo):
-    avgRange = range(-10, 11, 5)
-    
-    dat = [[whiteElo - i, blackElo - i, whiteElo - blackElo,((whiteElo - i) + (blackElo - i)) / 2] for i in avgRange]
-    preds = model.predict(dat,num_iteration=model.best_iteration, num_threads = 1).mean(axis = 0).tolist()
-    result = np.random.choice([0,0.5,1], p=preds) 
-    # print(whiteElo, blackElo, preds)
-
-    return result
+    preds = _win_probs(int(whiteElo), int(blackElo))
+    return np.random.choice([0, 0.5, 1], p=preds)
 
 def getIS10(team, matchSummary):
     teamMatches = matchSummary[matchSummary.playerTeam == team].sort_values(by = ['mpTotalOpp', 'ISi'], ascending = [False, False])
@@ -702,324 +717,260 @@ def simulateGame(whiteElo, blackElo, model):
         supplement = 1900 - min([whiteElo, blackElo])
     return chessMLPred(model, whiteElo + supplement, blackElo + supplement)
 
-def playMatch(matchTeams, teams, players, model):
 
-    a = matchTeams[0]
-    b = matchTeams[1]
+# ===========================================================================
+# Fast simulation core (2026 rewrite)
+# ---------------------------------------------------------------------------
+# The pairing engine above (makeHappyPools / pairingFast / happyPool ...) is
+# reused verbatim -- it implements FIDE Olympiad Pairing Rules D.02 and was
+# validated on the 2024 event. Everything below replaces the old pandas-heavy
+# per-round summarise/playMatch/main path with dict-based bookkeeping so a
+# 10k-sim run over 200 teams is tractable. Standings tiebreaks are computed
+# once, at the end, per Regs Appendix 2.I.
+# ===========================================================================
+
+import json
+from olympiadConfig import get_event  # noqa: E402
+
+
+def prep_board_elos(players_df):
+    """team -> list of top-4 board Elos (rows are already in board order)."""
+    elos = {}
+    for team, grp in players_df.groupby("Team", sort=False):
+        e = [int(x) for x in grp["Rtg"].tolist()[:4]]
+        while len(e) < 4:            # defensive; scraper already pads to 4
+            e.append(e[-1])
+        elos[team] = e
+    return elos
+
+
+def _match_gp(white_elos, black_elos):
+    """
+    Play one team match (4 boards) and return (white_team_gp, black_team_gp).
+    The board-1-white team has White on boards 1 & 3, Black on boards 2 & 4.
+    """
+    r1 = simulateGame(white_elos[0], black_elos[0], bst)   # white team, white
+    r2 = simulateGame(black_elos[1], white_elos[1], bst)   # black team, white
+    r3 = simulateGame(white_elos[2], black_elos[2], bst)
+    r4 = simulateGame(black_elos[3], white_elos[3], bst)
+    white_gp = r1 + (1 - r2) + r3 + (1 - r4)
+    return white_gp, 4 - white_gp
+
+
+def _gp_to_mp(gp):
+    return 2 if gp > 2 else (1 if gp == 2 else 0)
+
+
+def load_event(cfg):
+    """
+    Build the immutable per-event state needed to simulate: participating teams
+    (those with a real Round-1 pairing), starting ranks, board Elos, the official
+    Round-1 pairings, and any completed-round results to start from.
+    """
+    players = pd.read_csv(cfg.players_csv)
+    teams = pd.read_csv(cfg.teams_csv)
+    r1 = pd.read_csv(cfg.round1_pairings_csv)
+    matches = pd.read_csv(cfg.matches_csv)
+
+    r1_pairs = list(zip(r1.whiteTeam, r1.blackTeam))
+    participants = sorted(set(r1.whiteTeam) | set(r1.blackTeam))
+    pset = set(participants)
+
+    init_rank = dict(zip(teams.team, teams.initRank.astype(int)))
+    # team_id == chess-results starting number (snr). Contiguous 1..n_teams over
+    # ALL registered teams (including any that later withdrew), so the site's
+    # team_id-indexed arrays line up with its team/roster tables.
+    # native ints (not numpy) so psycopg2 can adapt team_ids straight into SQL
+    team_id = {t: int(r) for t, r in zip(teams.team, teams.initRank)}
+    n_teams = int(teams.initRank.max())
+    for t in participants:
+        init_rank.setdefault(t, 10_000)
+    missing_ids = [t for t in participants if t not in team_id]
+    if missing_ids:
+        raise RuntimeError(f"Participants missing a start number: {missing_ids[:5]}")
+
+    board_elos = prep_board_elos(players[players.Team.isin(pset)])
+    missing = [t for t in participants if t not in board_elos]
+    if missing:
+        raise RuntimeError(f"No roster for participating teams: {missing[:5]}")
+
+    # Seed completed rounds (empty pre-tournament). matches.csv holds both
+    # perspectives already (playerTeam, oppTeam, round, gp).
+    seed_mp = {t: 0 for t in participants}
+    seed_matches = {t: [] for t in participants}
+    seed_round_hp = {t: {} for t in participants}
+    seed_prev = set()
+    next_round = 1
+    if not matches.empty:
+        for row in matches.itertuples(index=False):
+            if row.playerTeam in pset and row.oppTeam in pset:
+                seed_mp[row.playerTeam] += _gp_to_mp(row.gp)
+                seed_matches[row.playerTeam].append((float(row.gp), row.oppTeam))
+                seed_round_hp[row.playerTeam][int(row.round)] = int(round(row.gp * 2))
+                seed_prev.add((row.playerTeam, row.oppTeam))
+        next_round = int(matches["round"].max()) + 1
+
+    return {
+        "cfg": cfg,
+        "participants": participants,
+        "init_rank": init_rank,
+        "team_id": team_id,
+        "n_teams": n_teams,
+        "board_elos": board_elos,
+        "r1_pairs": r1_pairs,
+        "seed_mp": seed_mp,
+        "seed_matches": seed_matches,
+        "seed_round_hp": seed_round_hp,
+        "seed_prev": seed_prev,
+        "next_round": next_round,
+        "n_rounds": cfg.n_rounds,
+    }
+
+
+def _pair_round(teams_by_rank, mp, prev):
+    """Pair one non-first round using the D.02 pool engine. Returns set of matches."""
+    n = len(teams_by_rank)
+    median_index = round(n / 2) if n % 2 == 0 else round(n / 2 - 0.5)
+    median_mp = mp[teams_by_rank[median_index]]
+
+    mps = sorted({mp[t] for t in teams_by_rank})
+    top_pools = [[t for t in teams_by_rank if mp[t] == v]
+                 for v in sorted(mps, reverse=True) if v > median_mp]
+    bottom_pools = [[t for t in teams_by_rank if mp[t] == v]
+                    for v in mps if v < median_mp]
+    median_pool = [[t for t in teams_by_rank if mp[t] == median_mp]]
+    return makeHappyPools(top_pools, bottom_pools, median_pool, prev)
+
+
+def _choose_white(a, b, wc):
+    if wc[a] < wc[b]:
+        return a, b
+    if wc[b] < wc[a]:
+        return b, a
+    return (a, b) if random.random() < 0.5 else (b, a)
+
+
+def _final_standings(participants, init_rank, mp, matches):
+    """Rank teams by MP -> IS(10) -> GP -> MP(10) (Regs Appendix 2.I, Cut-1)."""
+    gp_total, is10, mp10 = {}, {}, {}
+    for t in participants:
+        recs = matches[t]
+        gp_total[t] = sum(g for g, _ in recs)
+        # (ISi, opponent final MP) per game; sort by (oppMP, ISi) desc, drop lowest.
+        rows = sorted(((g * mp[o], mp[o]) for g, o in recs),
+                      key=lambda x: (x[1], x[0]), reverse=True)
+        keep = rows[:-1]  # Cut-1: drop the single lowest (or the bye slot)
+        is10[t] = sum(isi for isi, _ in keep)
+        mp10[t] = sum(om for _, om in keep)
+    order = sorted(participants,
+                   key=lambda t: (mp[t], is10[t], gp_total[t], mp10[t], -init_rank[t]),
+                   reverse=True)
+    return order, gp_total
+
+
+def simulate_once(state):
+    """
+    Run one full tournament from `state`. Returns a dict of team_id-indexed
+    arrays matching the olympiad_2026_sims schema (see SCHEMA.md):
+      gold/silver/bronze : team_ids of the final top 3
+      top10              : team_ids at final ranks 1..10 (in order)
+      final_rank         : final_rank[team_id] = 1..n_teams (0 = did not play)
+      match_points       : match_points[team_id]
+      game_points        : game_points[team_id] in HALF-points (0..88)
+      round_scores       : round_scores[round][team_id] in HALF-points (0..8)
+    Arrays are laid out so that, once stored in a (1-based) Postgres array,
+    arr[team_id] and round_scores[round][team_id] index directly. In Python
+    that means team t sits at index t-1 and round r at index r-1: the team
+    dimension has length n_teams and the round dimension length n_rounds.
+    A team_id that did not play carries 0 in every array.
+    """
+    participants = state["participants"]
+    init_rank = state["init_rank"]
+    board_elos = state["board_elos"]
+    team_id = state["team_id"]
+    n_teams = state["n_teams"]
+    n_rounds = state["n_rounds"]
+
+    mp = dict(state["seed_mp"])
+    matches = {t: list(state["seed_matches"][t]) for t in participants}
+    round_hp = {t: dict(state["seed_round_hp"][t]) for t in participants}
+    prev = set(state["seed_prev"])
+    wc = {t: 0 for t in participants}
+
+    def play(white, black, rnd):
+        wgp, bgp = _match_gp(board_elos[white], board_elos[black])
+        mp[white] += _gp_to_mp(wgp)
+        mp[black] += _gp_to_mp(bgp)
+        matches[white].append((wgp, black))
+        matches[black].append((bgp, white))
+        round_hp[white][rnd] = int(round(wgp * 2))
+        round_hp[black][rnd] = int(round(bgp * 2))
+        prev.add((white, black))
+        prev.add((black, white))
+        wc[white] += 1
+
+    for rnd in range(state["next_round"], n_rounds + 1):
+        if rnd == 1:
+            for white, black in state["r1_pairs"]:
+                play(white, black, rnd)
+            continue
+
+        teams_by_rank = sorted(participants, key=lambda t: (-mp[t], init_rank[t]))
+        # Odd field -> lowest-ranked team gets a bye (1 MP + 2 GP, Regs 4.1/4.3).
+        if len(teams_by_rank) % 2:
+            bye = teams_by_rank[-1]
+            teams_by_rank = teams_by_rank[:-1]
+            mp[bye] += 1
+            matches[bye].append((2.0, None))  # bye GP; opp None -> excluded from TB
+            round_hp[bye][rnd] = 4
+
+        for a, b in _pair_round(teams_by_rank, mp, prev):
+            if a == b:
+                continue
+            white, black = _choose_white(a, b, wc)
+            play(white, black, rnd)
+
+    # Bye rows carry opp=None (excluded from IS(10)/MP(10) -- the bye round is
+    # dropped anyway); filter them out before computing tiebreaks.
+    tb_matches = {t: [(g, o) for g, o in matches[t] if o is not None]
+                  for t in participants}
+    order, gp_total = _final_standings(participants, init_rank, mp, tb_matches)
+
+    # Length-n_teams lists; team t at index t-1 so Postgres arr[t] == team t.
+    final_rank = [0] * n_teams
+    match_points = [0] * n_teams
+    game_points = [0] * n_teams                            # half-points
+    round_scores = [[0] * n_teams for _ in range(n_rounds)]
+    for pos, t in enumerate(order):
+        tid = team_id[t]
+        final_rank[tid - 1] = pos + 1
+        match_points[tid - 1] = mp[t]
+        game_points[tid - 1] = int(round(gp_total[t] * 2))
+        for rnd, hp in round_hp[t].items():
+            round_scores[rnd - 1][tid - 1] = hp
+
+    return {
+        "gold": team_id[order[0]],
+        "silver": team_id[order[1]],
+        "bronze": team_id[order[2]],
+        "top10": [team_id[t] for t in order[:10]],
+        "final_rank": final_rank,
+        "match_points": match_points,
+        "game_points": game_points,
+        "round_scores": round_scores,
+    }
+
+
+def main(_=0):
+    """Standalone smoke test: simulate one tournament and print the podium."""
+    import sys
+    key = sys.argv[1] if len(sys.argv) > 1 else "open"
+    state = load_event(get_event(key))
+    res = simulate_once(state)
+    id2name = {v: k for k, v in state["team_id"].items()}
+    print("podium:", [id2name[res[m]] for m in ("gold", "silver", "bronze")])
+    return res
 
-    whiteTeam = getWhiteTeam(matchTeams, teams)
-    try:
-        blackTeam = [team for team in [a,b] if team != whiteTeam][0]
-    except IndexError:
-        print('list index error')
-        print(a)
-        print(b)
-        print(whiteTeam)
-
-    # im having trouble with the code below because its giving me empty data frames, but I think Germany and Ncaragua have players
-
-    whiteRoster = players[players.Team == whiteTeam][["Name", "Team", "Rtg"]]
-    blackRoster = players[players.Team == blackTeam][["Name", "Team", "Rtg"]]
-
-
-    newGame1 = [whiteRoster.iloc[0,0], whiteRoster.iloc[0,1], whiteRoster.iloc[0,2], blackRoster.iloc[0,0], blackRoster.iloc[0,1], blackRoster.iloc[0,2]]
-    newGame2 = [blackRoster.iloc[1,0], blackRoster.iloc[1,1], blackRoster.iloc[1,2], whiteRoster.iloc[1,0], whiteRoster.iloc[1,1], whiteRoster.iloc[1,2]]
-    newGame3 = [whiteRoster.iloc[2,0], whiteRoster.iloc[2,1], whiteRoster.iloc[2,2], blackRoster.iloc[2,0], blackRoster.iloc[2,1], blackRoster.iloc[2,2]]
-    newGame4 = [blackRoster.iloc[3,0], blackRoster.iloc[3,1], blackRoster.iloc[3,2], whiteRoster.iloc[3,0], whiteRoster.iloc[3,1], whiteRoster.iloc[3,2]]
-
-    results = [simulateGame(game[2], game[5], model) for game in [newGame1, newGame2, newGame3, newGame4]]
-
-    newGames = pd.DataFrame( [newGame1, newGame2, newGame3, newGame4], columns = ['whiteName', 'whiteTeam', 'whiteElo', 'blackName', 'blackTeam','blackElo'])
-
-    newGames['result'] = results
-
-    # newGames.loc[newGames.whiteName == 'Gukesh D.', 'result'] = 1
-    # newGames.loc[newGames.blackName == 'Gukesh D.', 'result'] = 0
-
-    return newGames
-
-'''
-evaluating a pool:
-1) remove any team that has played everyone
-2) remove best odd team (current and next groups validate)
-3) make sure pool validates after removing odd team
-'''
-
-
-def summarizeResults(games, teams, players, current = None):
-    # print('this is the teams input', teams, 'end of teams input')
-    ##Need table of games from each players perspective, and their score + team
-    ##Then we can summarize the number of points each team scored in the match by looking at team points in that round
-
-    # teams = whiteGamesCount(games, teams)
-
-    whiteGames = games.copy()
-    whiteGames['color'] = 'white'
-
-    blackColSort = ['blackName', 'blackTeam', 'blackElo', 'whiteName', 'whiteTeam', 'whiteElo', 'result', 'round', 'board', 'EloDiff', 'EloAvg']
-    blackGames = games[blackColSort].copy()
-    
-    blackGames.loc[:,'result'] = 1 - blackGames.result
-    blackGames.loc[:,'EloDiff'] = -1 * blackGames.EloDiff
-    blackGames['color'] = 'black'
-
-    newColNames = ['playerName', 'playerTeam', 'playerElo', 'oppName', 'oppTeam', 'oppElo', \
-        'result', 'round', 'board', 'EloDiff', 'EloAvg', 'color']
-
-    completeResults = pd.DataFrame(np.concatenate(
-        (whiteGames, blackGames)
-        , axis = 0), columns = newColNames)
-    # print(len(completeResults.playerTeam.unique()), 'fffff')
-    
-    ##summarize results by team, check if team played 4 games and if result matches opponent
-
-    matchSummary = completeResults.groupby(['playerTeam', 'oppTeam', 'round']).agg(
-        gp = ('result','sum'),
-        ).sort_values(by = ['round', 'gp', ], ascending = True).reset_index()
-    # print(len(matchSummary.playerTeam.unique()))
-    # print(matchSummary, 'new game match summary')
-
-    # im trying to figure out why current and matchSummary have dupliactes in them, please do some diagnostics below
-
-    # print(current)
-    # print(matchSummary)
-
-    # if current is not None:
-    #     matchSummary = pd.concat([current, matchSummary])
-
-    # print(matchSummary, 'this is the match summary')
-    
-    mpConditions = [
-        (matchSummary.gp > 2),
-        (matchSummary.gp == 2),
-        (matchSummary.gp < 2),
-    ]
-    mpValues = [2,1,0]
-
-    matchSummary['mp'] = np.select(mpConditions, mpValues)
-    matchSummary.loc[matchSummary.oppTeam == 'bye', 'mp'] = 1
-
-    # print(matchSummary[matchSummary['round'] == 10].to_string())
-
-    teamSummary = matchSummary.groupby(['playerTeam',]).agg(
-        mpTotal = ('mp','sum'),
-        ).sort_values(by = ['mpTotal', ], ascending = False).reset_index()
-    # print(teamSummary.shape[0], 'teamasassdsd')
-
-    matchSummary = matchSummary.merge(right = teamSummary, how = 'inner', on = 'playerTeam')
-    matchSummary = matchSummary.merge(right = teamSummary, how = 'inner', left_on = 'oppTeam', right_on = 'playerTeam', suffixes = ('', 'Opp'))
-    # print(len(matchSummary.playerTeam.unique()))
-    matchSummary['ISi'] = matchSummary.gp * matchSummary.mpTotalOpp  
-
-    teamSummary['IS(10)'] = teamSummary.playerTeam.apply(getIS10, matchSummary = matchSummary)
-    teamSummary['GP'] = teamSummary.playerTeam.apply(getGP, matchSummary = matchSummary)
-    teamSummary['MP(10)'] = teamSummary.playerTeam.apply(getMP10, matchSummary = matchSummary)
-
-    teamSummary = teamSummary.rename(columns = {'playerTeam': 'team'})
-    # teamSummary = teamSummary.merge(right = teams[['team', 'initRank', 'whiteCount']], how = 'inner', on = 'team')
-    teamSummary = teams[['team', 'initRank', 'whiteCount']].merge(right = teamSummary, how = 'left', on = 'team')
-    # print(teamSummary, 'initial team summary table')
-
-    teamSummary = teamSummary.sort_values(by = ['mpTotal', 'IS(10)', 'GP', 'MP(10)'], ascending = False)
-    teamSummary['bye'] = 0
-
-    # print(teamSummary)
-    # print(matchSummary)
-
-    return teamSummary, matchSummary
-
-def main(_):
-    # print('Simulation: ', nSim)
-    # get Olympiad players
-    players = pd.read_csv('./chessSim/data/olympiad/players2024.csv')
-    
-    #  get teams
-    teams = pd.read_csv('./chessSim/data/olympiad/teams2024.csv')
-    # print(teams.shape[0], 'num temas')
-
-    games = pd.read_csv('./chessSim/data/olympiad/games2024.csv')
-
-    current = pd.read_csv('./chessSim/data/olympiad/matches2024.csv')
-   
-    # games = games.loc[games['round'] < olympiadRound] #TODO remove this, just using to test simulating future rounds. eventually want to loop through all rounds
-
-    teams = whiteGamesCount(games, teams) #TODO: Do I need this?
-    teamSummary, matchSummary = summarizeResults(games, teams, players, current) #TODO: add back after round 1
-    # if matchSummary is empty DF nextRound = 1
-    if matchSummary.shape[0] == 0:
-        nextRound = 1
-    else:
-        nextRound = int(max(matchSummary['round']) + 1)
-        # print('next round:', nextRound)
-
-    # print(matchSummary)
-    # print('beginning next round', max(matchSummary['round']))
-    # print(teamSummary.shape[0],'number of teams in beginning')
-
-    # print(teamSummary.to_string())
-
-    #TODO create first round pairings, code that folows simulates remaining rounds only
-
-    # if games.shape[0] == 0:
-    #     nextRound = 1
-    # else: nextRound = max(matchSummary['round']) + 1
-
-
-    for pairingRound in range(nextRound, 12): # 11 rounds total, start after last round
-        # print('new round: ', pairingRound)
-        
-        if pairingRound == 1:
-            # print('first round')
-            previousMatchups = set()
-        elif pairingRound > 1:
-            previousMatchups = set(zip(matchSummary.playerTeam, matchSummary.oppTeam))
-        else: raise Exception("Pairing round number error (<1)")
-
-        teamsMatching = teamSummary.sort_values(by = ['mpTotal', 'initRank'], ascending = [False, True]).reset_index(drop = True)
-        # print(teamsMatching.to_string())
-        # print(matchSummary.to_string())
-
-        #remove bye team and find median team to find median group.
-        nTeams = len(teamsMatching.team.unique())
-        # print(nTeams, 'there are nteams')
-
-
-
-        # remove odd team out and give them a bye
-        byeTeam = None  #TODO does the bye team just get dropped, does it really matter?
-        if nTeams % 2 > 0:
-            byeTeam = teamsMatching.team[teamsMatching.bye == 0].tail(1).item()
-            # print(byeTeam, type(byeTeam), 'bye team')
-            teamsMatching = teamsMatching[teamsMatching.team != byeTeam]
-            #TODO: add bye to byeTeams record later on
-            # print('we removed a team and the new length is', teamsMatching.shape[0])
-
-
-
-        matchups = []
-
-        # print(pairingRound == 1, 'pairingRound')
-
-        if pairingRound == 1:
-            # print('rouind 1')
-            # print(teamsMatching)
-            initRankedTeams = list(teamsMatching.team)
-            # print('initiral pairing list', initRankedTeams)
-            matchups = makeHappyPools(initRankedTeams, [], [], previousMatchups)
-            # print('round 1 matchups:', matchups)
-
-        elif pairingRound > 1:
-            # print('later rounds')
-            # print('pairing roun > 1 and PR is: ', pairingRound)
-            # print(teamsMatching)
-
-
-            medianIndex = round(nTeams / 2) if nTeams % 2 == 0 else round(nTeams / 2 - 0.5)
-            medianTeamMP = teamsMatching.iloc[medianIndex].mpTotal
-
-            # print('median points', medianTeamMP)
-
-            mps = teamsMatching.mpTotal.unique()
-            mpsAsc = np.sort(mps)
-            mpsDesc = -np.sort(-mps)
-            
-            #create initial pools
-            topPools = []
-            bottomPools = []
-            medianPool = []
-
-            # medianPool.append([teamsMatching[(teamsMatching.mpTotal == medianTeamMP)].team])
-
-            for mp in [mp for mp in mpsDesc if mp > medianTeamMP]: # create top half of pools
-                mpPool = teamsMatching[(teamsMatching.mpTotal == mp)]
-                mpPool = mpPool.sort_values(by = ['mpTotal', 'initRank'], ascending = [False, True])
-                # print(mpPool, 'this is the one')
-                topPools.append(list(mpPool.team))
-
-            for mp in [mp for mp in mpsAsc if mp < medianTeamMP]: # create botttom half of pools
-                mpPool = teamsMatching[(teamsMatching.mpTotal == mp)]
-                mpPool = mpPool.sort_values(by = ['mpTotal', 'initRank'], ascending = [False, True])
-                bottomPools.append(list(mpPool.team))
-
-            for mp in [mp for mp in mpsDesc if mp == medianTeamMP]: # create botttom half of pools
-                mpPool = teamsMatching[(teamsMatching.mpTotal == mp)]
-                mpPool = mpPool.sort_values(by = ['mpTotal', 'initRank'], ascending = [False, True])
-                medianPool.append(list(mpPool.team))
-            # print(bottomPools, ' this is the bottom')
-            # print('len bottom', len(bottomPools[0]))
-            
-            # if pairingRound ==2:
-            #     print(medianPool)
-
-            # print('number of pooled teams:', len([team for pool in topPools+medianPool+bottomPools for team in pool]))
-            # print('number of pre pool teams', nTeams)
-            # print(teamsMatching.shape[0])
-
-            # print(topPools, 'here it is')
-
-            allPoolsDiagnostic = topPools + medianPool + bottomPools
-            pairingDiagnostics(matchups, previousMatchups, allPoolsDiagnostic, verbose = True) #Diagnostic to evlauate pairing process heuristics
-
-            matchups = makeHappyPools(topPools, bottomPools, medianPool, previousMatchups)
-
-            # print('round', pairingRound, 'matchups:', matchups)
-            # print('-------------')
-
-            # if pairingRound == 6:
-            #     # print(bottomPools, ' this is the bottom')
-            #     print(matchups)
-            # print('number of matches made', len(matchups))
-# 
-        else: raise Exception("Pairing round number error (<1)")
-        # print(matchups)
-
-        newGamesList = []
-        for matchPair in matchups:
-            if matchPair[0] == matchPair[1]:
-                raise Exception("Why is the same team playing itself?")
-            newGames = playMatch(matchPair, teams, players, bst)
-            newGames['round'] = pairingRound
-            newGames['board'] = [1,2,3,4]
-            newGames['EloDiff'] = newGames.whiteElo - newGames.blackElo
-            newGames['EloAvg'] =((newGames.whiteElo + newGames.blackElo) / 2 ).astype(int)
-            newGamesList.append(newGames)
-
-        # print(matchups)
-        # print(newGamesList, 'new games')
-
-        if games.shape[0] == 0:
-            games = pd.concat(newGamesList)
-        else:
-            games = pd.concat([games] + newGamesList)
-        # print(games.shape[0], 'game rows')
-
-        teamSummary, matchSummary = summarizeResults(games, teams, players, current)
-        # print('completed round')
-        # print(teamSummary, matchSummary)
-
-
-    a, b = summarizeResults(games, teams, players, current)
-
-    # # # print(b[b.playerTeam=='Russia'])
-    # a_tenrows = a.head(10)
-    # print(a_tenrows.to_string())
-
-    # # b tenrows
-    # b_tenrows = b.head(10)
-    # print(b_tenrows.to_string())
-
-    # print all rows of b where playerTeam = lookupTeam
-
-    # lookupTeam = 'Vietnam'
-    # print(b[b.playerTeam == lookupTeam].to_string())
-
-    
-    # print(a.mpTotal.sum())
-    # print((a.team.iloc[0], a.team.iloc[1], a.team.iloc[2]))
-    return (a.team.iloc[0], a.team.iloc[1], a.team.iloc[2])
-
-    # print(a)
-    # print(b.sort_values(by = 'mpTotal', ascending = False))
 
 if __name__ == "__main__":
-    main(0)
+    main()

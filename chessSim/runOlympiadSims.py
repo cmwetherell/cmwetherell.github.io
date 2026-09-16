@@ -1,84 +1,163 @@
-from re import I
-import pandas as pd
-from utils import summarizeCurrent
-from multiprocessing import Pool
-from itertools import repeat
-import time
+"""
+Run the Olympiad 2026 Monte-Carlo simulation for one event and (optionally)
+upload the results to Postgres for the website.
+
+    # dry run -- simulate + aggregate + print, touch nothing in the DB:
+    python chessSim/runOlympiadSims.py open --sims 2000
+
+    # full published run -- also write teams/players/matches/runs/sims/team_summary:
+    python chessSim/runOlympiadSims.py open --sims 10000 --upload
+    python chessSim/runOlympiadSims.py women --sims 10000 --upload
+
+`rounds_completed` is inferred from the scraped data (0 = pre-tournament); re-run
+after scraping each round to refresh the current run. See SCHEMA.md for the
+tables this writes and SIMS.md for the operating cadence.
+"""
+
 import sys
-import pickle
+import time
+import argparse
+from multiprocessing import Pool, set_start_method
+
+import numpy as np
+import pandas as pd
 from tqdm import tqdm
-from collections import Counter
-from multiprocessing import set_start_method
-import lightgbm as lgb
-import json
-import gzip
-from utils import upload_dataframe_to_db 
-from simOlympiad import main as simOlympiad
 
-def run_simulation_with_timeout(simulation_function, args, timeout_duration):
-    """Run a simulation function with a timeout."""
-    with Pool(processes=8) as pool:  # Use 8 processes for parallel execution
-        results = []
-        for result in tqdm(pool.imap_unordered(simulation_function, args), total=len(args), desc="Simulating"):
-            results.append(result)
-        return results
+from olympiadConfig import get_event
+from simOlympiad import load_event, simulate_once
 
-def simulation_worker(_):
-    """Wrapper function to run each simulation."""
-    try:
-        return simOlympiad(0)
-    except Exception as e:
-        print(f"Simulation error: {e}")
-        return None
+_STATE = None
+
+
+def _init_worker(state):
+    global _STATE
+    _STATE = state
+
+
+def _worker(_):
+    return simulate_once(_STATE)
+
+
+def _r1_match_rows(state):
+    """Round-1 official pairings as scheduled match rows (team1 = board-1 white)."""
+    tid = state["team_id"]
+    rows = []
+    for i, (white, black) in enumerate(state["r1_pairs"], start=1):
+        rows.append({"round": 1, "board_no": i,
+                     "team1_id": tid[white], "team2_id": tid[black],
+                     "team1_score": None, "team2_score": None, "status": "scheduled"})
+    return rows
+
+
+def run(event_key, n_sims, upload, procs, chunk=500):
+    cfg = get_event(event_key)
+    state = load_event(cfg)
+    N = state["n_teams"]
+    rounds_completed = state["next_round"] - 1
+    participants = state["participants"]
+    team_id = state["team_id"]
+    id2name = {v: k for k, v in team_id.items()}
+
+    print(f"=== {cfg.label} Olympiad {cfg.year}: {n_sims} sims, "
+          f"{len(participants)} teams, {rounds_completed} rounds completed ===")
+
+    # Running aggregates (0-based; position p == team_id p+1).
+    gold = np.zeros(N, dtype=np.int64)
+    silver = np.zeros(N, dtype=np.int64)
+    bronze = np.zeros(N, dtype=np.int64)
+    top10c = np.zeros(N, dtype=np.int64)
+    rank_sum = np.zeros(N, dtype=np.float64)
+    mp_sum = np.zeros(N, dtype=np.float64)
+    gp_sum = np.zeros(N, dtype=np.float64)      # half-points
+    played = np.zeros(N, dtype=np.int64)
+
+    conn = run_id = None
+    if upload:
+        import olympiadDB as db
+        conn = db.get_conn()
+        db.ensure_schema(conn)
+        db.upsert_teams(conn, cfg.key, pd.read_csv(cfg.teams_csv))
+        db.upsert_players(conn, cfg.key, pd.read_csv(cfg.players_csv), team_id)
+        db.upsert_matches(conn, cfg.key, _r1_match_rows(state))
+        run_id = db.insert_run(conn, cfg.key, rounds_completed, n_sims, N,
+                               source="pipeline")
+        print(f"created run_id={run_id}")
+
+    buffer, inserted = [], 0
+    start = time.time()
+    with Pool(procs, initializer=_init_worker, initargs=(state,)) as pool:
+        for res in tqdm(pool.imap_unordered(_worker, range(n_sims)),
+                        total=n_sims, desc="sim"):
+            gold[res["gold"] - 1] += 1
+            silver[res["silver"] - 1] += 1
+            bronze[res["bronze"] - 1] += 1
+            for t in res["top10"]:
+                top10c[t - 1] += 1
+            fr = np.asarray(res["final_rank"], dtype=np.float64)
+            rank_sum += fr
+            played += (fr > 0)
+            mp_sum += np.asarray(res["match_points"], dtype=np.float64)
+            gp_sum += np.asarray(res["game_points"], dtype=np.float64)
+            if upload:
+                buffer.append(res)
+                if len(buffer) >= chunk:
+                    db.insert_sims(conn, run_id, buffer, start_id=inserted)
+                    inserted += len(buffer)
+                    buffer = []
+    if upload and buffer:
+        db.insert_sims(conn, run_id, buffer, start_id=inserted)
+        inserted += len(buffer)
+
+    elapsed = time.time() - start
+    print(f"simulated {n_sims} in {elapsed:.1f}s ({elapsed / n_sims * 1000:.0f} ms/sim)")
+
+    # Per-participant summary rows.
+    summary = []
+    for name in participants:
+        p = team_id[name] - 1
+        n_played = played[p] or 1
+        summary.append({
+            "team_id": int(p + 1),
+            "p_gold": float(gold[p] / n_sims),
+            "p_silver": float(silver[p] / n_sims),
+            "p_bronze": float(bronze[p] / n_sims),
+            "p_medal": float((gold[p] + silver[p] + bronze[p]) / n_sims),
+            "p_top10": float(top10c[p] / n_sims),
+            "exp_rank": float(rank_sum[p] / n_played),
+            "exp_mp": float(mp_sum[p] / n_sims),
+            "exp_gp": float(gp_sum[p] / n_sims / 2.0),   # board points (0..44)
+        })
+    summary.sort(key=lambda s: s["p_medal"], reverse=True)
+
+    print("\nTop 12 by P(medal):")
+    print(f"{'team':32s} {'gold':>6s} {'silver':>7s} {'bronze':>7s} "
+          f"{'medal':>7s} {'top10':>7s} {'E[rank]':>8s} {'E[MP]':>6s}")
+    for s in summary[:12]:
+        print(f"{id2name[s['team_id']][:32]:32s} "
+              f"{s['p_gold']*100:5.1f}% {s['p_silver']*100:6.1f}% {s['p_bronze']*100:6.1f}% "
+              f"{s['p_medal']*100:6.1f}% {s['p_top10']*100:6.1f}% "
+              f"{s['exp_rank']:8.1f} {s['exp_mp']:6.1f}")
+
+    if upload:
+        db.insert_team_summary(conn, run_id, cfg.key, summary)
+        db.set_current(conn, cfg.key, run_id)
+        db.prune_runs(conn, cfg.key)
+        conn.close()
+        db.revalidate()
+        print(f"\nuploaded + set current: run_id={run_id}, {inserted} sims stored")
+    return summary
+
 
 def main():
-    start_time = time.time()
-    terminalArgs = sys.argv
+    ap = argparse.ArgumentParser()
+    ap.add_argument("event", help="open | women")
+    ap.add_argument("--sims", type=int, default=10000)
+    ap.add_argument("--upload", action="store_true", help="write results to Postgres")
+    ap.add_argument("--procs", type=int, default=8)
+    args = ap.parse_args()
+    run(args.event, args.sims, args.upload, args.procs)
 
-    nSims = 80
-    if len(terminalArgs) > 1:
-        nSims = int(terminalArgs[1])
 
-    timeout_duration = 30  # Set the timeout duration in seconds
-
-    # Create a list of tasks
-    tasks = repeat(0, nSims)
-
-    # Initialize a multiprocessing pool and execute simulations in parallel with timeouts
-    with Pool(processes=8) as pool:  # Use 8 processes for parallel execution
-        results = []
-        for result in tqdm(pool.imap_unordered(simulation_worker, tasks), total=nSims, desc="Simulating"):
-            results.append(result)
-
-    print("--- %s seconds ---" % (time.time() - start_time))
-    
-    # Process results as you have in the rest of your script
-    winsByRound = [results]
-    print('dumping')
-    pickle.dump(winsByRound, open("./chessSim/data/sims/olympiad45.p", "wb"))
-    print('done dumping')
-
-    # Convert results to DataFrame
-    df = pd.DataFrame(winsByRound[0])
-    df.columns = ['gold', 'silver', 'bronze']
-    df['round'] = 'Pre'
-    df['future_results'] = ""
-
-    # Upload DataFrame to database
-    table_name = 'olympiad_2024'
-    upload_dataframe_to_db(table_name, df)
-    print("DataFrame uploaded to the database successfully.")
-
-    # Analyze and print simulation results
-    ct = Counter([x[0] for x in results if x is not None])
-    for key in ct:
-        ct[key] /= (nSims / 100)
-    print('winners results', ct)
-
-    print("--- %s seconds ---" % (time.time() - start_time))
-    print((time.time() - start_time)/nSims)
-
-    
-if __name__=="__main__":
+if __name__ == "__main__":
     set_start_method("spawn")
     main()

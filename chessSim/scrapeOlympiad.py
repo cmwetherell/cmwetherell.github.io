@@ -1,286 +1,279 @@
-import requests
-import os
-import pandas as pd
-import pickle
-import numpy as np
-import json
-import chess.pgn # I would normally do 'from chess import pgn', but the developer examples did it this way.
+"""
+Scrape Olympiad data (players, teams, round results, official R1 pairings)
+from chess-results.com into per-event CSVs.
 
-#To surpress a warning I don't care about...
+One pipeline for both events -- pick the event on the command line:
+
+    python chessSim/scrapeOlympiad.py open
+    python chessSim/scrapeOlympiad.py women
+
+Tables are located by *content*, not by a hardcoded index, because
+chess-results shifts the number/order of layout tables between events
+(in 2026 the player table moved from index 4 to 6, which silently broke
+the old positional scraper). See olympiadConfig.py for event definitions.
+"""
+
+import os
+import sys
+import json
+from io import StringIO
+
+import requests
+import pandas as pd
+
+# Suppress the InsecureRequestWarning from verify=False (chess-results TLS).
 import urllib3
 from urllib3.exceptions import InsecureRequestWarning
 urllib3.disable_warnings(InsecureRequestWarning)
 
-def getTeamRating(team, players):
-    avgRating = players.Rtg[players.Team == team].sort_values(ascending = False).head(4).mean()
-    fifthRating = 0
-    if players.Rtg[players.Team == team].shape[0] > 4:
-        # print(players.Rtg[players.Team == team].sort_values(ascending = False).reset_index())
-        fifthRating = players.Rtg[players.Team == team].sort_values(ascending = False).reset_index(drop = True).iloc[4] #get reserve rating
+try:
+    from olympiadConfig import get_event, EventConfig
+except ImportError:  # when run as chessSim.scrapeOlympiad
+    from chessSim.olympiadConfig import get_event, EventConfig
 
-    return pd.Series([avgRating, fifthRating])
+HEADERS = {"User-agent": "Mozilla/5.0"}
 
-def whiteGames(gamesWhite, teams):
 
-    gamesWhite = gamesWhite[gamesWhite.board == 1].whiteTeam.value_counts().to_frame().reset_index()
-    gamesWhite.columns = ['team', ' whiteCount']
-    teamsWhite = teams.merge(gamesWhite)
+def fetch_tables(url: str) -> list:
+    """Return all HTML tables on a chess-results page as DataFrames."""
+    resp = requests.get(url, verify=False, headers=HEADERS, timeout=60)
+    resp.raise_for_status()
+    return pd.read_html(StringIO(resp.text))
 
-    return teamsWhite
+
+def _flat_text(df: pd.DataFrame) -> str:
+    """Lower-cased concatenation of a table's cells + column labels."""
+    parts = [str(c) for c in df.columns]
+    parts += [str(v) for v in df.to_numpy().ravel()[:400]]
+    return " ".join(parts).lower()
+
+
+def pick_table(tables: list, must_contain, min_rows: int = 5) -> pd.DataFrame:
+    """
+    Return the first (largest) table whose content contains all the given
+    marker strings. Prefers larger tables so we grab the data grid, not a
+    small header/nav table that happens to share a word.
+    """
+    markers = [m.lower() for m in must_contain]
+    candidates = [
+        t for t in tables
+        if t.shape[0] >= min_rows and all(m in _flat_text(t) for m in markers)
+    ]
+    if not candidates:
+        raise RuntimeError(
+            f"No table matching {must_contain} found "
+            f"(saw {[t.shape for t in tables]})"
+        )
+    return max(candidates, key=lambda t: t.shape[0])
+
+
+def _promote_header(df: pd.DataFrame, marker: str) -> pd.DataFrame:
+    """
+    Find the row containing `marker`, use it as the column header, and return
+    the rows below it. Handles chess-results tables that carry a banner row
+    (e.g. "Round 1 on ...") above the real header.
+    """
+    marker = marker.lower()
+    header_idx = None
+    for i in range(min(3, df.shape[0])):
+        if marker in " ".join(str(v) for v in df.iloc[i]).lower():
+            header_idx = i
+            break
+    if header_idx is None:
+        return df
+    out = df.copy()
+    out.columns = out.iloc[header_idx]
+    out = out.iloc[header_idx + 1:].reset_index(drop=True)
+    return out
+
+
+# ---------------------------------------------------------------------------
+# Players
+# ---------------------------------------------------------------------------
+
+def scrape_players(cfg: EventConfig) -> pd.DataFrame:
+    tables = fetch_tables(cfg.url(art=16, flag=30, zeilen=99999))
+    raw = pick_table(tables, ["Rtg", "Team", "Name"], min_rows=10)
+    players = _promote_header(raw, "Name")
+
+    # The player-title column has a blank header on chess-results. Detect it by
+    # content (values are chess titles) and name it before dropping other blanks.
+    titles = {"GM", "IM", "FM", "CM", "NM", "WGM", "WIM", "WFM", "WCM"}
+    for col in players.columns:
+        if pd.isna(col):
+            vals = players[col].dropna().astype(str).str.strip()
+            if len(vals) and (vals.isin(titles).mean() > 0.3):
+                players = players.rename(columns={col: "Title"})
+                break
+
+    # Drop remaining unnamed spacer columns.
+    players = players.loc[:, [c for c in players.columns if pd.notna(c)]]
+    players = players.loc[:, ~players.columns.duplicated()]
+
+    if "rtg+/-" not in players.columns:
+        players["rtg+/-"] = 0
+    players["rtg+/-"] = pd.to_numeric(players["rtg+/-"], errors="coerce").fillna(0)
+
+    players["Rtg"] = pd.to_numeric(players["Rtg"], errors="coerce").fillna(0).astype(int)
+    players["dR"] = players["rtg+/-"].astype(int) / 10
+    if "Rp" in players.columns:
+        rp = pd.to_numeric(players["Rp"], errors="coerce").fillna(0).astype(int)
+        players.loc[players.Rtg == 0, "Rtg"] = rp
+    players.loc[players.Rtg == 0, "Rtg"] = 1200  # unrated fallback
+    players.Rtg = round(players.Rtg + players["dR"]).astype(int)
+
+    players["Team"] = players["Team"].astype(str).str.replace(r"\s*\*\)$", "", regex=True).str.strip()
+
+    # Keep board order as listed (Bo. ascending) so roster iloc[0..3] == boards 1-4.
+    if "Bo." in players.columns:
+        players["Bo."] = pd.to_numeric(players["Bo."], errors="coerce")
+        players = players.sort_values(["Team", "Bo."], kind="stable")
+
+    # Ensure every team has >= 4 players (duplicate the lowest-rated if short).
+    frames = []
+    for team, grp in players.groupby("Team", sort=False):
+        grp = grp.copy()
+        while grp.shape[0] < 4:
+            grp = pd.concat([grp, grp.sort_values("Rtg").head(1)], ignore_index=True)
+            print(f"  padded roster for {team} -> {grp.shape[0]} players")
+        frames.append(grp)
+    players = pd.concat(frames, ignore_index=True)
+
+    os.makedirs(cfg.data_dir, exist_ok=True)
+    players.to_csv(cfg.players_csv, index=False)
+
+    team_map = players[["FED", "Team"]].drop_duplicates().set_index("Team")["FED"].to_dict()
+    with open(cfg.team_map_json, "w") as fh:
+        json.dump(team_map, fh)
+
+    print(f"players: {players.shape[0]} rows, {players.Team.nunique()} teams -> {cfg.players_csv}")
+    return players
+
+
+# ---------------------------------------------------------------------------
+# Teams (starting rank)
+# ---------------------------------------------------------------------------
+
+def scrape_teams(cfg: EventConfig) -> pd.DataFrame:
+    tables = fetch_tables(cfg.url(art=32, turdet="YES", flag=30, zeilen=99999, transfer="J"))
+    raw = pick_table(tables, ["Team", "RtgAvg"], min_rows=10)
+
+    teams = pd.DataFrame({
+        "initRank": pd.to_numeric(raw["No."], errors="coerce"),
+        "team": raw["Team"].astype(str).str.replace(r"\s*\*\)$", "", regex=True).str.strip(),
+        "fed": raw.get("FED", "").astype(str).str.strip(),
+        "avg_rating": pd.to_numeric(raw.get("RtgAvg"), errors="coerce"),
+        "captain": raw.get("Captain", "").astype(str).str.strip(),
+    })
+    teams = teams.dropna(subset=["initRank"])
+    teams["initRank"] = teams["initRank"].astype(int)
+    teams["avg_rating"] = teams["avg_rating"].fillna(0).astype(int)
+    teams = teams.sort_values("initRank").reset_index(drop=True)
+
+    os.makedirs(cfg.data_dir, exist_ok=True)
+    teams.to_csv(cfg.teams_csv, index=False)
+    print(f"teams: {teams.shape[0]} rows -> {cfg.teams_csv}")
+    return teams
+
+
+# ---------------------------------------------------------------------------
+# Round results / official pairings
+# ---------------------------------------------------------------------------
+
+def _clean_gp(val):
+    """Parse a chess-results game-point cell ('2½' -> 2.5, blank -> NaN)."""
+    if pd.isna(val):
+        return None
+    s = str(val).strip().replace("½", ".5")
+    if s in ("", "nan"):
+        return None
+    try:
+        return float(s)
+    except ValueError:
+        return None
+
+
+_NON_TEAM = {"not paired", "bye", "spielfrei", "", "nan", "spielfrei / not paired"}
+
+
+def _strip_team(name) -> str:
+    return str(name).replace("*)", "").strip()
+
+
+def _is_real_team(name: str) -> bool:
+    return bool(name) and name.lower() not in _NON_TEAM
+
+
+def scrape_rounds(cfg: EventConfig):
+    """
+    Walk every round page. For each round, capture team-vs-team pairings and
+    (where present) the team game points. Returns (matches_df, round1_pairings_df).
+
+      matches_df       : completed matches (playerTeam, oppTeam, round, gp) -- both
+                         perspectives per match. Empty pre-tournament.
+      round1_pairings  : official R1 pairings (whiteTeam, blackTeam) -- team listed
+                         first on chess-results has board-1 white.
+    """
+    all_matches = []
+    r1_pairs = []
+
+    for rd in range(1, cfg.n_rounds + 1):
+        try:
+            tables = fetch_tables(cfg.url(art=2, rd=rd, flag=30))
+            grid = pick_table(tables, ["Res."], min_rows=3)
+        except RuntimeError:
+            # No pairing table for this round yet -> stop, nothing further published.
+            break
+
+        grid = _promote_header(grid, "Res.")
+        # Positional layout of the results grid (verified against 2026 pages):
+        #   1=SNo1  4=Team1  7=Res1  9=Res2  12=Team2  15=SNo2
+        team1 = grid.iloc[:, 4].map(_strip_team)
+        team2 = grid.iloc[:, 12].map(_strip_team)
+        res1 = grid.iloc[:, 7].map(_clean_gp)
+        res2 = grid.iloc[:, 9].map(_clean_gp)
+
+        played_any = res1.notna().any()
+
+        for t1, t2, g1, g2 in zip(team1, team2, res1, res2):
+            # Rows like "Angola vs not paired" are absent/withdrawn teams, not a
+            # pairing-allocated bye -- skip them (those teams don't play).
+            if not (_is_real_team(t1) and _is_real_team(t2)):
+                continue
+            if rd == 1:
+                r1_pairs.append({"whiteTeam": t1, "blackTeam": t2})
+            if g1 is not None and g2 is not None:
+                all_matches.append({"playerTeam": t1, "oppTeam": t2, "round": rd, "gp": g1})
+                all_matches.append({"playerTeam": t2, "oppTeam": t1, "round": rd, "gp": g2})
+
+        if not played_any and rd > 1:
+            # Round rd has pairings but no results, and it's not R1 -> future round.
+            break
+
+    matches_df = pd.DataFrame(all_matches, columns=["playerTeam", "oppTeam", "round", "gp"])
+    r1_df = pd.DataFrame(r1_pairs, columns=["whiteTeam", "blackTeam"])
+
+    os.makedirs(cfg.data_dir, exist_ok=True)
+    matches_df.to_csv(cfg.matches_csv, index=False)
+    r1_df.to_csv(cfg.round1_pairings_csv, index=False)
+
+    completed = int(matches_df["round"].max()) if not matches_df.empty else 0
+    participants = sorted(set(r1_df.whiteTeam) | set(r1_df.blackTeam))
+    print(f"rounds: {completed} completed round(s); {len(r1_df)} real R1 pairings; "
+          f"{len(participants)} participating teams -> {cfg.matches_csv}")
+    return matches_df, r1_df
+
 
 def main():
+    if len(sys.argv) < 2:
+        raise SystemExit("usage: python chessSim/scrapeOlympiad.py <open|women>")
+    cfg = get_event(sys.argv[1])
+    print(f"=== Scraping {cfg.label} Olympiad {cfg.year} (tnr{cfg.tnr}) ===")
+    scrape_players(cfg)
+    scrape_teams(cfg)
+    scrape_rounds(cfg)
+    print("done.")
 
-    # get Olympiad players
-
-    playersURL = 'https://chess-results.com/tnr967173.aspx?lan=1&art=16&flag=30&zeilen=99999'
-    
-    
-    players = pd.read_html(requests.get(playersURL, verify = False,
-                                    headers={'User-agent': 'Mozilla/5.0'}).text)
-    
-    # remove header row and make row currntly at index 0 be the column names
-    players = players[4]
-    players.columns = players.iloc[0]
-    players = players.drop(players.index[0])
-
-    if 'rtg+/-' not in players.columns:
-        players['rtg+/-'] = 0
-
-    players.loc[players['rtg+/-'].isnull(), 'rtg+/-'] = 0
-    players.Rtg = players.Rtg.astype(int)
-    players['dR'] = players['rtg+/-'].astype(int) / 10
-    # if rp exists
-    if 'Rp' in players.columns:
-        players.loc[players.Rtg==0, 'Rtg'] = players.Rp.astype(int)
-    players.loc[players.Rtg==0, 'Rtg'] = 1200
-    players.Rtg = round(players.Rtg + players['dR']).astype(int)
-    # players.Rtg = players.Rp
-
-    # change Hungary B to Hungary 2 and Hungary C to Hungary 3
-    # players.loc[players.Team == 'Hungary B', 'Team'] = 'Hungary 2'
-    # players.loc[players.Team == 'Hungary C', 'Team'] = 'Hungary 3'
-
-    # for each team, make sure they have at least 4 players. If they don't duplicate the lowest rated player so theyre is 4 players on the team
-    for team in players.Team.unique():
-        while players[players.Team == team].shape[0] < 4:
-            lowestRated = players[players.Team == team].sort_values(by = 'Rtg').head(1)
-            players = pd.concat([players, lowestRated])
-            print('Added player to team: ', team)
-    player_file = './chessSim/data/olympiad/players2024.csv'
-    players.to_csv(player_file, index = False)
-
-
-    # with DF I want to create a .json file saved to the same directory as the input file with a map between FED and Team, no duplicates
-
-    # create a dictionary with FED as key and Team as value
-    team_map = players[['FED', 'Team']].drop_duplicates().set_index('Team').to_dict()['FED']
-
-    # save dictionary to json file
-    with open('/Users/caleb/dev/pawnalyze-old-blog/chessSim/data/olympiad/team_map.json', 'w') as file:
-        json.dump(team_map, file)
-
-    # make teams
-    teamURL = 'https://chess-results.com/tnr967173.aspx?lan=1&art=32&turdet=YES&flag=30&zeilen=99999&transfer=J'
-
-    teams = pd.read_html(requests.get(teamURL, verify = False,
-                                    headers={'User-agent': 'Mozilla/5.0'}).text)
-
-
-    teams = teams[6]
-
-    # teams.columns = teams.iloc[0]
-    # teams = teams.drop(teams.index[0])
-    # teams = teams.drop(teams.index[0])
-    teams = teams[['No.', 'Team']]
-    teams.columns = ['initRank', 'team']
-    teams = teams[['team', 'initRank']]
-
-    # teams[['avgRating', 'fifthRating']] = teams.team.apply(getTeamRating, players = players)
-    # teams = teams.sort_values(by = ['avgRating', 'fifthRating'], ascending = False).reset_index(drop = True)
-
-    # teams['initRank'] = teams.index + 1
-    teams['mp'], teams['IS10'], teams['gp'], teams['oppMP10'] = 0,0,0,0
-
-    # invalidTeams = ['Pakistan', 'Cote d\'Ivoire', 'Rwanda', 'Lesotho']
-    # teams = teams[~teams['team'].isin(invalidTeams)]
-    # print info about teams df
-
-    # print all rows of teams
-    with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
-        print(teams)
-
-
-
-    teams.to_csv('./chessSim/data/olympiad/teams2024.csv', index = False)
-
-    # print(teams)
-
-    # TODO: Run this once games have been completed or posted.
-    # #Process games from chess-results: http://chess-results.com/partieSuche.aspx?lan=1&art=4&tnr=368908&rd=1
-    # pgn = open("./chessSim/data/olympiad/2024.pgn") # http://caissabase.co.uk/ download Scid files, export to pgn
-    
-    # get all files from folder, loop through and add games to df
-    rootFolder = './chessSim/data/olympiad/pgn'
-
-
-    gameData = []
-    for pgnFile in os.listdir(rootFolder):
-        pgn = open(rootFolder + '/' + pgnFile)
-        while True:
-            headers = chess.pgn.read_headers(pgn)
-            if headers is None:
-                break
-            
-            headerElements = [header for header in headers] #create list of meta data for each game, could be dict instead
-
-            # if this criteria is met, the game has all the criteria we need for our model training data.
-            if ('WhiteElo' in headerElements) & ('BlackElo' in headerElements) & ('Result' in headerElements) \
-            & ('White' in headerElements) & ('Black' in headerElements) & ('WhiteTeam' in headerElements) & ('BlackTeam' in headerElements):
-
-                # append relevant data to what will become our pandas df
-                dat = [headers['White'], headers['WhiteTeam'], headers['WhiteElo'], \
-                    headers['Black'], headers['BlackTeam'], headers['BlackElo'], headers['Result'] \
-                        ,headers['Round'], headers['Board']]
-                gameData.append(dat)
-    df = pd.DataFrame(gameData, columns = ['whiteName', 'whiteTeam', 'whiteElo', 'blackName', 'blackTeam', 'blackElo', 'result', 'round', 'board'])
-
-    ##Cleaning Data
-    df = df[df.result != '*'] # cleaning some games that didn't have a valid result recorded
-    df.whiteElo = df.whiteElo.astype(int) #changing type
-    df.blackElo = df.blackElo.astype(int)
-    # print(df['round'].unique())
-    df['round'] = df['round'].astype(float).apply(np.floor)
-
-    df.loc[df.result=='1-0', 'result'] = 1 #use integers for multiclass indexes
-    df.loc[df.result=='1/2-1/2', 'result'] = 0.5
-    df.loc[df.result=='0-1', 'result'] = 0
-
-    df.loc[df.whiteElo==0, 'whiteElo'] = 1700 ### using TPR of unranked players in 2018 Olympiad.
-    df.loc[df.blackElo==0, 'blackElo'] = 1700
-
-        ##Feature Engineering (very simple!)
-    df['EloDiff'] = df.whiteElo - df.blackElo
-    df['EloAvg'] =((df.whiteElo + df.blackElo) / 2 ).astype(int)
-
-
-    # print(df)
-    # write to csv for future use
-    df.to_csv('./chessSim/data/olympiad/games2024.csv', index = False)
-    print(df.columns)
-
-    rounds = ['https://chess-results.com/tnr967173.aspx?lan=1&art=2&rd=1&flag=30',
-              'https://chess-results.com/tnr967173.aspx?lan=1&art=2&rd=2&flag=30',
-              'https://chess-results.com/tnr967173.aspx?lan=1&art=2&rd=3&flag=30',
-              'https://chess-results.com/tnr967173.aspx?lan=1&art=2&rd=4&flag=30',
-              'https://chess-results.com/tnr967173.aspx?lan=1&art=2&rd=5&flag=30',
-              'https://chess-results.com/tnr967173.aspx?lan=1&art=2&rd=6&flag=30',
-              'https://chess-results.com/tnr967173.aspx?lan=1&art=2&rd=7&flag=30',
-              'https://chess-results.com/tnr967173.aspx?lan=1&art=2&rd=8&flag=30',
-              'https://chess-results.com/tnr967173.aspx?lan=1&art=2&rd=9&flag=30',
-            #   'https://chess-results.com/tnr967173.aspx?lan=1&art=2&rd=10&flag=30',
-            
-    ]
-
-    i = 1
-    matchResults = []
-    for roundURL in rounds:
-
-
-        roundResults = pd.read_html(requests.get(roundURL, verify = False,
-                                        headers={'User-agent': 'Mozilla/5.0'}).text)
-
-
-        roundResults = roundResults[4]
-        roundResults.columns = roundResults.iloc[1]
-        roundResults = roundResults.drop(roundResults.index[0])
-        roundResults = roundResults.drop(roundResults.index[0])
-
-        whiteTeams = roundResults.iloc[:, [4, 7, 12]]
-        blackTeams = roundResults.iloc[:, [12, 9, 4]]
-        # print(whiteTeams)
-
-        whiteTeams.columns = ['playerTeam', 'gp', 'oppTeam']
-        blackTeams.columns = ['playerTeam', 'gp', 'oppTeam']
-
-        results = pd.concat([whiteTeams, blackTeams]).reset_index(drop=True)
-        results['round'] = i
-        i+=1
-
-        results.gp = results.gp.replace('3½', '3.5')
-        results.gp = results.gp.replace('2½', '2.5')
-        results.gp = results.gp.replace('1½', '1.5')
-        results.gp = results.gp.replace('½', '0.5')
-        # print(results.gp)
-
-        results.gp = results.gp.astype(float)
-
-        # print(results)
-
-        mpConditions = [
-            (results.gp > 2),
-            (results.gp == 2),
-            (results.gp < 2),
-        ]
-        mpValues = [2,1,0]
-
-        results['mp'] = np.select(mpConditions, mpValues)
-
-        results.loc[results.playerTeam == 'India *)', 'playerTeam'] = 'India'
-        results.loc[results.oppTeam == 'India *)', 'oppTeam'] = 'India'
-
-        results.loc[results.playerTeam == 'India 2 *)', 'playerTeam'] = 'India 2'
-        results.loc[results.oppTeam == 'India 2 *)', 'oppTeam'] = 'India 2'
-
-        results = results[['playerTeam', 'oppTeam', 'round', 'gp']]
-
-        invalidTeams = ['Pakistan',  'Rwanda', ]
-        results = results[~results['playerTeam'].isin(invalidTeams)]  
-
-        matchResults.append(results)
-
-    matchResults = pd.concat(matchResults)
-    matchResults.to_csv('./chessSim/data/olympiad/matches2024.csv', index = False)
 
 if __name__ == "__main__":
     main()
-
-
-
-# Example game headers
-# [Event "43rd Olympiad Batumi 2018 Open"]
-# [Site "Batumi"]
-# [Date "2018.09.24"]
-# [Round "1"]
-# [Board "1"]
-# [White "So, Wesley"]
-# [Black "Sanchez Alvarez, Roberto Carlos"]
-# [Result "1-0"]
-# [ECO "B90"]
-# [WhiteElo "2776"]
-# [BlackElo "2391"]
-# [PlyCount "0"]
-# [EventDate "2018.09.24"]
-# [EventType "team"]
-# [EventRounds "11"]
-# [EventCountry "GEO"]
-# [WhiteTeam "United States of America"]
-# [BlackTeam "Panama"]
-
-# [Event "Chennai Chess Olympiad | Open"]
-# [Site "chess24.com"]
-# [Date "2022.07.29"]
-# [Round "1"]
-# [White "Vidit, Santosh Gujrathi"]
-# [Black "Makoto, Rodwell"]
-# [Result "1-0"]
-# [Board "1"]
-# [WhiteCountry "IND"]
-# [WhiteFideId "5029465"]
-# [WhiteElo "2714"]
-# [WhiteTitle "GM"]
-# [WhiteEloChange "1"]
-# [BlackCountry "ZIM"]
-# [BlackFideId "11000120"]
-# [BlackElo "2346"]
-# [BlackTitle "IM"]
-# [BlackEloChange "-2"]
