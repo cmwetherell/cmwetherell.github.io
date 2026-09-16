@@ -87,6 +87,11 @@ def pairing(teams: list = [], usedTeams = [], initPass = False):
         matchesSlow = []
     n = len(teams)
 
+    # Cap enumeration: this builds *every* pairing permutation (factorial), which
+    # is a fallback path (happyPool) only reached for an unpairable pool. A few
+    # thousand candidates are plenty for happyPool to pick a max-valid pairing.
+    if len(matchesSlow) > 20000:
+        return matchesSlow
 
     usedTeams = deepcopy(usedTeams)
 
@@ -111,6 +116,19 @@ def pairing(teams: list = [], usedTeams = [], initPass = False):
 
     return matchesSlow
 
+class PairingError(Exception):
+    """Raised when a round's pairing search exceeds its budget (pathological
+    scoregroup). The caller re-rolls the sim with fresh randomness."""
+
+
+# Remaining pairingFast() invocations allowed for the current round. makeHappyPools'
+# float/opponent-search loops all call pairingFast every iteration, so bounding the
+# total number of calls per round bounds every one of those loops -- turning a rare
+# runaway loop into a fast, catchable PairingError instead of a hang. Reset in
+# _pair_round(); each worker process has its own copy.
+_pair_budget = [10 ** 9]
+
+
 # @cached
 def pairingFast(teams: list, previousPairings: set = set()):
 
@@ -124,30 +142,46 @@ def pairingFast(teams: list, previousPairings: set = set()):
         Returns the first valid pairing list from a group for the 44th Olympiad
     """
 
-    # print('trying to pair', n, ' teams')
-    # if n > 10:
-    #     return None
+    _pair_budget[0] -= 1
+    if _pair_budget[0] <= 0:
+        raise PairingError("per-round pairing budget exceeded")
 
     if len(teams) == 0:
         return []
-    # if len(teams) % 2 > 0:
-    #     raise Exception("odd number of teams passed into pairing algorithm")
 
-    # oppTeams = []
+    # Failure-memoisation + a hard recursion budget. Whether a set of teams has a
+    # rematch-free perfect pairing is a property of the SET (every recursive
+    # sub-list is a subsequence of the original order, so a given set always has
+    # the same first team) -- so caching sets already proven unpairable is exact
+    # and only prunes provably-dead branches. Without this the backtracking is
+    # exponential and, on a heavily-constrained late-round scoregroup, effectively
+    # hangs (root cause of the 10k-run stalls). The budget is a last-resort guard:
+    # if a genuinely huge unpairable pool blows past it we return None (treated as
+    # "float instead"), which the caller handles.
+    failed = set()
+    budget = [4_000_000]
 
-    team = teams[0]
-    # oppTeams = [teams[i] for i in itertools.chain(range(round(n/2), n), range(round(n/2)-1,0,-1))]
-    n = len(teams)
-    for i in itertools.chain(range(round(n/2), n), range(round(n/2)-1,0,-1)):
-        opp = teams[i]
+    def _rec(ts):
+        if not ts:
+            return []
+        if budget[0] <= 0:
+            return None
+        budget[0] -= 1
+        key = frozenset(ts)
+        if key in failed:
+            return None
+        team = ts[0]
+        n = len(ts)
+        for i in itertools.chain(range(round(n / 2), n), range(round(n / 2) - 1, 0, -1)):
+            opp = ts[i]
+            if (team, opp) not in previousPairings:
+                sub = _rec([t for t in ts if t != team and t != opp])
+                if sub is not None:
+                    return [(team, opp)] + sub
+        failed.add(key)
+        return None
 
-        if (team, opp) not in previousPairings:
-            tmpTeams = [t for t in teams if t not in [team, opp]]
-            subResult = pairingFast(tmpTeams, previousPairings)
-            if subResult is not None:
-                return [(team, opp)] + subResult
-    # raise Exception("No valid pairing found, need to add supplemental code for this situation TODO")
-    return None
+    return _rec(teams)
 
 def pairingDiagnostics(newMatchups, previousMatchups, initPools, verbose = False):
 
@@ -829,6 +863,9 @@ def load_event(cfg):
 
 def _pair_round(teams_by_rank, mp, prev):
     """Pair one non-first round using the D.02 pool engine. Returns set of matches."""
+    # Generous budget: a normal round uses a few thousand calls; a pathological
+    # scoregroup that would otherwise spin blows past this in ~1s and raises.
+    _pair_budget[0] = 600_000
     n = len(teams_by_rank)
     median_index = round(n / 2) if n % 2 == 0 else round(n / 2 - 0.5)
     median_mp = mp[teams_by_rank[median_index]]
