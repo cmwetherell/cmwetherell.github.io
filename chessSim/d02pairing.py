@@ -26,6 +26,7 @@ from itertools import groupby
 
 import numpy as np
 from scipy.optimize import linear_sum_assignment
+import networkx as nx
 
 _INF = 1e9
 # D.02 assigns board-1 colour AFTER pairing (Art 7.5 equalisation->alternation,
@@ -107,8 +108,37 @@ def _bracket_pairs(bracket, n_float, opp, last_color):
     rest = [r for r in residents if r not in used]
     slide = _slide_match(rest, opp, last_color)
     if slide is None:
+        # The S1<->S2 slide can't avoid a rematch here; a rematch-free pairing may
+        # still exist within the bracket via an exchange (two same-half teams
+        # paired). Find it with a rematch-free general matching (blossom) on just
+        # this bracket -- small, so fast. None only if truly unpairable.
+        slide = _blossom_match(rest, opp)
+    if slide is None:
         return None
     return pairs + slide
+
+
+def _blossom_match(teams, opp):
+    """Rematch-free general (non-bipartite) perfect matching of one bracket,
+    biased toward the S1[i]-vs-S2[i] slide distance. None if none exists."""
+    n = len(teams)
+    if n % 2 or n == 0:
+        return [] if n == 0 else None
+    h = n // 2
+    pos = {t: i for i, t in enumerate(teams)}
+    G = nx.Graph()
+    G.add_nodes_from(teams)
+    for i, a in enumerate(teams):
+        oa = opp.get(a, ())
+        for b in teams[i + 1:]:
+            if b in oa:
+                continue
+            # prefer pairs at the slide distance (~h apart)
+            G.add_edge(a, b, weight=n - abs(abs(pos[a] - pos[b]) - h))
+    m = nx.max_weight_matching(G, maxcardinality=True)
+    if len(m) * 2 != n:
+        return None
+    return [tuple(p) for p in m]
 
 
 def _feasible_next(next_bracket, opp):
@@ -173,17 +203,56 @@ def pair_round(ctx):
         result.extend(chosen_pairs)
         carry = chosen_floaters
 
-    # Completeness safety net: in late rounds the float logic can occasionally
-    # leave teams unpaired (a group that can't be paired rematch-free without a
-    # float chess-results would make). Never DROP them -- pair the leftovers,
-    # allowing a rematch only if truly forced. Keeps every sim a full field.
+    # Completeness: in hard late rounds the per-bracket float logic can leave
+    # teams unpaired (a rematch-free pairing needs floats it didn't make). Rather
+    # than drop teams or allow a rematch (FIDE [C1] is absolute), fall back to a
+    # GLOBAL rematch-free min-cost matching for the whole round -- guaranteed
+    # complete and rematch-free (blossom), minimising score differences (Swiss).
     paired = set()
     for a, b in result:
         paired.add(a); paired.add(b)
     leftover = [t for t in teams if t not in paired]
     if leftover:
-        extra = _slide_match(leftover, opp, last_color, allow_rematch=True)
-        if extra:
+        # Almost always the few leftovers pair among themselves rematch-free
+        # (tiny blossom). If they can't, they only need to swap with teams in their
+        # own score neighbourhood -- release those pairs and re-blossom that local
+        # subset (fast). Whole-field is an ultra-rare last resort.
+        leftover.sort(key=lambda t: (-mp[t], ir[t]))
+        extra = _blossom_match(leftover, opp)
+        if extra is not None:
             result.extend(extra)
+        else:
+            lo_scores = [mp[t] for t in leftover]
+            lo, hi = min(lo_scores) - 2, max(lo_scores) + 2
+            subset = sorted((t for t in teams if lo <= mp[t] <= hi),
+                            key=lambda t: (-mp[t], ir[t]))
+            sset = set(subset)
+            result = [(a, b) for a, b in result if a not in sset and b not in sset]
+            sub = _blossom_match(subset, opp)
+            if sub is None:
+                return _global_match(teams, opp, mp, ir)
+            result.extend(sub)
 
     return {frozenset(p) for p in result}
+
+
+def _global_match(teams, opp, mp, ir):
+    """
+    Global rematch-free min-cost perfect matching (fallback for rounds the D.02
+    float logic can't complete). Prefers same-scoregroup pairs (Swiss), then the
+    slide order. Guaranteed complete + rematch-free if any such pairing exists.
+    """
+    order = sorted(teams, key=lambda t: (-mp[t], ir[t]))
+    pos = {t: i for i, t in enumerate(order)}
+    G = nx.Graph()
+    G.add_nodes_from(order)
+    n = len(order)
+    for i, a in enumerate(order):
+        for b in order[i + 1:]:
+            if b in opp.get(a, ()):        # no rematch edge (absolute)
+                continue
+            # cost: score difference dominates; then hug the slide.
+            cost = (mp[a] - mp[b]) ** 2 * 1000.0 + abs(pos[a] - pos[b])
+            G.add_edge(a, b, weight=(n * n * 1000.0 - cost))   # max-weight == min-cost
+    matching = nx.max_weight_matching(G, maxcardinality=True)
+    return {frozenset(p) for p in matching}

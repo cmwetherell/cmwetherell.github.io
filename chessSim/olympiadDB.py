@@ -381,6 +381,12 @@ def validate_round_opps(conn, run_id, event, n_teams, n_rounds=11, sample=60):
             if sc is not None:
                 final_rounds.add(rnd)   # a real, played round (may have forfeits)
 
+        # Teams the sim actually simulates (participants). A team whose OFFICIAL
+        # opponent isn't a participant (its opponent joined/left between rounds)
+        # can't be reproduced, so we don't require an official match for it.
+        cur.execute(f"SELECT team_id FROM {TEAM_SUMMARY_TABLE} WHERE run_id = %s", (run_id,))
+        participants = {r[0] for r in cur.fetchall()}
+
         # sample of sims for content checks
         cur.execute(f"""
             SELECT sim_id, round_opps, round_scores FROM {SIMS_TABLE}
@@ -407,9 +413,11 @@ def validate_round_opps(conn, run_id, event, n_teams, n_rounds=11, sample=60):
                         errs.append(f"sim {sim_id} r{r+1}: real scores out of range {ssum}")
                 elif ssum != 8:
                     errs.append(f"sim {sim_id} r{r+1}: sim scores !=8 ({ssum}) for t{tid}/{opp}")
-                # official pairing match (rounds present in matches)
+                # official pairing match -- only when the official opponent is a
+                # participant (else its opponent joined/left and can't be reproduced).
                 off = official.get(r + 1)
-                if off and off.get(tid) is not None and off[tid] != opp:
+                if (off and off.get(tid) is not None and off[tid] in participants
+                        and off[tid] != opp):
                     errs.append(f"sim {sim_id} r{r+1}: t{tid} opp {opp} != official {off[tid]}")
                 seen[tid] = seen.get(tid, 0) + 1
             # no team appears twice as a player in a round is implicit; check repeats below
