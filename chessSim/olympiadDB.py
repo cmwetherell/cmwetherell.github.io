@@ -448,14 +448,15 @@ def set_current(conn, event, run_id):
     conn.commit()
 
 
-def prune_runs(conn, event, past_sims_keep=2000):
+def prune_runs(conn, event, past_sims_keep=10000):
     """
-    Storage control. The CURRENT run keeps its full sims (the scenario / pick-em
-    explorer needs them). Every OTHER run of this event is downsampled to
-    `past_sims_keep` sims -- past rounds don't need full pick-em resolution, and
-    sims are i.i.d. so keeping sim_id < N is a valid random subsample. Run rows
-    and team_summary are kept for ALL runs, so the odds-over-time history (which
-    reads team_summary, not raw sims) is fully preserved. Drops synthetic runs.
+    Storage control. The CURRENT run keeps its full sim set (which may be raised
+    above the baseline for extra pick-em precision). Every OTHER run of this event
+    is capped at `past_sims_keep` sims (default 10k) -- so if a round is simulated
+    with more, it's trimmed back once it's no longer the current round (sims are
+    i.i.d., so keeping sim_id < N is a valid random subsample). Run rows and
+    team_summary are kept for ALL runs, so the odds-over-time history (which reads
+    team_summary, not raw sims) is fully preserved. Drops synthetic runs.
     """
     with conn.cursor() as cur:
         cur.execute(f"""

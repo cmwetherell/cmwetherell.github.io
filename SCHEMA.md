@@ -223,12 +223,11 @@ Scenario-filter grammar the API validates: tokens `round:team_id:{w|d|l}` →
 4. **Final** after round 11: `rounds_completed = 11`, every sim is the actual result.
 
 ### Sim retention (storage)
-Only the **current** run keeps its full sim set (10k) — that's what the pick-em /
-scenario explorer queries. Every **past** run is downsampled to ~2,000 sims
-(`past_sims_keep`), since past rounds don't need full pick-em resolution. **All
-runs keep their `runs` row and `team_summary`**, so the odds-over-time history
-(which reads `team_summary`, not raw `sims`) is fully preserved. If you ever need
-a past round's scenario explorer, note it runs on the reduced ~2k sample.
+All runs keep up to **10k** sims (`past_sims_keep`). The **current** run may be
+simulated with MORE than 10k for extra pick-em precision; once it is no longer
+current it is trimmed back to 10k. **All runs keep their `runs` row and
+`team_summary`**, so the odds-over-time history (which reads `team_summary`, not
+raw `sims`) is fully preserved regardless.
 
 ## Live-results tables (populated round-by-round)
 
