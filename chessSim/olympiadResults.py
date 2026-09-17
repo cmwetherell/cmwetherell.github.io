@@ -84,7 +84,6 @@ def _round_ids(tour_id, rd):
 def _parse_pgn(pgn_text):
     games = []
     stream = io.StringIO(pgn_text)
-    exporter = chess.pgn.StringExporter(headers=False, variations=False, comments=False)
     while True:
         try:
             game = chess.pgn.read_game(stream)
@@ -95,6 +94,9 @@ def _parse_pgn(pgn_text):
         h = game.headers
         if not h.get("White") or not h.get("Black"):
             continue
+        # A fresh exporter per game -- StringExporter accumulates, so reusing one
+        # would prepend every earlier game's moves to this game's pgn.
+        exporter = chess.pgn.StringExporter(headers=False, variations=False, comments=False)
         moves = game.accept(exporter).strip()
         games.append({
             "white_player": h.get("White"), "black_player": h.get("Black"),

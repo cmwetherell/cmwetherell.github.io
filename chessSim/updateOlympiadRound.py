@@ -58,7 +58,7 @@ def final_rounds(cfg):
     return sorted(int(r) for r in fin["round"].unique())
 
 
-def update(event_key, n_sims, procs, backfill_games=False):
+def update(event_key, n_sims, procs, games_only=False):
     cfg = get_event(event_key)
     print(f"===== Updating {cfg.label} Olympiad {cfg.year} =====")
 
@@ -72,10 +72,12 @@ def update(event_key, n_sims, procs, backfill_games=False):
     rounds_completed = done_rounds[-1] if done_rounds else 0
     print(f"completed rounds: {rounds_completed}")
 
-    # 2. board games (latest final round by default; all of them with --backfill)
-    game_rounds = done_rounds if backfill_games else ([rounds_completed] if rounds_completed else [])
+    # 2. board games for EVERY completed round (idempotent upsert). Ingesting all
+    # rounds each run means a missed trigger can't leave a permanent hole in the
+    # per-board leaderboards. team_ids are re-derived from current players.csv, so
+    # re-ingesting also corrects ids after a mid-event renumbering.
     games_by_round = {}
-    for rd in game_rounds:
+    for rd in done_rounds:
         games_by_round[rd] = results.collect_round_games(cfg, rd)
 
     # 3. DB upserts (orchestrator owns reference + results tables)
@@ -97,6 +99,13 @@ def update(event_key, n_sims, procs, backfill_games=False):
             db.upsert_games(conn, cfg.key, gdf.to_dict("records"))
     conn.close()
 
+    if games_only:
+        # Games/reference/standings refreshed without re-simulating -- bust the
+        # site cache directly (sims path normally does this).
+        db.revalidate()
+        print(f"===== {cfg.label}: games-only update complete (rounds {done_rounds}) =====")
+        return
+
     # 4. re-run sims + upload (reference tables already handled above)
     runner.run(cfg.key, n_sims, upload=True, procs=procs, upsert_reference=False)
     print(f"===== {cfg.label}: update complete (through round {rounds_completed}) =====")
@@ -107,10 +116,10 @@ def main():
     ap.add_argument("event", help="open | women")
     ap.add_argument("--sims", type=int, default=10000)
     ap.add_argument("--procs", type=int, default=8)
-    ap.add_argument("--backfill-games", action="store_true",
-                    help="ingest board games for ALL completed rounds, not just the latest")
+    ap.add_argument("--games-only", action="store_true",
+                    help="refresh games/standings/reference only; skip the sim re-run")
     args = ap.parse_args()
-    update(args.event, args.sims, args.procs, args.backfill_games)
+    update(args.event, args.sims, args.procs, games_only=args.games_only)
 
 
 if __name__ == "__main__":
