@@ -8,4 +8,7 @@ cd /Users/caleb/dev/pawnalyze-old-blog
 PY=/Users/caleb/.pyenv/versions/3.11.4/bin/python3
 mkdir -p logs
 echo "===== poll $(date) =====" >> logs/olympiad_poll.log
-"$PY" chessSim/pollOlympiad.py --sims 10000 >> logs/olympiad_poll.log 2>&1
+# caffeinate -i prevents idle sleep while a poll/update runs, so a long re-sim
+# (D.02 engine, ~16 min) isn't killed mid-run by the laptop sleeping. (A closed
+# lid can still sleep; keep the lid open around round-end for reliability.)
+caffeinate -i "$PY" chessSim/pollOlympiad.py --sims 10000 >> logs/olympiad_poll.log 2>&1
