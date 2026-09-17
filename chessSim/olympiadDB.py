@@ -448,20 +448,21 @@ def set_current(conn, event, run_id):
     conn.commit()
 
 
-def prune_runs(conn, event, keep_latest_sims=3):
+def prune_runs(conn, event, past_sims_keep=2000):
     """
-    Delete raw sims for older runs to keep the table small (summaries are kept
-    for history). Keeps sims for the most recent `keep_latest_sims` runs and
-    always for the current run. Also removes any leftover synthetic runs.
+    Storage control. The CURRENT run keeps its full sims (the scenario / pick-em
+    explorer needs them). Every OTHER run of this event is downsampled to
+    `past_sims_keep` sims -- past rounds don't need full pick-em resolution, and
+    sims are i.i.d. so keeping sim_id < N is a valid random subsample. Run rows
+    and team_summary are kept for ALL runs, so the odds-over-time history (which
+    reads team_summary, not raw sims) is fully preserved. Drops synthetic runs.
     """
     with conn.cursor() as cur:
         cur.execute(f"""
             DELETE FROM {SIMS_TABLE} s USING {RUNS_TABLE} r
-            WHERE s.run_id = r.run_id AND r.event = %s AND NOT r.is_current
-              AND r.run_id NOT IN (
-                SELECT run_id FROM {RUNS_TABLE} WHERE event = %s
-                ORDER BY created_at DESC LIMIT %s)
-        """, (event, event, keep_latest_sims))
+            WHERE s.run_id = r.run_id AND r.event = %s
+              AND NOT r.is_current AND s.sim_id >= %s
+        """, (event, past_sims_keep))
         cur.execute(f"DELETE FROM {RUNS_TABLE} WHERE event = %s AND source = 'synthetic'",
                     (event,))
     conn.commit()
