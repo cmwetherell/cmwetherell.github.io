@@ -459,6 +459,19 @@ def prune_runs(conn, event, past_sims_keep=10000):
     team_summary, not raw sims) is fully preserved. Drops synthetic runs.
     """
     with conn.cursor() as cur:
+        # Drop superseded runs: keep only the latest run per rounds_completed
+        # (plus the current run). Re-running a round replaces its prior run so the
+        # odds-history has exactly one point per (event, rounds_completed). Sims
+        # cascade-delete via FK.
+        cur.execute(f"""
+            DELETE FROM {RUNS_TABLE} r
+            WHERE r.event = %s AND NOT r.is_current AND EXISTS (
+                SELECT 1 FROM {RUNS_TABLE} r2
+                WHERE r2.event = r.event AND r2.rounds_completed = r.rounds_completed
+                  AND r2.run_id <> r.run_id
+                  AND (r2.is_current OR r2.created_at > r.created_at))
+        """, (event,))
+        # Cap non-current runs at past_sims_keep sims.
         cur.execute(f"""
             DELETE FROM {SIMS_TABLE} s USING {RUNS_TABLE} r
             WHERE s.run_id = r.run_id AND r.event = %s
