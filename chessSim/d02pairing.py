@@ -204,34 +204,27 @@ def pair_round(ctx):
         carry = chosen_floaters
 
     # Completeness: in hard late rounds the per-bracket float logic can leave
-    # teams unpaired (a rematch-free pairing needs floats it didn't make). Rather
-    # than drop teams or allow a rematch (FIDE [C1] is absolute), fall back to a
-    # GLOBAL rematch-free min-cost matching for the whole round -- guaranteed
-    # complete and rematch-free (blossom), minimising score differences (Swiss).
+    # teams unpaired (a rematch-free pairing needs cross-bracket floats it didn't
+    # make). Rather than drop teams or allow a rematch (FIDE [C1] is absolute),
+    # recompute the whole round as a single GLOBAL rematch-free min-cost matching
+    # -- guaranteed complete and rematch-free (blossom), minimising score
+    # differences (Swiss). This never fires on the validated official rounds
+    # (their bracket logic completes with leftover == []); it only triggers on the
+    # rare simulated round whose per-bracket float order can't finish, where a
+    # whole-field recompute is both simpler and provably complete.
+    #
+    # An earlier "release the leftovers' score-neighbourhood subset and re-blossom
+    # just that subset" repair ORPHANED teams: releasing a pair (x, y) where x was
+    # in the window but its downfloat partner y sat outside it dropped y, and the
+    # subset re-blossom never re-paired y -- so the unpaired count never fell, it
+    # just shifted onto whoever had floated in (often a contender). The
+    # completeness invariant is regression-checked by d02_repro_real.py.
     paired = set()
     for a, b in result:
         paired.add(a); paired.add(b)
     leftover = [t for t in teams if t not in paired]
     if leftover:
-        # Almost always the few leftovers pair among themselves rematch-free
-        # (tiny blossom). If they can't, they only need to swap with teams in their
-        # own score neighbourhood -- release those pairs and re-blossom that local
-        # subset (fast). Whole-field is an ultra-rare last resort.
-        leftover.sort(key=lambda t: (-mp[t], ir[t]))
-        extra = _blossom_match(leftover, opp)
-        if extra is not None:
-            result.extend(extra)
-        else:
-            lo_scores = [mp[t] for t in leftover]
-            lo, hi = min(lo_scores) - 2, max(lo_scores) + 2
-            subset = sorted((t for t in teams if lo <= mp[t] <= hi),
-                            key=lambda t: (-mp[t], ir[t]))
-            sset = set(subset)
-            result = [(a, b) for a, b in result if a not in sset and b not in sset]
-            sub = _blossom_match(subset, opp)
-            if sub is None:
-                return _global_match(teams, opp, mp, ir)
-            result.extend(sub)
+        return _global_match(teams, opp, mp, ir)
 
     return {frozenset(p) for p in result}
 
