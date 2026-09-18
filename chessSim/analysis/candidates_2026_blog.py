@@ -18,6 +18,7 @@ load_dotenv(os.path.join(os.path.dirname(__file__), '..', '..', '.env'))
 DB_URL = (
     f"postgresql+psycopg2://{os.environ['POSTGRES_USER']}:{os.environ['POSTGRES_PASSWORD']}"
     f"@{os.environ['POSTGRES_HOST']}:{os.environ['POSTGRES_PORT']}/{os.environ['POSTGRES_DATABASE']}"
+    f"?sslmode=require"
 )
 OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "output")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -25,12 +26,12 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 PLAYERS = {
     'Nak': ('Nakamura, Hikaru', 2810),
     'Car': ('Caruana, Fabiano', 2795),
-    'Gir': ('Giri, Anish', 2760),
-    'Pra': ('Praggnanandhaa R', 2758),
+    'Gir': ('Giri, Anish', 2753),
+    'Pra': ('Praggnanandhaa R', 2741),
     'Wei': ('Wei, Yi', 2754),
-    'Sin': ('Sindarov, Javokhir', 2726),
+    'Sin': ('Sindarov, Javokhir', 2745),
     'Esi': ('Esipenko, Andrey', 2698),
-    'Blu': ('Bluebaum, Matthias', 2684),
+    'Blu': ('Bluebaum, Matthias', 2698),
 }
 
 SHORT_NAMES = {

@@ -69,6 +69,9 @@ def summarizeCurrent(games):
         whitePlayer.addGame(row.result, whiteElo, blackElo, 'c')
         blackPlayer.addGame((1 - row.result), blackElo, whiteElo, 'c')
 
+    for player in playersCopy.values():
+        player.updateRatings()
+
     gamesCopy['blackWin'] = 0
 
     whiteResults = gamesCopy[['whitePlayer', 'blackPlayer', 'result', 'blackWin']].values
@@ -273,7 +276,7 @@ def upload_dataframe_to_db(table_name: str, df: pd.DataFrame, if_exists: Optiona
 
     # Create the SQLAlchemy engine
     try:
-        engine = create_engine(f'postgresql+psycopg2://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DATABASE}')
+        engine = create_engine(f'postgresql+psycopg2://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DATABASE}?sslmode=require')
         
         # Upload the DataFrame to the database
         df.to_sql(table_name, con=engine, if_exists=if_exists, index=False)
