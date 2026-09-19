@@ -141,6 +141,21 @@ def _blossom_match(teams, opp):
     return [tuple(p) for p in m]
 
 
+def _score_match(teams, opp, mp, ir):
+    """
+    Score-aware rematch-free PERFECT matching of `teams` as (a, b) tuples, or
+    None if no perfect matching exists. Used to re-pair a completeness-repair
+    pool. Unlike _blossom_match's bracket-slide weight (right within ONE
+    scoregroup), this puts match-point difference first -- which is what matters
+    once the pool spans several scoregroups, otherwise a leader can be handed a
+    mid-table opponent.
+    """
+    m = _global_match(teams, opp, mp, ir)
+    if len(m) * 2 != len(teams):
+        return None
+    return [tuple(p) for p in m]
+
+
 def _feasible_next(next_bracket, opp):
     """
     Can the next bracket be paired keeping ALL its members in (an odd bracket may
@@ -194,37 +209,83 @@ def pair_round(ctx):
                 break
 
         if chosen_pairs is None:
-            # fallback: pair whatever we can, float the rest (should be rare)
+            # No parity-preserving downfloat makes both this bracket and the next
+            # pairable. Pair this bracket in place rather than dropping it: the
+            # MDP step in _bracket_pairs is greedy (each floater takes the
+            # strongest unplayed resident) and can return None even when a
+            # rematch-free pairing of the whole bracket exists, so fall through to
+            # a rematch-free general matching of the bracket. Only if that too is
+            # impossible do these teams reach the completeness net below.
+            def _pair_in_place(bracket):
+                p = _bracket_pairs(bracket, len(carry), opp, last_color)
+                return p if p is not None else _blossom_match(bracket, opp)
+
             even = carry + grp
-            if len(even) % 2:
-                chosen_floaters = [even[-1]]
-                even = even[:-1]
-            chosen_pairs = _bracket_pairs(even, len(carry), opp, last_color) or []
+            if len(even) % 2 == 0:
+                chosen_pairs = _pair_in_place(even) or []
+            else:
+                # One team must float. Floating the lowest is the D.02 default,
+                # but if the remainder is then unpairable (e.g. a lone leader has
+                # already played that lowest team) try the next-lowest resident
+                # instead, rather than dropping the whole bracket. Carried-in
+                # downfloaters (the first len(carry) entries) are never re-floated.
+                chosen_pairs, chosen_floaters = None, [even[-1]]
+                for k in range(len(even) - 1, len(carry) - 1, -1):
+                    p = _pair_in_place(even[:k] + even[k + 1:])
+                    if p is not None:
+                        chosen_pairs, chosen_floaters = p, [even[k]]
+                        break
+                if chosen_pairs is None:
+                    chosen_pairs = []
         result.extend(chosen_pairs)
         carry = chosen_floaters
 
     # Completeness: in hard late rounds the per-bracket float logic can leave
     # teams unpaired (a rematch-free pairing needs cross-bracket floats it didn't
     # make). Rather than drop teams or allow a rematch (FIDE [C1] is absolute),
-    # recompute the whole round as a single GLOBAL rematch-free min-cost matching
-    # -- guaranteed complete and rematch-free (blossom), minimising score
-    # differences (Swiss). This never fires on the validated official rounds
-    # (their bracket logic completes with leftover == []); it only triggers on the
-    # rare simulated round whose per-bracket float order can't finish, where a
-    # whole-field recompute is both simpler and provably complete.
+    # repair LOCALLY: release the leftovers' score neighbourhood and re-pair it
+    # with a rematch-free general matching (blossom). This never fires on the
+    # validated official rounds (their bracket logic completes with
+    # leftover == []), only on simulated rounds the bracket order can't finish.
     #
-    # An earlier "release the leftovers' score-neighbourhood subset and re-blossom
-    # just that subset" repair ORPHANED teams: releasing a pair (x, y) where x was
-    # in the window but its downfloat partner y sat outside it dropped y, and the
-    # subset re-blossom never re-paired y -- so the unpaired count never fell, it
-    # just shifted onto whoever had floated in (often a contender). The
-    # completeness invariant is regression-checked by d02_repro_real.py.
+    # The release must not orphan anyone: when a result pair (x, y) touches the
+    # window, BOTH x and y go into the re-pair pool -- even if y's score sits
+    # outside the window (a downfloater). An earlier version released only the
+    # in-window member and re-blossomed just the window, which dropped y and
+    # merely shifted the unpaired slot onto whoever had floated in (often a
+    # contender). Releasing whole pairs keeps the pool even (leftover is even:
+    # the field is even and result covers an even count) and self-contained, so
+    # a perfect matching of the pool completes the round. Widen the window if the
+    # pool has no rematch-free perfect matching; the whole-field recompute is a
+    # last resort because a ~200-node pure-Python blossom costs seconds and this
+    # path fires several times per sim in late rounds. Invariant regression-
+    # checked by d02_repro_real.py.
     paired = set()
     for a, b in result:
         paired.add(a); paired.add(b)
     leftover = [t for t in teams if t not in paired]
     if leftover:
-        return _global_match(teams, opp, mp, ir)
+        lo_mp = min(mp[t] for t in leftover)
+        hi_mp = max(mp[t] for t in leftover)
+        for width in (2, 4, 8):
+            window = {t for t in teams if lo_mp - width <= mp[t] <= hi_mp + width}
+            keep, pool = [], set(leftover)
+            for a, b in result:
+                if a in window or b in window:
+                    pool.add(a); pool.add(b)
+                else:
+                    keep.append((a, b))
+            if len(pool) == len(teams):
+                # Nothing left to keep: the whole field is the pool, so this is
+                # exactly the global recompute (perfect if one exists, else the
+                # max-cardinality partial). Widening further would be a no-op.
+                return _global_match(teams, opp, mp, ir)
+            sub = _score_match(sorted(pool, key=lambda t: (-mp[t], ir[t])), opp, mp, ir)
+            if sub is not None:
+                result = keep + sub
+                break
+        else:
+            return _global_match(teams, opp, mp, ir)
 
     return {frozenset(p) for p in result}
 
