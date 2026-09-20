@@ -73,6 +73,25 @@ def _init_worker(state):
         pass  # not in main thread (shouldn't happen for a pool worker)
 
 
+def _is_retryable(exc):
+    """
+    True if `exc` is -- or was caused by -- a watchdog timeout or pairing dead
+    end. The watchdog raises _SimTimeout from a signal handler at an arbitrary
+    point; if that point is inside a library call the library may re-wrap it
+    (LightGBM's predict turns ANY exception during data conversion into
+    ValueError("Cannot convert data list to numpy array.") from err). Walking
+    the cause/context chain keeps such a wrapped timeout a retry rather than a
+    run-killing crash.
+    """
+    seen = set()
+    while exc is not None and id(exc) not in seen:
+        if isinstance(exc, (_SimTimeout, PairingError)):
+            return True
+        seen.add(id(exc))
+        exc = exc.__cause__ if exc.__cause__ is not None else exc.__context__
+    return False
+
+
 def _worker(_):
     for _attempt in range(_MAX_RETRIES):
         try:
@@ -80,13 +99,14 @@ def _worker(_):
             result = simulate_once(_STATE)
             signal.setitimer(signal.ITIMER_REAL, 0)
             return result
-        except (_SimTimeout, PairingError):
-            # Pathological scoregroup: re-roll with fresh randomness (different
-            # scores -> different scoregroups -> almost always pairs cleanly).
+        except BaseException as e:
             signal.setitimer(signal.ITIMER_REAL, 0)
-            continue
-        except BaseException:
-            signal.setitimer(signal.ITIMER_REAL, 0)
+            if _is_retryable(e):
+                # Pathological scoregroup or a watchdog trip: re-roll with fresh
+                # randomness (different scores -> different scoregroups -> almost
+                # always pairs cleanly; a wall-clock trip after a machine sleep
+                # simply re-runs the sim).
+                continue
             raise
     return None  # gave up: pathological pairing on every retry (astronomically rare)
 

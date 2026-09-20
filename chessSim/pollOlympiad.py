@@ -30,13 +30,41 @@ import olympiadDB as db
 from updateOlympiadRound import update
 
 _LOCK = "/tmp/olympiad_poll.lock"
-_LOCK_STALE_SECONDS = 3600   # ignore a lock older than this (crashed run)
+_LOCK_STALE_SECONDS = 3600   # reclaim an ownerless lock older than this (crashed run)
+
+
+def _pid_alive(pid):
+    try:
+        os.kill(pid, 0)          # signal 0: existence check only
+        return True
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True              # exists, owned by someone else
 
 
 def _acquire_lock():
+    """
+    One poll/update at a time. A lock is honoured while its owning PID is alive
+    -- regardless of age -- so a long update (or one paused by a laptop sleep,
+    which ages the file's mtime just like real elapsed time) never gets a second
+    poller started on top of it: two 8-worker pools on 8 cores starve every sim
+    and trip the watchdog. Only a lock whose owner is gone AND is older than
+    _LOCK_STALE_SECONDS is reclaimed, so a crash can't wedge polling forever.
+    A lock whose owner is provably dead is reclaimed at once.
+    """
     if os.path.exists(_LOCK):
-        age = time.time() - os.path.getmtime(_LOCK)
-        if age < _LOCK_STALE_SECONDS:
+        owner = None
+        try:
+            with open(_LOCK) as fh:
+                owner = int(fh.read().split()[-1])
+        except (OSError, ValueError, IndexError):
+            pass
+        if owner is not None:
+            if _pid_alive(owner):
+                return False
+            # owner crashed/was killed: safe to take over immediately
+        elif time.time() - os.path.getmtime(_LOCK) < _LOCK_STALE_SECONDS:
             return False
     with open(_LOCK, "w") as fh:
         fh.write(str(os.getpid()))
