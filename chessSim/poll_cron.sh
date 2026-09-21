@@ -12,3 +12,7 @@ echo "===== poll $(date) =====" >> logs/olympiad_poll.log
 # (D.02 engine, ~16 min) isn't killed mid-run by the laptop sleeping. (A closed
 # lid can still sleep; keep the lid open around round-end for reliability.)
 caffeinate -i "$PY" chessSim/pollOlympiad.py --sims 10000 >> logs/olympiad_poll.log 2>&1
+# Post-poll health check against external truth (chess-results). Writes
+# logs/health/latest.md; on a NEW failure it runs `claude -p` (read-only tools)
+# once to diagnose and saves logs/health/diagnosis_<ts>.md. Never blocks polling.
+"$PY" chessSim/healthcheck.py >> logs/olympiad_health.log 2>&1 || true
