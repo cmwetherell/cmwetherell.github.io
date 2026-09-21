@@ -44,8 +44,11 @@ every run — this doc mirrors it.
   (Open 206 / Women 189 participants); runs before that had 202 / 186 and are
   being regenerated. A team never given a real pairing is excluded: it carries
   **0** in every array and gets no `team_summary` row. A round a team did not
-  play (absent, or a bye) is 0 in `round_scores`/`round_opps` — a bye is
-  distinguishable by its 4 half-points in `round_scores`.
+  play (absent, or a bye) is 0 in `round_opps`; a **bye** carries 4 half-points
+  in `round_scores` and 1 MP (FIDE Regs 4.1/4.3 — verified against the
+  chess-results ranking table), an **absent** team carries 0. A team that
+  **withdraws** mid-event (stops appearing in the published pairings) keeps its
+  results to date and is ranked, but is not paired in simulated rounds.
 - **Scores are half-points.** A board is worth 2 (win) / 1 (draw) / 0. A 4-board
   match totals **0..8** half-points; **4 = a drawn match**. So "team wins a
   match" ⇔ score `> 4`, "draw" ⇔ `= 4`, "loss" ⇔ `< 4`. Match points (MP) are
@@ -104,7 +107,7 @@ rounds are played.
 | `round` | smallint | 1..11 |
 | `board_no` | smallint | pairing/table number within the round (PK part) |
 | `team1_id` | smallint | board-1 **white** team |
-| `team2_id` | smallint | nullable (bye) |
+| `team2_id` | smallint | **NULL = pairing-allocated bye** (odd field); `team1_score` is then 4 (the bye's 2 GP) once the round is underway, `status` `scheduled` before |
 | `team1_score` | smallint | half-points 0..8, NULL until known |
 | `team2_score` | smallint | half-points 0..8, NULL until known |
 | `status` | text | `scheduled` \| `live` \| `final` |

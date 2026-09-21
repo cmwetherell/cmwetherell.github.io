@@ -27,9 +27,9 @@ from urllib3.exceptions import InsecureRequestWarning
 urllib3.disable_warnings(InsecureRequestWarning)
 
 try:
-    from olympiadConfig import get_event, EventConfig
+    from olympiadConfig import get_event, EventConfig, BYE, BYE_GP
 except ImportError:  # when run as chessSim.scrapeOlympiad
-    from chessSim.olympiadConfig import get_event, EventConfig
+    from chessSim.olympiadConfig import get_event, EventConfig, BYE, BYE_GP
 
 HEADERS = {"User-agent": "Mozilla/5.0"}
 
@@ -194,6 +194,11 @@ def _clean_gp(val):
 
 
 _NON_TEAM = {"not paired", "bye", "spielfrei", "", "nan", "spielfrei / not paired"}
+# A pairing-allocated bye (odd field: the lowest-ranked unpaired team). Scores
+# 1 MP + 2 GP (FIDE Olympiad Regs 4.1/4.3; verified on the chess-results ranking
+# table: bye teams carry +1 MP / +2 GP over their played games). Distinct from
+# "not paired" = absent/withdrawn that round, which scores nothing.
+_BYE = {"bye", "spielfrei"}
 
 
 def _strip_team(name) -> str:
@@ -202,6 +207,10 @@ def _strip_team(name) -> str:
 
 def _is_real_team(name: str) -> bool:
     return bool(name) and name.lower() not in _NON_TEAM
+
+
+def _is_bye(name: str) -> bool:
+    return str(name).strip().lower() in _BYE
 
 
 def scrape_rounds(cfg: EventConfig):
@@ -239,6 +248,27 @@ def scrape_rounds(cfg: EventConfig):
         played_any = res1.notna().any()
 
         for bno, t1, t2, g1, g2 in zip(board_no, team1, team2, res1, res2):
+            # "X vs bye": pairing-allocated bye. Record it as a match against
+            # BYE so the team is seeded with its 1 MP + 2 GP and is known to be
+            # active this round (a team absent from a round's pairings without a
+            # bye is "not paired" -- absent/withdrawn -- and scores nothing).
+            if _is_real_team(t1) and _is_bye(t2) or _is_real_team(t2) and _is_bye(t1):
+                team = t1 if _is_real_team(t1) else t2
+                # The bye's points count once the round is underway; for a
+                # merely published future round it stays 'scheduled' (and out
+                # of matches.csv, so next_round doesn't advance past it) -- the
+                # sim credits it when that pinned round is played.
+                round_results.append({
+                    "round": rd, "board_no": int(bno) if pd.notna(bno) else None,
+                    "team1": team, "team2": BYE,
+                    "team1_score_hp": int(BYE_GP * 2) if played_any else None,
+                    "team2_score_hp": None,
+                    "status": "final" if played_any else "scheduled",
+                })
+                if played_any:
+                    all_matches.append({"playerTeam": team, "oppTeam": BYE,
+                                        "round": rd, "gp": BYE_GP})
+                continue
             # Rows like "Angola vs not paired" are absent/withdrawn teams, not a
             # pairing-allocated bye -- skip them (those teams don't play).
             if not (_is_real_team(t1) and _is_real_team(t2)):

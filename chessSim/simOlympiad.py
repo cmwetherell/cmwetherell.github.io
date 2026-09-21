@@ -766,7 +766,7 @@ def simulateGame(whiteElo, blackElo, model):
 # ===========================================================================
 
 import json
-from olympiadConfig import get_event  # noqa: E402
+from olympiadConfig import get_event, BYE  # noqa: E402
 
 
 def prep_board_elos(players_df):
@@ -830,7 +830,7 @@ def load_event(cfg, pretournament=False, through_round=None):
 
     r1_pairs = list(zip(r1.whiteTeam, r1.blackTeam))
     if rr is not None and not rr.empty:
-        participants = sorted(set(rr.team1) | set(rr.team2))
+        participants = sorted((set(rr.team1) | set(rr.team2)) - {BYE})
     else:
         participants = sorted(set(r1.whiteTeam) | set(r1.blackTeam))
     pset = set(participants)
@@ -839,6 +839,19 @@ def load_event(cfg, pretournament=False, through_round=None):
         if through_round < 1:
             raise ValueError("through_round must be >= 1 (use pretournament=True for R0)")
         matches = matches[matches["round"] <= through_round]
+
+    # ACTIVE participants: those in the latest published round's pairings (paired
+    # or given the bye). A team that has stopped appearing -- "not paired" after
+    # withdrawing mid-event -- keeps its seeded results for the standings but is
+    # not paired in simulated rounds. For a through_round backfill the latest
+    # relevant round is N+1 (its pairings were published at that point).
+    active = set(participants)
+    if rr is not None and not rr.empty and not pretournament:
+        latest = int(rr["round"].max()) if through_round is None else through_round + 1
+        in_latest = rr[rr["round"] == latest]
+        if not in_latest.empty:
+            active = (set(in_latest.team1) | set(in_latest.team2)) - {BYE}
+            active &= pset
 
     init_rank = dict(zip(teams.team, teams.initRank.astype(int)))
     # team_id == chess-results starting number (snr). Contiguous 1..n_teams over
@@ -868,7 +881,16 @@ def load_event(cfg, pretournament=False, through_round=None):
     next_round = 1
     if not pretournament and not matches.empty:
         for row in matches.itertuples(index=False):
-            if row.playerTeam in pset and row.oppTeam in pset:
+            if row.playerTeam not in pset:
+                continue
+            if row.oppTeam == BYE:
+                # Pairing-allocated bye: 1 MP + 2 GP; opp None -> excluded from
+                # tiebreaks (mirrors the simulated-bye bookkeeping below).
+                seed_mp[row.playerTeam] += _gp_to_mp(row.gp)
+                seed_matches[row.playerTeam].append((float(row.gp), None))
+                seed_round_hp[row.playerTeam][int(row.round)] = int(round(row.gp * 2))
+                seed_round_opp[row.playerTeam][int(row.round)] = 0
+            elif row.oppTeam in pset:
                 seed_mp[row.playerTeam] += _gp_to_mp(row.gp)
                 seed_matches[row.playerTeam].append((float(row.gp), row.oppTeam))
                 seed_round_hp[row.playerTeam][int(row.round)] = int(round(row.gp * 2))
@@ -891,12 +913,15 @@ def load_event(cfg, pretournament=False, through_round=None):
         else:
             sched = rr[(rr["status"] == "scheduled") & (rr["round"] >= next_round)]
         for row in sched.itertuples(index=False):
+            # a published bye row (team2 == BYE) is not a pairing; the pinned
+            # round's odd leftover gets the bye in simulate_once.
             if row.team1 in pset and row.team2 in pset:
                 fixed_pairs.setdefault(int(row.round), []).append((row.team1, row.team2))
 
     return {
         "cfg": cfg,
         "participants": participants,
+        "active": sorted(active),
         "init_rank": init_rank,
         "team_id": team_id,
         "n_teams": n_teams,
@@ -974,6 +999,9 @@ def simulate_once(state):
     A team_id that did not play carries 0 in every array.
     """
     participants = state["participants"]
+    # Teams still in the event (in the latest published round). A withdrawn team
+    # keeps its seeded results for the final standings but is not paired.
+    active = state.get("active", participants)
     init_rank = state["init_rank"]
     board_elos = state["board_elos"]
     team_id = state["team_id"]
@@ -1011,6 +1039,13 @@ def simulate_once(state):
                "prev": prev, "last_color": {}}
         return _d02_pair_round(ctx)
 
+    def give_bye(team, rnd):
+        # Bye: 1 MP + 2 GP (Regs 4.1/4.3); opp None -> excluded from tiebreaks.
+        mp[team] += 1
+        matches[team].append((2.0, None))
+        round_hp[team][rnd] = 4
+        round_opp[team][rnd] = 0               # 0 == bye
+
     fixed_pairs = state.get("fixed_pairs", {})
     for rnd in range(state["next_round"], n_rounds + 1):
         # Use official published pairings for this round if we have them (fixed
@@ -1023,9 +1058,14 @@ def simulate_once(state):
             for white, black in fp:
                 play(white, black, rnd)
                 paired_now.add(white); paired_now.add(black)
-            # Participants whose official opponent left the field (participant-set
-            # drift) aren't in fp -> pair them with the engine, don't leave unpaired.
-            leftover = [t for t in participants if t not in paired_now]
+            # Active teams not in the published pairings: the round's bye (odd
+            # field -- the published bye row is not a pairing) and any team whose
+            # official opponent left the field. Give the lowest-ranked its bye,
+            # pair the rest with the engine rather than leave them unplayed.
+            leftover = sorted((t for t in active if t not in paired_now),
+                              key=lambda t: (-mp[t], init_rank[t]))
+            if len(leftover) % 2:
+                give_bye(leftover.pop(), rnd)
             if leftover:
                 for pair in _d02_pair(leftover):
                     a, b = tuple(pair)
@@ -1033,15 +1073,10 @@ def simulate_once(state):
                     play(white, black, rnd)
             continue
 
-        teams_by_rank = sorted(participants, key=lambda t: (-mp[t], init_rank[t]))
+        teams_by_rank = sorted(active, key=lambda t: (-mp[t], init_rank[t]))
         # Odd field -> lowest-ranked team gets a bye (1 MP + 2 GP, Regs 4.1/4.3).
         if len(teams_by_rank) % 2:
-            bye = teams_by_rank[-1]
-            teams_by_rank = teams_by_rank[:-1]
-            mp[bye] += 1
-            matches[bye].append((2.0, None))  # bye GP; opp None -> excluded from TB
-            round_hp[bye][rnd] = 4
-            round_opp[bye][rnd] = 0            # 0 == bye
+            give_bye(teams_by_rank.pop(), rnd)
 
         # FIDE D.02 team pairing (validated 100% vs official R2 for both events).
         for pair in _d02_pair(teams_by_rank):

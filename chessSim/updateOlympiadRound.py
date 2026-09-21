@@ -25,7 +25,7 @@ import argparse
 
 import pandas as pd
 
-from olympiadConfig import get_event
+from olympiadConfig import get_event, BYE
 import scrapeOlympiad as scr
 import olympiadResults as results
 import olympiadDB as db
@@ -40,11 +40,11 @@ def build_match_rows(cfg):
     rows = []
     for m in rr.itertuples(index=False):
         t1, t2 = tid.get(m.team1), tid.get(m.team2)
-        if t1 is None or t2 is None:
+        if t1 is None or (t2 is None and m.team2 != BYE):
             continue
         rows.append({
             "round": int(m.round), "board_no": int(m.board_no),
-            "team1_id": t1, "team2_id": t2,
+            "team1_id": t1, "team2_id": t2,          # None == bye (schema: nullable)
             "team1_score": None if pd.isna(m.team1_score_hp) else int(m.team1_score_hp),
             "team2_score": None if pd.isna(m.team2_score_hp) else int(m.team2_score_hp),
             "status": m.status,

@@ -44,6 +44,13 @@ TEAM_SUMMARY_TABLE = f"{TABLE_PREFIX}_team_summary"
 GAMES_TABLE = f"{TABLE_PREFIX}_games"
 STANDINGS_TABLE = f"{TABLE_PREFIX}_standings"
 
+# Sentinel opponent name for a pairing-allocated bye in matches.csv /
+# round_results.csv (team2 == BYE). A bye scores 1 MP + BYE_GP game points
+# (FIDE Olympiad Regs 4.1/4.3; verified against the chess-results ranking
+# table). Shared by the scraper and the simulator.
+BYE = "bye"
+BYE_GP = 2.0
+
 
 @dataclass(frozen=True)
 class EventConfig:
