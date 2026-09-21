@@ -275,12 +275,22 @@ def upsert_matches(conn, event, match_rows):
 def upsert_standings(conn, event, after_round, rows):
     """rows: dicts with team_id, rank, mp, gp_hp, tb1, tb2, tb3 and optionally
     after_round (rows may span several rounds; a row without it uses the
-    `after_round` argument). NaN tiebreaks are stored as NULL."""
+    `after_round` argument). NaN tiebreaks are stored as NULL.
+
+    Every (event, after_round) block that appears in `rows` is REPLACED: rows
+    for team_ids not in the new block are deleted in the same transaction.
+    Otherwise a chess-results renumbering (late entries shift SNo) leaves rows
+    keyed by a stale id behind, duplicating ranks."""
     def _f(v):
         return None if v is None or (isinstance(v, float) and v != v) else float(v)
     vals = [(event, int(r.get("after_round", after_round)), int(r["team_id"]), int(r["rank"]),
              int(r["mp"]), int(r["gp_hp"]), _f(r.get("tb1")), _f(r.get("tb2")), _f(r.get("tb3")))
             for r in rows]
+    if not vals:
+        return
+    blocks = {}
+    for v in vals:
+        blocks.setdefault(v[1], []).append(v[2])
     with conn.cursor() as cur:
         execute_values(cur, f"""
             INSERT INTO {STANDINGS_TABLE}
@@ -291,6 +301,13 @@ def upsert_standings(conn, event, after_round, rows):
               tb1 = EXCLUDED.tb1, tb2 = EXCLUDED.tb2, tb3 = EXCLUDED.tb3,
               updated_at = now()
         """, vals)
+        for rd, ids in blocks.items():
+            cur.execute(f"""
+                DELETE FROM {STANDINGS_TABLE}
+                WHERE event = %s AND after_round = %s AND NOT (team_id = ANY(%s))
+            """, (event, rd, ids))
+            if cur.rowcount:
+                print(f"standings: R{rd} pruned {cur.rowcount} stale row(s) (superseded team ids)")
     conn.commit()
 
 

@@ -290,6 +290,15 @@ from `matches` and cross-checked against the official values on every scrape (a
 mismatch is logged loudly), so a site-side derivation from `matches` agrees
 with them exactly — including byes (1 MP / 4 half-points).
 
+Each block is **exactly the official page's team set** for that round: a late
+arrival that chess-results already lists before its first pairing is present
+at 0 MP / 0 GP with its official rank (chess-results ranks it among the other
+0-point teams, so it is not necessarily last), so ranks run 1..n with no gaps.
+A team chess-results had not yet added is simply absent from that block (Open
+R1–R2 have 205 rows; R3+ have 206). Every scrape rewrites all blocks
+1..completed and **replaces** each one — rows keyed by a superseded SNo (from
+a chess-results renumbering) are deleted, never left to duplicate a rank.
+
 | column | type | notes |
 |--------|------|-------|
 | `event` | text | |

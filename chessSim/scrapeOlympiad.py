@@ -338,6 +338,12 @@ def scrape_standings(cfg: EventConfig) -> pd.DataFrame:
     from `matches`; rank/tb* are authoritative. If the ranking page for a round
     can't be fetched or parsed, that round falls back to the derived ranking
     (rank by mp, gp_hp; tb* null), so an update never fails on it.
+
+    Each round's block is exactly the official page's team set: a team that
+    chess-results lists but that had no match yet (a late arrival, seeded 0 MP /
+    0 GP and ranked among the other 0-point teams) is included with its official
+    rank, so ranks run 1..n with no gaps. Teams keyed by a superseded SNo are
+    dropped when the block is written (see olympiadDB.upsert_standings).
     """
     matches = pd.read_csv(cfg.matches_csv)
     teams = pd.read_csv(cfg.teams_csv)
@@ -369,6 +375,22 @@ def scrape_standings(cfg: EventConfig) -> pd.DataFrame:
             agg["tb1"] = agg["tb2"] = agg["tb3"] = None
             print(f"standings: R{rd} official ranking unavailable -> derived rank, no tiebreaks")
         else:
+            # Late arrivals are on the official page with 0 points before their
+            # first pairing; give them a derived 0/0 row so the block is exact.
+            known = set(team_id.values())
+            unknown = official[~official.team_id.isin(known)]
+            if len(unknown):
+                print(f"standings: R{rd} WARNING {len(unknown)} official SNo(s) not in teams.csv "
+                      f"(dropped): {unknown.team_id.tolist()[:5]}")
+                official = official[official.team_id.isin(known)]
+            idle = sorted(set(official.team_id) - set(agg.team_id))
+            if idle:
+                name_of = {v: k for k, v in team_id.items()}
+                agg = pd.concat([agg, pd.DataFrame({"playerTeam": [name_of[t] for t in idle],
+                                                    "mp": 0, "gp_hp": 0, "team_id": idle})],
+                                ignore_index=True)
+                print(f"standings: R{rd} {len(idle)} team(s) on official ranking without a match yet "
+                      f"(0/0): {[name_of[t] for t in idle][:5]}")
             agg = agg.merge(official, on="team_id", how="left")
             miss = agg[agg["rank"].isna()]
             if len(miss):

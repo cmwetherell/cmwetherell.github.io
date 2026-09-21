@@ -168,6 +168,27 @@ def run_checks():
         gaps = [r for r in range(0, rc + 1) if have.get(r, 0) != 1]
         add(f"{ev}.history", not gaps, f"rounds with !=1 summarised run: {gaps}" if gaps else f"R0..R{rc} all present")
 
+        # standings: one exact block per completed round -- ranks 1..n with no
+        # gaps or duplicates, every team_id a live team, official tiebreaks set
+        cur.execute(f"""
+            SELECT s.after_round, count(*), count(DISTINCT s.rank), max(s.rank),
+                   count(*) FILTER (WHERE t.team_id IS NULL),
+                   count(*) FILTER (WHERE s.tb1 IS NULL OR s.tb1 <> s.tb1)
+            FROM {db.STANDINGS_TABLE} s
+            LEFT JOIN {db.TEAMS_TABLE} t ON t.event = s.event AND t.team_id = s.team_id
+            WHERE s.event=%s GROUP BY 1""", (ev,))
+        blocks = {r[0]: r[1:] for r in cur.fetchall()}
+        bad = []
+        for rd in range(1, rc + 1):
+            b = blocks.get(rd)
+            if b is None:
+                bad.append(f"R{rd}: missing"); continue
+            n, nrank, mx, orphans, notb = b
+            if not (n == nrank == mx) or orphans or notb:
+                bad.append(f"R{rd}: rows={n} ranks={nrank} max={mx} orphans={orphans} no_tb={notb}")
+        add(f"{ev}.standings", not bad,
+            "; ".join(bad) if bad else f"R1..R{rc} exact ({', '.join(str(blocks[r][0]) for r in range(1, rc + 1))} rows)")
+
         cur.execute(f"""
             SELECT run_id FROM {db.RUNS_TABLE} r WHERE event=%s AND NOT is_current
               AND created_at < now() - interval '6 hours'
