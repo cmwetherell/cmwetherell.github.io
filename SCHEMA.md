@@ -282,24 +282,31 @@ PK `(event, round, board_no, board)`; FK `(event, round, board_no)` → `matches
 (cascade); index on `(white_fide_id, black_fide_id)`. Live games appear with
 `result='*'` and update to a final result as they finish.
 
-### `olympiad_2026_standings` — live team standings
-Current standings after each completed round, computed from the authoritative
-chess-results match scores.
+### `olympiad_2026_standings` — official team standings after every completed round
+One row per team per completed round. **`rank` and the tiebreaks are the official
+chess-results values** (its ranking table after round N, which it serves per
+round, so past rounds are exact, not reconstructed). `mp` / `gp_hp` are derived
+from `matches` and cross-checked against the official values on every scrape (a
+mismatch is logged loudly), so a site-side derivation from `matches` agrees
+with them exactly — including byes (1 MP / 4 half-points).
 
 | column | type | notes |
 |--------|------|-------|
 | `event` | text | |
-| `after_round` | smallint | 0..11 |
+| `after_round` | smallint | 1..11 — one block per completed round |
 | `team_id` | smallint | |
-| `rank` | smallint | 1 = leader |
-| `mp` | smallint | match points |
-| `gp_hp` | smallint | game points in half-points |
-| `tb1` `tb2` `tb3` | real | official Sonneborn-Berger tiebreaks — **currently NULL**; rank is by (MP, GP). The exact chess-results tiebreak ordering can be layered in from its ranking crosstable once published. |
+| `rank` | smallint | **official** chess-results rank, 1 = leader. (chess-results prints a blank rank on a row that ties the row above on the displayed tiebreaks; the pipeline fills it from the row's position, which is exact.) |
+| `mp` | smallint | match points (= official TB1) |
+| `gp_hp` | smallint | game points in half-points (= official TB3 × 2) |
+| `tb1` | real | official **TB2 — Olympiad Sonneborn-Berger without lowest result ("Chennai")**: the first tiebreak after match points |
+| `tb2` | real | official **TB3 — game points** (= `gp_hp / 2`) |
+| `tb3` | real | official **TB4 — Olympiad sum of adjusted match points without lowest result ("Chennai")** |
 | `updated_at` | timestamptz | |
 
-PK `(event, after_round, team_id)`.
+PK `(event, after_round, team_id)`. Ranking order is `mp` desc → `tb1` desc →
+`tb2` desc → `tb3` desc, which is what `rank` encodes. If chess-results' ranking
+page for a round is ever unavailable, that round falls back to a derived rank
+(by `mp`, `gp_hp`) with `tb*` NULL rather than failing the update.
 
-> For the official champion/medal ranking use the **simulation's** final standings
-> once `rounds_completed=11` (it applies the full FIDE Appendix 2.I tiebreaks);
-> for mid-event live standings use this table (MP → GP), which matches the public
-> leaderboard closely.
+> Read `rank` from this table for completed rounds. Use the **simulation's**
+> `final_rank` only for projected/what-if standings.

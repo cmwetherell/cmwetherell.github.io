@@ -317,15 +317,27 @@ def _gp_to_mp(gp):
 
 def scrape_standings(cfg: EventConfig) -> pd.DataFrame:
     """
-    Current team standings after the last completed round, computed from the
-    scraped completed matches (authoritative match scores from chess-results):
-    match points and game points per team, ranked by (MP desc, GP desc).
+    Official team standings after EVERY completed round, from the chess-results
+    ranking table (art=0&rd=N -- the rd parameter is honoured, so past rounds
+    are exact, not reconstructed). Columns: after_round, team_id, rank, mp,
+    gp_hp, tb1, tb2, tb3.
 
-    Columns: after_round, team_id, rank, mp, gp_hp, tb1, tb2, tb3.
-    tb1..tb3 (official Sonneborn-Berger tiebreaks) are left null here; the exact
-    official ordering can be layered in from the chess-results ranking crosstable
-    once it is published (it does not exist until a round is final). Empty
-    pre-tournament.
+      rank   : official chess-results rank ("Rk.")
+      mp     : match points -- DERIVED from matches.csv, cross-checked against
+               the official TB1 (a mismatch is printed loudly: it means the sim
+               input disagrees with chess-results)
+      gp_hp  : game points in half-points -- DERIVED, cross-checked vs TB3*2
+      tb1    : official TB2 = Olympiad-Sonneborn-Berger without lowest result
+               (Chennai) -- the first tiebreak after match points
+      tb2    : official TB3 = game points (== gp_hp / 2)
+      tb3    : official TB4 = Olympiad-Sum of Adjusted matchpoints without
+               lowest result (Chennai)
+      (official TB1 == mp, so it is not stored twice)
+
+    mp/gp_hp stay derived so they agree exactly with a site-side derivation
+    from `matches`; rank/tb* are authoritative. If the ranking page for a round
+    can't be fetched or parsed, that round falls back to the derived ranking
+    (rank by mp, gp_hp; tb* null), so an update never fails on it.
     """
     matches = pd.read_csv(cfg.matches_csv)
     teams = pd.read_csv(cfg.teams_csv)
@@ -338,26 +350,86 @@ def scrape_standings(cfg: EventConfig) -> pd.DataFrame:
         print("standings: 0 completed rounds -> empty")
         return df
 
-    after_round = int(matches["round"].max())
-    agg = matches.groupby("playerTeam").agg(
-        mp=("gp", lambda s: int(sum(_gp_to_mp(g) for g in s))),
-        gp_hp=("gp", lambda s: int(round(s.sum() * 2))),
-    ).reset_index()
-    agg = agg.sort_values(["mp", "gp_hp"], ascending=False).reset_index(drop=True)
-    agg["rank"] = agg.index + 1
+    completed = int(matches["round"].max())
+    frames = []
+    for rd in range(1, completed + 1):
+        upto = matches[matches["round"] <= rd]
+        agg = upto.groupby("playerTeam").agg(
+            mp=("gp", lambda s: int(sum(_gp_to_mp(g) for g in s))),
+            gp_hp=("gp", lambda s: int(round(s.sum() * 2))),
+        ).reset_index()
+        agg["team_id"] = agg.playerTeam.map(team_id)
+        agg = agg.dropna(subset=["team_id"])
+        agg["team_id"] = agg.team_id.astype(int)
 
-    rows = []
-    for r in agg.itertuples(index=False):
-        tid = team_id.get(r.playerTeam)
-        if tid is None:
-            continue
-        rows.append({"after_round": after_round, "team_id": tid, "rank": int(r.rank),
-                     "mp": int(r.mp), "gp_hp": int(r.gp_hp),
-                     "tb1": None, "tb2": None, "tb3": None})
-    df = pd.DataFrame(rows, columns=cols)
+        official = _official_ranking(cfg, rd)
+        if official is None:
+            agg = agg.sort_values(["mp", "gp_hp"], ascending=False).reset_index(drop=True)
+            agg["rank"] = agg.index + 1
+            agg["tb1"] = agg["tb2"] = agg["tb3"] = None
+            print(f"standings: R{rd} official ranking unavailable -> derived rank, no tiebreaks")
+        else:
+            agg = agg.merge(official, on="team_id", how="left")
+            miss = agg[agg["rank"].isna()]
+            if len(miss):
+                print(f"standings: R{rd} WARNING {len(miss)} team(s) not on official ranking: "
+                      f"{miss.playerTeam.tolist()[:5]}")
+            bad_mp = agg[(agg.off_mp.notna()) & (agg.off_mp != agg.mp)]
+            bad_gp = agg[(agg.off_gp.notna()) & ((agg.off_gp * 2).round() != agg.gp_hp)]
+            if len(bad_mp) or len(bad_gp):
+                print(f"standings: R{rd} WARNING derived != official for "
+                      f"{[(r.playerTeam, r.mp, r.off_mp) for r in bad_mp.itertuples()][:4]} (mp) "
+                      f"{[(r.playerTeam, r.gp_hp, r.off_gp) for r in bad_gp.itertuples()][:4]} (gp)")
+            # teams missing from the official page (shouldn't happen) get a derived rank after the rest
+            if len(miss):
+                nxt = int(agg["rank"].max() or 0) + 1
+                agg.loc[agg["rank"].isna(), "rank"] = range(nxt, nxt + len(miss))
+        agg["after_round"] = rd
+        frames.append(agg[cols])
+
+    df = pd.concat(frames, ignore_index=True)
+    df["rank"] = df["rank"].astype(int)
     df.to_csv(cfg.standings_csv, index=False)
-    print(f"standings: after round {after_round}, {len(df)} teams -> {cfg.standings_csv}")
+    print(f"standings: rounds 1..{completed}, {len(df)} rows "
+          f"(official rank + tiebreaks) -> {cfg.standings_csv}")
     return df
+
+
+def _official_ranking(cfg: EventConfig, rd: int):
+    """
+    chess-results ranking table after round `rd` -> DataFrame(team_id, rank,
+    off_mp, tb1, tb2, tb3, off_gp) or None if unavailable. Numbers use a
+    decimal comma ('135,5'); SNo is the starting number == team_id.
+    """
+    try:
+        resp = requests.get(cfg.url(art=0, rd=rd, flag=30, zeilen=99999),
+                            verify=False, headers=HEADERS, timeout=60)
+        resp.raise_for_status()
+        tables = pd.read_html(StringIO(resp.text), thousands=None, decimal=",")
+    except Exception as e:  # noqa: BLE001
+        print(f"standings: R{rd} ranking fetch failed: {e}")
+        return None
+    cand = [t for t in tables
+            if t.shape[0] >= 10 and {"Rk.", "SNo", "TB1", "TB2", "TB3"} <= set(map(str, t.columns))]
+    if not cand:
+        return None
+    t = max(cand, key=lambda x: x.shape[0]).reset_index(drop=True)
+    # chess-results leaves "Rk." blank on a row that ties the row above on the
+    # displayed tiebreaks; the table is in rank order, so the blank row's rank
+    # is its position (verified: the missing numbers == the blank positions).
+    rank = pd.to_numeric(t["Rk."], errors="coerce")
+    rank = rank.fillna(pd.Series(t.index + 1, index=t.index).astype(float))
+    out = pd.DataFrame({
+        "team_id": pd.to_numeric(t["SNo"], errors="coerce"),
+        "rank": rank,
+        "off_mp": pd.to_numeric(t["TB1"], errors="coerce"),
+        "tb1": pd.to_numeric(t["TB2"], errors="coerce"),
+        "off_gp": pd.to_numeric(t["TB3"], errors="coerce"),
+        "tb3": pd.to_numeric(t.get("TB4"), errors="coerce") if "TB4" in t.columns else None,
+    }).dropna(subset=["team_id", "rank"])
+    out["tb2"] = out["off_gp"]
+    out["team_id"] = out.team_id.astype(int)
+    return out
 
 
 def main():

@@ -273,9 +273,14 @@ def upsert_matches(conn, event, match_rows):
 
 
 def upsert_standings(conn, event, after_round, rows):
-    """rows: dicts with team_id, rank, mp, gp_hp, tb1, tb2, tb3."""
-    vals = [(event, after_round, r["team_id"], r["rank"], r["mp"], r["gp_hp"],
-             r.get("tb1"), r.get("tb2"), r.get("tb3")) for r in rows]
+    """rows: dicts with team_id, rank, mp, gp_hp, tb1, tb2, tb3 and optionally
+    after_round (rows may span several rounds; a row without it uses the
+    `after_round` argument). NaN tiebreaks are stored as NULL."""
+    def _f(v):
+        return None if v is None or (isinstance(v, float) and v != v) else float(v)
+    vals = [(event, int(r.get("after_round", after_round)), int(r["team_id"]), int(r["rank"]),
+             int(r["mp"]), int(r["gp_hp"]), _f(r.get("tb1")), _f(r.get("tb2")), _f(r.get("tb3")))
+            for r in rows]
     with conn.cursor() as cur:
         execute_values(cur, f"""
             INSERT INTO {STANDINGS_TABLE}
