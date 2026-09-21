@@ -797,24 +797,48 @@ def _gp_to_mp(gp):
     return 2 if gp > 2 else (1 if gp == 2 else 0)
 
 
-def load_event(cfg, pretournament=False):
+def load_event(cfg, pretournament=False, through_round=None):
     """
-    Build the immutable per-event state needed to simulate: participating teams
-    (those with a real Round-1 pairing), starting ranks, board Elos, the official
-    Round-1 pairings, and any completed-round results to start from.
+    Build the immutable per-event state needed to simulate: participating teams,
+    starting ranks, board Elos, the official Round-1 pairings, and any
+    completed-round results to start from.
+
+    Participants are every team that appears in ANY published team-vs-team
+    pairing (completed or scheduled). Basing this on Round 1 alone silently
+    dropped the late-arriving delegations (Angola, Cote d'Ivoire, CAR, Marshall
+    Islands showed as "not paired" in R1 and only joined from R2) -- and with
+    them every later match they played, including the forfeit wins awarded to
+    their opponents. A team that never gets a real pairing (fully withdrawn)
+    is still excluded.
 
     pretournament=True builds the R0 (pre-tournament) state: ignore all completed
     results (simulate from Round 1), pin only the official Round-1 pairings, and
     simulate rounds 2..11 -- i.e. what a forecast knew before any games.
+
+    through_round=N rebuilds the state as it stood after round N: seed only
+    rounds <= N, pin round N+1's official pairings, simulate N+1..11. Used to
+    (re)generate a historical run for the odds-over-time chart.
     """
     players = pd.read_csv(cfg.players_csv)
     teams = pd.read_csv(cfg.teams_csv)
     r1 = pd.read_csv(cfg.round1_pairings_csv)
     matches = pd.read_csv(cfg.matches_csv)
+    try:
+        rr = pd.read_csv(cfg.round_results_csv)
+    except (FileNotFoundError, OSError):
+        rr = None
 
     r1_pairs = list(zip(r1.whiteTeam, r1.blackTeam))
-    participants = sorted(set(r1.whiteTeam) | set(r1.blackTeam))
+    if rr is not None and not rr.empty:
+        participants = sorted(set(rr.team1) | set(rr.team2))
+    else:
+        participants = sorted(set(r1.whiteTeam) | set(r1.blackTeam))
     pset = set(participants)
+
+    if through_round is not None:
+        if through_round < 1:
+            raise ValueError("through_round must be >= 1 (use pretournament=True for R0)")
+        matches = matches[matches["round"] <= through_round]
 
     init_rank = dict(zip(teams.team, teams.initRank.astype(int)))
     # team_id == chess-results starting number (snr). Contiguous 1..n_teams over
@@ -851,24 +875,24 @@ def load_event(cfg, pretournament=False):
                 seed_round_opp[row.playerTeam][int(row.round)] = team_id[row.oppTeam]
                 seed_prev.add((row.playerTeam, row.oppTeam))
         next_round = int(matches["round"].max()) + 1
+    if through_round is not None:
+        next_round = through_round + 1
 
-    # Official published-but-unplayed pairings (chess-results "scheduled" rows) for
-    # rounds we haven't simulated yet -- typically just the next round. We FIX these
-    # instead of generating our own, so round_opps for the next round equals the
-    # published pairing (only its result varies across sims). Pre-tournament this
-    # covers Round 1. Falls back to r1_pairs / simulated pairing if unavailable.
+    # Official published-but-unplayed pairings for rounds we haven't simulated
+    # yet -- typically just the next round. We FIX these instead of generating our
+    # own, so round_opps for the next round equals the published pairing (only
+    # its result varies across sims). Pre-tournament pins nothing beyond R1
+    # (handled via r1_pairs). A through_round backfill pins round N+1 whatever
+    # its status now: those were the published pairings at that point in time.
     fixed_pairs = {}
-    try:
-        rr = pd.read_csv(cfg.round_results_csv)
-        # Pre-tournament: pin nothing beyond R1 (handled via r1_pairs) -- rounds
-        # 2..11 are all forecast. Otherwise pin the published future pairings.
-        sched = (rr.iloc[0:0] if pretournament
-                 else rr[(rr["status"] == "scheduled") & (rr["round"] >= next_round)])
+    if rr is not None and not rr.empty and not pretournament:
+        if through_round is not None:
+            sched = rr[rr["round"] == next_round]
+        else:
+            sched = rr[(rr["status"] == "scheduled") & (rr["round"] >= next_round)]
         for row in sched.itertuples(index=False):
             if row.team1 in pset and row.team2 in pset:
                 fixed_pairs.setdefault(int(row.round), []).append((row.team1, row.team2))
-    except (FileNotFoundError, OSError, KeyError, ValueError):
-        pass
 
     return {
         "cfg": cfg,

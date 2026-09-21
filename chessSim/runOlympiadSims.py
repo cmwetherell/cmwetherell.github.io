@@ -172,9 +172,16 @@ def _r1_match_rows(state):
 
 
 def run(event_key, n_sims, upload, procs, chunk=500, upsert_reference=True,
-        pretournament=False, make_current=True):
+        pretournament=False, make_current=True, through_round=None):
+    """
+    through_round=N: historical backfill -- rebuild the state as of after round
+    N and upload it as a NON-current run (make_current is forced False), giving
+    the odds-over-time chart one pipeline run per (event, rounds_completed).
+    """
+    if through_round is not None:
+        make_current = False
     cfg = get_event(event_key)
-    state = load_event(cfg, pretournament=pretournament)
+    state = load_event(cfg, pretournament=pretournament, through_round=through_round)
     N = state["n_teams"]
     rounds_completed = state["next_round"] - 1
     participants = state["participants"]
@@ -182,7 +189,8 @@ def run(event_key, n_sims, upload, procs, chunk=500, upsert_reference=True,
     id2name = {v: k for k, v in team_id.items()}
 
     print(f"=== {cfg.label} Olympiad {cfg.year}: {n_sims} sims, "
-          f"{len(participants)} teams, {rounds_completed} rounds completed ===")
+          f"{len(participants)} teams, {rounds_completed} rounds completed"
+          f"{' (backfill)' if through_round is not None else ''} ===")
 
     # Running aggregates (0-based; position p == team_id p+1).
     gold = np.zeros(N, dtype=np.int64)
@@ -208,8 +216,18 @@ def run(event_key, n_sims, upload, procs, chunk=500, upsert_reference=True,
             db.upsert_teams(conn, cfg.key, pd.read_csv(cfg.teams_csv))
             db.upsert_players(conn, cfg.key, pd.read_csv(cfg.players_csv), team_id)
             db.upsert_matches(conn, cfg.key, _r1_match_rows(state))
+        # Record a team-list change on the run so a shift in n_teams (a late
+        # entry, a withdrawal, or a scrape that missed a trailing row) is
+        # visible in the history rather than something to reverse-engineer.
+        notes = None
+        prev_n = db.last_run_n_teams(conn, cfg.key)
+        if prev_n is not None and prev_n != N:
+            notes = f"n_teams changed {prev_n} -> {N}"
+            print(f"NOTE: {notes}")
+        if through_round is not None:
+            notes = (notes + "; " if notes else "") + f"backfill through R{through_round}"
         run_id = db.insert_run(conn, cfg.key, rounds_completed, n_sims, N,
-                               source="pipeline")
+                               source="pipeline", notes=notes)
         print(f"created run_id={run_id}")
 
     def db_retry(fn, what, tries=4):
@@ -322,8 +340,18 @@ def main():
     ap.add_argument("--sims", type=int, default=10000)
     ap.add_argument("--upload", action="store_true", help="write results to Postgres")
     ap.add_argument("--procs", type=int, default=8)
+    ap.add_argument("--through-round", type=int, default=None, metavar="N",
+                    help="historical backfill: simulate from the state after round N "
+                         "and upload as a non-current run (0 = pre-tournament)")
     args = ap.parse_args()
-    run(args.event, args.sims, args.upload, args.procs)
+    if args.through_round is None:
+        run(args.event, args.sims, args.upload, args.procs)
+    elif args.through_round == 0:
+        run(args.event, args.sims, args.upload, args.procs,
+            upsert_reference=False, pretournament=True, make_current=False)
+    else:
+        run(args.event, args.sims, args.upload, args.procs,
+            upsert_reference=False, through_round=args.through_round)
 
 
 if __name__ == "__main__":

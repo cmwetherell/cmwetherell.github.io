@@ -181,9 +181,17 @@ def ensure_schema(conn):
 
 
 def upsert_teams(conn, event, teams_df):
+    """
+    Upsert the entry list and PRUNE trailing rows beyond it. team_id is the
+    chess-results starting number, which shifted for the last few entries while
+    the list was still settling before R1 (a team added then removed pushed
+    "US Virgin Islands" through 191/190/189); without pruning, each renumbering
+    leaves a ghost row under the old id (players cascade via the FK).
+    """
     rows = [(event, int(r.initRank), str(r.fed), str(r.team),
              int(r.avg_rating), (str(r.captain) if r.captain else None))
             for r in teams_df.itertuples(index=False)]
+    n_teams = max(r[1] for r in rows)
     with conn.cursor() as cur:
         execute_values(cur, f"""
             INSERT INTO {TEAMS_TABLE} (event, team_id, fed_code, name, avg_rating, captain)
@@ -192,7 +200,20 @@ def upsert_teams(conn, event, teams_df):
               fed_code = EXCLUDED.fed_code, name = EXCLUDED.name,
               avg_rating = EXCLUDED.avg_rating, captain = EXCLUDED.captain
         """, rows)
+        cur.execute(f"DELETE FROM {TEAMS_TABLE} WHERE event = %s AND team_id > %s",
+                    (event, n_teams))
+        if cur.rowcount:
+            print(f"teams: pruned {cur.rowcount} stale row(s) with team_id > {n_teams}")
     conn.commit()
+
+
+def last_run_n_teams(conn, event):
+    """n_teams of the most recent run for this event (None if no runs yet)."""
+    with conn.cursor() as cur:
+        cur.execute(f"SELECT n_teams FROM {RUNS_TABLE} WHERE event = %s "
+                    f"ORDER BY created_at DESC LIMIT 1", (event,))
+        row = cur.fetchone()
+    return int(row[0]) if row else None
 
 
 def upsert_players(conn, event, players_df, team_id):
@@ -459,17 +480,32 @@ def prune_runs(conn, event, past_sims_keep=10000):
     team_summary, not raw sims) is fully preserved. Drops synthetic runs.
     """
     with conn.cursor() as cur:
-        # Drop superseded runs: keep only the latest run per rounds_completed
-        # (plus the current run). Re-running a round replaces its prior run so the
-        # odds-history has exactly one point per (event, rounds_completed). Sims
-        # cascade-delete via FK.
+        # 1. Drop dead partial runs: a run row with no team_summary is a crash
+        # leftover (the runner writes the summary last, just before set_current).
+        # Such a run must never be allowed to shadow a real one -- step 2 keeps
+        # the NEWEST run per rounds_completed, and a newer summary-less partial
+        # would otherwise win and delete the good run (this happened to Women R3).
+        # The age guard protects a run that is legitimately still in flight from
+        # another process (a full run takes well under an hour).
+        cur.execute(f"""
+            DELETE FROM {RUNS_TABLE} r
+            WHERE r.event = %s AND NOT r.is_current
+              AND r.created_at < now() - interval '6 hours'
+              AND NOT EXISTS (SELECT 1 FROM {TEAM_SUMMARY_TABLE} s WHERE s.run_id = r.run_id)
+        """, (event,))
+        # 2. Drop superseded runs: keep only the latest COMPLETE run per
+        # rounds_completed (plus the current run). Re-running a round replaces
+        # its prior run so the odds-history has exactly one point per (event,
+        # rounds_completed). Only a run that has a team_summary can supersede
+        # another. Sims cascade-delete via FK.
         cur.execute(f"""
             DELETE FROM {RUNS_TABLE} r
             WHERE r.event = %s AND NOT r.is_current AND EXISTS (
                 SELECT 1 FROM {RUNS_TABLE} r2
                 WHERE r2.event = r.event AND r2.rounds_completed = r.rounds_completed
                   AND r2.run_id <> r.run_id
-                  AND (r2.is_current OR r2.created_at > r.created_at))
+                  AND (r2.is_current OR r2.created_at > r.created_at)
+                  AND EXISTS (SELECT 1 FROM {TEAM_SUMMARY_TABLE} s2 WHERE s2.run_id = r2.run_id))
         """, (event,))
         # Cap non-current runs at past_sims_keep sims.
         cur.execute(f"""
