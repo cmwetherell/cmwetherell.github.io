@@ -9,7 +9,15 @@ the site is expected to run. The pipeline that produces all of this:
 |------|--------|--------|
 | Scrape teams / players / R1 pairings | `chessSim/scrapeOlympiad.py <open\|women>` | CSVs under `chessSim/data/olympiad/2026/<event>/` |
 | Simulate + upload | `chessSim/runOlympiadSims.py <open\|women> --sims 10000 --upload` | all tables below |
+| Per-round update (scrape + games + re-sim, sets current) | `chessSim/updateOlympiadRound.py <open\|women>` — run automatically by the cron poller `pollOlympiad.py` | all tables below |
+| **Regenerate a historical round** (non-current run) | `chessSim/runOlympiadSims.py <open\|women> --sims 10000 --upload --through-round N` (N=0 is pre-tournament); `chessSim/backfill_olympiad.sh` does every round | `runs`/`sims`/`team_summary` |
 | DB access layer (DDL + upserts) | `chessSim/olympiadDB.py` | — |
+
+**Invariant:** every `(event, rounds_completed)` from 0 up to the current round has
+**exactly one** `pipeline` run, and every pipeline run has a full `team_summary`.
+The pipeline enforces this on each upload: a re-run of a round replaces the prior
+run for that round, and a run row with no `team_summary` (a crashed upload) is
+deleted rather than allowed to shadow a real run.
 
 Credentials come from the repo-root `.env` (`POSTGRES_*`); see `.env.example`.
 The DDL in `olympiadDB.py` is the source of truth and is applied idempotently on
@@ -22,22 +30,29 @@ every run — this doc mirrors it.
 - **Two events** share one set of tables, distinguished by an `event` column:
   `'open'` | `'women'`.
 - **`team_id` = the chess-results starting number (snr)**, 1-based and contiguous
-  over *all registered teams* (Open: 1..207, Women: 1..191). It is the stable
+  over *all registered teams* (Open: 1..206, Women: 1..189). It is the stable
   key everywhere. **Do not key on `fed_code`** — federations repeat (Uzbekistan
-  2 and 3 both `UZB`).
-- **Participants vs. registered.** ~5 registered teams per event are "not paired"
-  in Round 1 (withdrawn/no-show), so the field that actually plays is **202
-  (Open)** / **186 (Women)**. Non-participating `team_id`s still exist in
-  `*_teams` but carry **0** in every simulation array and get **no**
-  `team_summary` row. Filter them out by `final_rank > 0` / their absence from
-  `team_summary`.
+  2 and 3 both `UZB`). The entry list settled a few days before R1; earlier
+  scrapes saw 207/191 and the trailing ids shifted. `*_teams` is now pruned to
+  the current entry list on every update, and a run whose `n_teams` differs
+  from the previous run carries a `notes` line (`n_teams changed A -> B`).
+- **Participants = every team in any published pairing.** A team is simulated
+  if it appears in *any* round's team-vs-team pairing (completed or scheduled).
+  This includes the late-arriving delegations that were "not paired" in Round 1
+  and joined from R2 (Angola, Côte d'Ivoire, Central African Republic, and
+  Marshall Islands in the Open) — from **21 Sep** these are in every run
+  (Open 206 / Women 189 participants); runs before that had 202 / 186 and are
+  being regenerated. A team never given a real pairing is excluded: it carries
+  **0** in every array and gets no `team_summary` row. A round a team did not
+  play (absent, or a bye) is 0 in `round_scores`/`round_opps` — a bye is
+  distinguishable by its 4 half-points in `round_scores`.
 - **Scores are half-points.** A board is worth 2 (win) / 1 (draw) / 0. A 4-board
   match totals **0..8** half-points; **4 = a drawn match**. So "team wins a
   match" ⇔ score `> 4`, "draw" ⇔ `= 4`, "loss" ⇔ `< 4`. Match points (MP) are
   separate: **2** for a match win, **1** for a drawn match, **0** for a loss.
 - **Arrays are Postgres 1-based and indexed by `team_id`.** `final_rank[t]` is
   team `t`'s finish; `round_scores[r][t]` is team `t`'s half-point score in round
-  `r` (`r` = 1..11). Array length = `n_teams` (207 / 191). A team that did not
+  `r` (`r` = 1..11). Array length = `n_teams` (206 / 189). A team that did not
   play a given round has 0 there.
 - **11 rounds**, Swiss, both events. Ranking is **Match Points**, then tiebreaks
   (FIDE Olympiad 2026 Regs, Appendix 2.I): **IS(10)** Olympiad Sonneborn-Berger
@@ -111,11 +126,11 @@ One row per Monte-Carlo run. A run is a snapshot: "N sims given the first
 | `event` | text | |
 | `rounds_completed` | smallint | 0 = pre-tournament, up to 11 |
 | `n_sims` | integer | e.g. 10000 |
-| `n_teams` | smallint | array length (207 / 191) |
+| `n_teams` | smallint | array length (206 / 189) |
 | `source` | text | `pipeline` \| `synthetic` (local seed data) |
 | `is_current` | boolean | exactly one true per event |
 | `created_at` | timestamptz | |
-| `notes` | text | nullable |
+| `notes` | text | nullable; set when `n_teams` changes vs the previous run, and `backfill through RN` on a regenerated historical run |
 
 Partial unique index guarantees a single `is_current` run per event
 (`... WHERE is_current`); history index on `(event, rounds_completed, created_at DESC)`.
