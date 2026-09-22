@@ -5,7 +5,7 @@
 # (prune_runs replaces the prior run for that round). Hold the poll lock while
 # this runs so cron doesn't start an update on top of it.
 #
-#   caffeinate -i chessSim/backfill_olympiad.sh [sims] [procs]
+#   chessSim/backfill_olympiad.sh [sims] [procs]
 set -uo pipefail
 cd "$(dirname "$0")/.."
 PY=/Users/caleb/.pyenv/versions/3.11.4/bin/python3
